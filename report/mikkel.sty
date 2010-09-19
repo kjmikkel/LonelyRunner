@@ -1,0 +1,113 @@
+% The LaTeX package for Mikkel Kjær Jensen
+\ProvidesPackage{mikkel}
+\newif\ifPDF
+\ifx\pdfoutput\undefined\PDFfalse
+\else\ifnum\pdfoutput > 0 \PDFtrue
+    	\else\PDFfalse
+		\fi
+\fi
+
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{float}
+\usepackage{textcomp}
+\usepackage{fixme}
+\usepackage{enumerate}
+\usepackage{verbatim}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{listing}
+\usepackage{lscape}
+\usepackage{pdflscape}
+\usepackage{verbatim}
+\usepackage[final]{listings}
+
+%\usepackage{ulem}
+\ifPDF
+	\usepackage[pdftex]{hyperref}
+        \usepackage[pdftex]{graphicx}
+	
+\else
+	\usepackage[dvips]{graphicx}
+%	\usepackage[dvips]{hyperref}
+\fi
+\lstset{ %
+language=Python,                % choose the language of the code
+basicstyle=\scriptsize,       % the size of the fonts that are used for the code
+numbers=left,                   % where to put the line-numbers
+numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
+numbersep=5pt,                  % how far the line-numbers are from the code
+%backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=true,         % underline spaces within strings
+showtabs=true,                 % show tabs within strings adding particular underscores
+frame=single,	                % adds a frame around the code
+tabsize=2,	                % sets default tabsize to 2 spaces
+captionpos=b,                   % sets the caption-position to bottom
+breaklines=true,                % sets automatic line breaking
+breakatwhitespace=true,        % sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)}          % if you want to add a comment within your code
+}
+% Pages styles (master pages)
+\makeatletter
+\newcommand{\sqbox}{\hfill$\square$}
+\newcommand{\hide}[1]{}
+\newcommand{\E}[1]{\{#1\}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\R}{\mathbb{R}}
+%\newcommand{\dfrac}[4]{\frac{\frac{#1}{#2}}{\frac{#3}{#4}}}
+\newcommand{\eqa}[1]{\begin{eqnarray*}#1\end{eqnarray*}}
+\newcommand{\limTO}[2]{\lim_{#1 \rightarrow #2}}
+\newcommand{\LHop}{=^{[0/0]}}
+\newcommand{\parDif}[1]{\frac{\partial }{\partial #1}}
+\newcommand{\grad}[3]{\nabla #1(#2) = (#3)}
+\newcommand{\gra}[3]{\nabla #1(#2)}
+\newcommand{\todo}[1]{\fixme{#1}}
+\newcommand{\pref}[1]{See section \ref{#1} p. \pageref{#1}}
+\newcommand{\nref}[1]{see section \ref{#1} p. \pageref{#1}}
+\newcommand{\method}[5]{
+\subsection{#1}
+#2 
+\ \\\\\emph{Example:}
+#3
+\ \\\\\emph{Advantages and Disadvantages:}
+\ad{#4}{#5}
+}
+\newcommand{\ad}[2]{
+\subsubsection*{Advantages:}
+\begin{itemize}
+#1
+\end{itemize}
+\subsubsection*{Disadvantages:}
+\begin{itemize}
+#2
+\end{itemize}
+}
+\newcommand{\test}[5]{
+\texttt{Name:}
+\label{#1}
+#1\\
+\texttt{Description:}
+#2\\
+\texttt{Purpose of test:}
+#3\\
+\texttt{Author texts}
+#4\\
+\texttt{Corpus}
+#5
+}
+\newcommand{\nl}{\\\\}
+\newcommand{\postSize}[1]{\texttt{#1}}
+\newcommand{\postAmount}[1]{\texttt{#1}}
+\newcommand{\q}[1]{\texttt{``#1''}}
+\newcommand{\forum}{web forums}
+\newcommand{\src}[1]{
+\subsection{#1.py}
+\label{code:#1}
+\lstinputlisting{../src/src/#1.py}
+}
+\newcommand\ps@Standard{
+\renewcommand\@oddhead{Mikkel Kjær Jensen, CPR: 2501851747}
+\renewcommand\@evenhead{\@oddhead}
+}
