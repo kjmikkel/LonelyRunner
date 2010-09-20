@@ -1,14 +1,30 @@
 \section{Introduction}
 \label{introduction}
-
 \todo{Introduction}
 
-\subsection{Applications}
-\todo{applications}
+The Lonely Runner conjecture states that given 
+
+The most succinct description I have seen of the problem is found in \cite{ANote} which has the following description of the problem:\\
+
+Given any n positive integers $w_1, w_2, \ldots, w_n$, there is a real number $x$ such that 
+$$
+\Vert w_i x\Vert \geq \frac{1}{n+1}
+$$
+
+for each $i = 1, 2, \ldots, n$, where for a real number $x$, $\Vert x \Vert$ is the distance from $x$ from the nearest integer.
+
+There exist 2 equivalent descriptions, which are more colourful:
+\begin{enumerate}
+\item Assume there are $n$ runners at a circular track (with unit length), where every runner has pairwise, constant, different speed (which, without loss of generality can be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions} \todo{Should I instead point to Zwei Sate uber inhomogene diophntische Approximation von Irrationalzahlen?}), there will then be a time where all the runners are at least $\frac{1}{n + 1}$ distance from the start line.\\
+
+\item Instead of n runners, we now have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner, everything else is the same \cite{Bienia97flows.view-obstructions}.\\
+\end{enumerate}
 
 \subsection{Scope and Limitations}
 \label{scope}
 \todo{Scope and limitations}
+In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
+I will work to make the program give a result (within a reasonable time) with up to 1000 runners. While the program may work with more than 1000 runners, I will not dedicate any time to this.
 
 \subsection{Expectations to the reader}
 \label{expectations}
