@@ -1,6 +1,9 @@
 \section{Possible methods}
 \label{choiceOfMethod}
 
+\subsection{Introduction}
+I will in this subsection describe the different methods I have thought of using in this project, and discuss their merits and flaws.
+
 \begin{description}
 \item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (descibed in the Introduction) lends itself well to a geometrical interpretation, and leads me to wonder whether an algorithm based on this fact would be efficient.
 
@@ -10,7 +13,7 @@
 \subsection{Computational Geometry}
 The following solution is based on the first intiutive description of the conjecture. Since we are interested when the runners are $\frac{1}{n + 1}$ units, or more, from the starting point, it is clear that we are interested when the runners are in the interval [$\frac{1}{n + 1}$, $\frac{n}{n + 1}$] on the track. However, we are not interested about the interval on the track, but rather, if a solution exist, the timepoint when all the runners are $\frac{1}{n+1}$. So one possible solution to the problem would be to calculate all the time intervals when a given runner is $\frac{1}{n+1}$ units from the start position. 
 
-In that case it becomes a matter of finding out whether there is a overlap of all the intervals 
+In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
 
 \subsection{Number Theoretic}
 
