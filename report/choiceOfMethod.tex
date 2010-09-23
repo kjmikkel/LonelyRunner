@@ -28,6 +28,7 @@ In that case it becomes a matter of finding out whether there is a overlap of al
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
+
   Create and initilize \li
   
 \End $\gets 0$
@@ -41,7 +42,7 @@ In that case it becomes a matter of finding out whether there is a overlap of al
 
   $start \gets$ \startT(\unit)
   
-  $end \gets$ \eT($timeUnit * \n$, \unit)
+  $end \gets$ \eT(\unit * \n, \unit)
   
   $line \gets$ \finish($end$.time $+$ \unit) 
   
@@ -65,9 +66,9 @@ In that case it becomes a matter of finding out whether there is a overlap of al
     
     \inter $-= 1$
 
-    $start \gets $ \startT(\p.time + \eT.\unit * 2)
+    $start \gets $ \startT(\p.time + \p.\unit * 2)
 
-    $end \gets $ \finish($start$.time $+ \p.$\unit $* \n$, \p.\unit)
+    $end \gets $ \eT($start$.time $+ \p.$\unit $* \n$, \p.\unit)
 
     $line \gets$ \finish($end$.time + \p.\unit)
     
@@ -76,6 +77,7 @@ In that case it becomes a matter of finding out whether there is a overlap of al
   
   \If{\p is \finish}{
       \End += 1
+  
       \If{\End == \n}{
         
         \return \no
@@ -83,7 +85,6 @@ In that case it becomes a matter of finding out whether there is a overlap of al
       }
   }
 }
-\return \no
 \end{algorithm}
 
 \subsection{Number Theoretic}
