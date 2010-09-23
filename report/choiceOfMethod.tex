@@ -15,5 +15,68 @@ The following solution is based on the first intiutive description of the conjec
 
 In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
 
+\begin{algorithm}[H]
+  \caption{FindLonelyRunnerTime}
+  \SetKwData{return}{return}
+  \SetKwData{s}{speeds}
+  \SetKwData{ti}{time}
+  \SetKwData{li}{timelist} \SetKwData{startT}{startTimePoint} \SetKwData{eT}{endTimePoint} \SetKwData{finish}{FinishingLinePoint} \SetKwData{p}{p}
+  \SetKwData{no}{No time} 
+  \SetKwData{End}{End} \SetKwData{inter}{intersect} \SetKwData{n}{numberOfRunners}
+  \SetKwInOut{Input}{input}
+  \SetKwInOut{Output}{output}
+  \Input{A list \s which contains n pairwise different speeds for n runners}
+  \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  
+  Create and initilize \li
+  
+\End $\gets 0$
+
+\inter $\gets 0$
+
+\n $\gets$ size(\s)
+
+\ForEach{t $\in$ \s}{
+  $start \gets$ \startT($\frac{1}{t * (\n+1)}$)
+  
+  $end \gets$ \eT($\frac{1}{t * (\n+1)}$, $\frac{\n}{t * (\n+1)}$, t)
+  
+  $line \gets$ \finish($\frac{n}{t * (n+1)}$) 
+  
+  add $start$, $end$ and $line$ to \li
+}
+\While{\li is not empty}{
+  \p $\gets$ firstPoint(\li)
+  
+  \If{\p is \startT}{
+      \End = 0
+      
+      \inter += 1
+      
+      \If{\inter == \n}{
+        \return \p.time
+      }
+    }
+
+  \If{\p is \eT}{
+    \End = 0
+    
+    \inter -= 1
+
+    $start \gets$ \startT(\p.time + $\frac{2}{\p.t * (n + 1)}$
+  }
+  
+  \If{\p is \finish}{
+      \End += 1
+      \If{\End == \n}{
+        
+        \return \no
+        
+      }
+  }
+}
+\return \no
+\end{algorithm}
+
 \subsection{Number Theoretic}
 
