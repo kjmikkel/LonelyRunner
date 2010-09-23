@@ -21,8 +21,8 @@ In that case it becomes a matter of finding out whether there is a overlap of al
   \SetKwData{s}{speeds}
   \SetKwData{ti}{time}
   \SetKwData{li}{timelist} \SetKwData{startT}{startTimePoint} \SetKwData{eT}{endTimePoint} \SetKwData{finish}{FinishingLinePoint} \SetKwData{p}{p}
-  \SetKwData{no}{No time} 
-  \SetKwData{End}{End} \SetKwData{inter}{intersect} \SetKwData{n}{numberOfRunners}
+  \SetKwData{no}{No time} \SetKwData{unit}{timeUnit}
+  \SetKwData{End}{End} \SetKwData{inter}{intersect} \SetKwData{n}{numRunners}
   \SetKwInOut{Input}{input}
   \SetKwInOut{Output}{output}
   \Input{A list \s which contains n pairwise different speeds for n runners}
@@ -36,14 +36,16 @@ In that case it becomes a matter of finding out whether there is a overlap of al
 
 \n $\gets$ size(\s)
 
-\ForEach{t $\in$ \s}{
-  $start \gets$ \startT($\frac{1}{t * (\n+1)}$)
+\ForEach{speed $\in$ \s}{
+  \unit $\gets \frac{1}{speed * (\n+1)}$ 
+
+  $start \gets$ \startT(\unit)
   
-  $end \gets$ \eT($\frac{1}{t * (\n+1)}$, $\frac{\n}{t * (\n+1)}$, t)
+  $end \gets$ \eT($timeUnit * \n$, \unit)
   
-  $line \gets$ \finish($\frac{n}{t * (n+1)}$) 
+  $line \gets$ \finish($end$.time $+$ \unit) 
   
-  add $start$, $end$ and $line$ to \li
+  Add $start$, $end$ and $line$ to \li
 }
 \While{\li is not empty}{
   \p $\gets$ firstPoint(\li)
@@ -51,7 +53,7 @@ In that case it becomes a matter of finding out whether there is a overlap of al
   \If{\p is \startT}{
       \End = 0
       
-      \inter += 1
+      \inter $+= 1$
       
       \If{\inter == \n}{
         \return \p.time
@@ -61,9 +63,15 @@ In that case it becomes a matter of finding out whether there is a overlap of al
   \If{\p is \eT}{
     \End = 0
     
-    \inter -= 1
+    \inter $-= 1$
 
-    $start \gets$ \startT(\p.time + $\frac{2}{\p.t * (n + 1)}$
+    $start \gets $ \startT(\p.time + \eT.\unit * 2)
+
+    $end \gets $ \finish($start$.time $+ \p.$\unit $* \n$, \p.\unit)
+
+    $line \gets$ \finish($end$.time + \p.\unit)
+    
+    Add $start$, $end$ and $line$ to \li
   }
   
   \If{\p is \finish}{
