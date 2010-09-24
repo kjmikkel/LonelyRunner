@@ -5,23 +5,25 @@
 I will in this subsection describe the different methods I have thought of using in this project, and discuss their merits and flaws.
 
 \begin{description}
-\item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (descibed in the Introduction) lends itself well to a geometrical interpretation, and leads me to wonder whether an algorithm based on this fact would be efficient.
+\item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (described in the Introduction) lends itself well to a geometrical interpretation, and leads me to wonder whether an algorithm based on this fact would be efficient.
 
 \item[Number theoretic:] The Lonely Runner conjecture is, in its original formulation, a problem from number theory. It is therefore not reasonable to assume that a number theoretic approach could lead to great speedups in calculating a possible solution.
 \end{description}
 
 \subsection{Computational Geometry}
-The following solution is based on the first intiutive description of the conjecture. Since we are interested when the runners are $\frac{1}{n + 1}$ units, or more, from the starting point, it is clear that we are interested when the runners are in the interval [$\frac{1}{n + 1}$, $\frac{n}{n + 1}$] on the track. However, we are not interested about the interval on the track, but rather, if a solution exist, the timepoint when all the runners are $\frac{1}{n+1}$. So one possible solution to the problem would be to calculate all the time intervals when a given runner is $\frac{1}{n+1}$ units from the start position. 
+The following solution is based on the first intuitive description of the conjecture. Since we are interested when the runners are $\frac{1}{n + 1}$ units, or more, from the starting point, it is clear that we are interested when the runners are in the interval [$\frac{1}{n + 1}$, $\frac{n}{n + 1}$] on the track. However, we are not interested about the interval on the track, but rather, if a solution exist, the time-point when all the runners are $\frac{1}{n+1}$. So one possible solution to the problem would be to calculate all the time intervals when a given runner is $\frac{1}{n+1}$ units from the start position. 
 
-In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
+In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner conjecture has not been proved, we have to make sure the algorithm also terminates in the case where the Lonely Runner conjecture does not hold.
 
-[description about intervals and finnish line]
 
-In order to distingush these 3 cases we need to introduce 3 different points:
+
+[description about intervals and finish line]
+
+In order to distinguish these 3 cases we need to introduce 3 different points:
 \begin{description}
 \item[\comStart] The first point where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart will contain the time it took to reach that location, and which runner it belongs to.
-\item[\comEnd] The first point after the \comStart where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm \comEnd has the responcibility of finding the next interval its runner is at least $\frac{1}{n+1}$ units away from the startline. I place this responcibility on \comEnd, on the grounds it is the first point where we know the current interval is not going to give a solution to the Lonely Runner conjecture. \comEnd needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
-\item[\comFin] The time at which the runner passes the startline. As explainted above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
+\item[\comEnd] The first point after the \comStart where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm \comEnd has the responsibility of finding the next interval its runner is at least $\frac{1}{n+1}$ units away from the start-line. I place this responsibility on \comEnd, on the grounds it is the first point where we know the current interval is not going to give a solution to the Lonely Runner conjecture. \comEnd needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
+\item[\comFin] The time at which the runner passes the start-line. As explained above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
 \end{description}
 
 \begin{algorithm}[H]
@@ -48,7 +50,7 @@ Add $start$, $end$ and $line$ to \li
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
-  Create and initilize \li
+  Create and initialise \li
   
 \End $\gets 0$
 
