@@ -15,7 +15,9 @@ The following solution is based on the first intiutive description of the conjec
 
 In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
 
-[description about intervals and finnish line]
+[description about intervals and finnish line - also introduce and the need for a heap]
+
+\subsubsection{Points}
 
 In order to distingush these 3 cases we need to introduce 3 different points:
 \begin{description}
@@ -24,6 +26,26 @@ In order to distingush these 3 cases we need to introduce 3 different points:
 \item[\comFin] The time at which the runner passes the startline. As explainted above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
 \end{description}
 
+\subsubsection{Order of points}
+In order to ensure this approch will work, I introduce the order $\prec$. For the timepoints $p$ and $q$, $p \prec q$ iff \\
+
+\begin{center}
+$p_{time} < q_{time}$\\
+or \\
+$p_{time} == q_{time}$ and type($p$) == \comFin and type(q) $\in \E{\comStart, \comEnd}$\\
+or \\
+$p_{time} == q_{time}$ and type($p$) == \comStart and type($q$) == \comEnd \\
+or \\
+$p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
+\end{center}
+
+Using this order there is no ambiguity where to place the points, and we also avoid any problems with the edge case where we have (n-1) runners are in the zone \todo{Clarify what this is}
+
+
+ensure that in the case where 2 
+ termination condition \todo{find a better term - this is when there are n \comFin at the same time }
+
+\subsubsection{Algorithm}
 \begin{algorithm}[H]
 \caption{MakeTimePoints}
 \highlights
