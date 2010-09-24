@@ -67,36 +67,26 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \newcommand{\todo}[1]{\fixme{#1}}
 \newcommand{\pref}[1]{See section \ref{#1} p. \pageref{#1}}
 \newcommand{\nref}[1]{see section \ref{#1} p. \pageref{#1}}
-\newcommand{\method}[5]{
-\subsection{#1}
-#2 
-\ \\\\\emph{Example:}
-#3
-\ \\\\\emph{Advantages and Disadvantages:}
-\ad{#4}{#5}
-}
-\newcommand{\ad}[2]{
-\subsubsection*{Advantages:}
-\begin{itemize}
-#1
-\end{itemize}
-\subsubsection*{Disadvantages:}
-\begin{itemize}
-#2
-\end{itemize}
-}
-\newcommand{\test}[5]{
-\texttt{Name:}
-\label{#1}
-#1\\
-\texttt{Description:}
-#2\\
-\texttt{Purpose of test:}
-#3\\
-\texttt{Author texts}
-#4\\
-\texttt{Corpus}
-#5
+\newcommand{\comStart}{startTimePoint}
+\newcommand{\comEnd}{endTimePoint}
+\newcommand{\comFin}{FinishingLinePoint}
+\newcommand{\highlights}{
+\SetKwData{return}{return}
+  \SetKwData{s}{speeds}
+  \SetKwData{ti}{time}
+  \SetKwData{li}{timelist} 
+  \SetKwData{startT}{\comStart} 
+  \SetKwData{eT}{\comEnd}
+  \SetKwData{finish}{\comFin}
+  \SetKwData{p}{p}
+  \SetKwData{no}{No time} 
+  \SetKwData{unit}{timeUnit}
+  \SetKwData{run}{runnerNum}
+  \SetKwData{End}{End} 
+  \SetKwData{inter}{intersect} 
+  \SetKwData{n}{numRunners}
+  \SetKwInOut{Input}{input}
+  \SetKwInOut{Output}{output}
 }
 \newcommand{\src}[1]{
 \subsection{#1.py}

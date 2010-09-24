@@ -15,20 +15,39 @@ The following solution is based on the first intiutive description of the conjec
 
 In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
 
+[description about intervals and finnish line]
+
+In order to distingush these 3 cases we need to introduce 3 different points:
+\begin{description}
+\item[\comStart] The first point where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart will contain the time it took to reach that location, and which runner it belongs to.
+\item[\comEnd] The first point after the \comStart where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm \comEnd has the responcibility of finding the next interval its runner is at least $\frac{1}{n+1}$ units away from the startline. I place this responcibility on \comEnd, on the grounds it is the first point where we know the current interval is not going to give a solution to the Lonely Runner conjecture. \comEnd needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
+\item[\comFin] The time at which the runner passes the startline. As explainted above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
+\end{description}
+
+\begin{algorithm}[H]
+\caption{MakeTimePoints}
+\highlights
+\SetKwData{start}{startTime}
+\Input{A start-time \ti and the \unit used to run $\frac{1}{(\n + 1)}$ part of the track, the number \run of the runner, and the time queue \li}
+\Output{The time queue \li, with a new \startT, \eT and \finish inserted for \run runner}
+ 
+Make new \startT $start$ from \start as its start-time, and \run as its runner 
+  
+Make new \eT $end$ from \start + \unit * \n as its start-time, \unit as its speed, and \run as its runner
+  
+Make new \finish $finish$ with \start + \unit * (n+1) as its time, and \run as its runner
+  
+Add $start$, $end$ and $line$ to \li
+
+\return \li
+\end{algorithm}
+
 \begin{algorithm}[H]
   \caption{FindLonelyRunnerTime}
-  \SetKwData{return}{return}
-  \SetKwData{s}{speeds}
-  \SetKwData{ti}{time}
-  \SetKwData{li}{timelist} \SetKwData{startT}{startTimePoint} \SetKwData{eT}{endTimePoint} \SetKwData{finish}{FinishingLinePoint} \SetKwData{p}{p}
-  \SetKwData{no}{No time} \SetKwData{unit}{timeUnit}
-  \SetKwData{End}{End} \SetKwData{inter}{intersect} \SetKwData{n}{numRunners}
-  \SetKwInOut{Input}{input}
-  \SetKwInOut{Output}{output}
+  \highlights
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
-
   Create and initilize \li
   
 \End $\gets 0$
@@ -37,16 +56,15 @@ In that case it becomes a matter of finding out whether there is a overlap of al
 
 \n $\gets$ size(\s)
 
-\ForEach{speed $\in$ \s}{
-  \unit $\gets \frac{1}{speed * (\n+1)}$ 
+$runnerNum \gets 1$
 
-  $start \gets$ \startT(\unit)
+\ForEach{speed $\in$ \s}{
+
+  \unit $\gets \frac{1}{speed * (\n + 1)}$  
+
+  \li $\gets$ MakeTimePoints(\unit, \unit, $runnerNum$, \li)
   
-  $end \gets$ \eT(\unit * \n, \unit)
-  
-  $line \gets$ \finish($end$.time $+$ \unit) 
-  
-  Add $start$, $end$ and $line$ to \li
+  $runnerNum += 1$
 }
 \While{\li is not empty}{
   \p $\gets$ firstPoint(\li)
@@ -66,14 +84,10 @@ In that case it becomes a matter of finding out whether there is a overlap of al
     
     \inter $-= 1$
 
-    $start \gets $ \startT(\p.time + \p.\unit * 2)
+    \ti $\gets \frac{2}{\p.\unit * (\n + 1)} + \p.\ti$
 
-    $end \gets $ \eT($start$.time $+ \p.$\unit $* \n$, \p.\unit)
-
-    $line \gets$ \finish($end$.time + \p.\unit)
-    
-    Add $start$, $end$ and $line$ to \li
-  }
+    \li $\gets$ MakeTimePoints(\ti, p.\unit, p.\run, \li)
+ }
   
   \If{\p is \finish}{
       \End += 1
