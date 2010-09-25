@@ -44,9 +44,9 @@ More generally, a given runner with speed $s$ will be in the \zone at time
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{displaymath}
 
+So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure that the plane sweep algorithm will always terminate, but always find a valid solution to the conjecture, if its exists.
 
-
-In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
+My solution to this problem would be to terminate the algorithm is to   
 
 [description about intervals and finnish line - also introduce and the need for a heap]
 
@@ -72,7 +72,7 @@ or \\
 $p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
 \end{center}
 
-Using this order there is no ambiguity where to place the points, and we also avoid any problems with the edge case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd and a \comStart, both at the same time. Since the \zone is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd comes first, then the case would not be reported - therefore \comStart must be placed before \comEnd.
+Using this order there is no ambiguity where to place the points, and we also avoid the degernate case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd and a \comStart, both at the same time. Since the \zone is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd comes first, then the case would not be reported - therefore \comStart must be placed before \comEnd.
 
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
