@@ -11,7 +11,40 @@ I will in this subsection describe the different methods I have thought of using
 \end{description}
 
 \subsection{Computational Geometry}
-The following solution is based on the first intiutive description of the conjecture. Since we are interested when the runners are $\frac{1}{n + 1}$ units, or more, from the starting point, it is clear that we are interested when the runners are in the interval [$\frac{1}{n + 1}$, $\frac{n}{n + 1}$] on the track. However, we are not interested about the interval on the track, but rather, if a solution exist, the timepoint when all the runners are $\frac{1}{n+1}$. So one possible solution to the problem would be to calculate all the time intervals when a given runner is $\frac{1}{n+1}$ units from the start position. 
+The following solution is based on the first intiutive description of the conjecture. It is clear that we are interested in the time interval when the runners are in the \zone. However, we are interested in the time they are in the \zone - i.e. when a runner with a speed $s$ enters and leaves the \zone.\\ 
+
+Let $s$ be the speed and $t$ be the time, then from \ref{mainProb} we have 
+
+\begin{equation}
+\label{speedOne}
+\begin{split}
+s * t &= \frac{1}{n+1} \\
+t &= \frac{1}{s * (n+1)}
+\end{split}
+\end{equation}
+
+and 
+
+\begin{equation}
+\label{speedTwo}
+\begin{split}
+s * t &= \frac{n}{n+1} \\
+t &= \frac{n}{s * (n+1)}
+\end{split}
+\end{equation}
+
+From \ref{speedOne} and \ref{speedOne} it is clear that the time interval for the first the runner is in the \zone will be 
+\begin{displaymath}
+\left[\frac{1}{s * (n+1)}, \frac{n}{s * (n+1)}\right]
+\end{displaymath}
+
+More generally, a given runner with speed $s$ will be in the \zone at time 
+
+\begin{displaymath}
+\left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
+\end{displaymath}
+
+
 
 In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure the algorithm will always terminate.  
 
@@ -32,18 +65,14 @@ In order to ensure this approch will work, I introduce the order $\prec$. For th
 \begin{center}
 $p_{time} < q_{time}$\\
 or \\
-$p_{time} == q_{time}$ and type($p$) == \comFin and type(q) $\in \E{\comStart, \comEnd}$\\
+$p_{time} == q_{time}$ and type($p$) == \comFin and type($q$) != type($p$)\\
 or \\
 $p_{time} == q_{time}$ and type($p$) == \comStart and type($q$) == \comEnd \\
 or \\
 $p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
 \end{center}
 
-Using this order there is no ambiguity where to place the points, and we also avoid any problems with the edge case where we have (n-1) runners are in the zone \todo{Clarify what this is}
-
-
-ensure that in the case where 2 
- termination condition \todo{find a better term - this is when there are n \comFin at the same time }
+Using this order there is no ambiguity where to place the points, and we also avoid any problems with the edge case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd and a \comStart, both at the same time. Since the \zone is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd comes first, then the case would not be reported - therefore \comStart must be placed before \comEnd.
 
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
