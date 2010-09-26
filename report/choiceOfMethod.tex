@@ -46,9 +46,7 @@ More generally, a given runner with speed $s$ will be in the \zone at time
 
 So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure that the plane sweep algorithm will always terminate, but always find a valid solution to the conjecture, if its exists.
 
-My solution to this problem would be to terminate the algorithm is to   
-
-[description about intervals and finnish line - also introduce and the need for a heap]
+My solution to this problem would be to terminate the algorithm if all the runners crosses the start-line at the same time - since everything after that will only be a repitition of what had already happened.
 
 \subsubsection{Points}
 
@@ -82,13 +80,13 @@ Using this order there is no ambiguity where to place the points, and we also av
 \Input{A start-time \ti and the \unit used to run $\frac{1}{(\n + 1)}$ part of the track, the number \run of the runner, and the time queue \li}
 \Output{The time queue \li, with a new \startT, \eT and \finish inserted for \run runner}
  
-Make new \startT $start$ from \start as its start-time, and \run as its runner 
+Make new \startT $start$ from \start as its start-time, and \run as its runner
   
 Make new \eT $end$ from \start + \unit * \n as its start-time, \unit as its speed, and \run as its runner
   
 Make new \finish $finish$ with \start + \unit * (n+1) as its time, and \run as its runner
   
-Add $start$, $end$ and $line$ to \li
+Add $start$, $end$ and $finish$ to \li
 
 \return \li
 \end{algorithm}
@@ -96,6 +94,9 @@ Add $start$, $end$ and $line$ to \li
 \begin{algorithm}[H]
   \caption{FindLonelyRunnerTime}
   \highlights
+  \SetKwData{rTime}{finishTime}
+  \SetKwData{lFinish}{LastRunnerToFinish}
+  \SetKwData{and}{and}
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
@@ -105,18 +106,23 @@ Add $start$, $end$ and $line$ to \li
 
 \inter $\gets 0$
 
+\rTime $\gets -1$
+
+\lFinish $\gets -1$
+
 \n $\gets$ size(\s)
 
 $runnerNum \gets 1$
 
 \ForEach{speed $\in$ \s}{
-
+  
   \unit $\gets \frac{1}{speed * (\n + 1)}$  
-
+  
   \li $\gets$ MakeTimePoints(\unit, \unit, $runnerNum$, \li)
   
   $runnerNum += 1$
 }
+
 \While{\li is not empty}{
   \p $\gets$ firstPoint(\li)
   
@@ -126,31 +132,56 @@ $runnerNum \gets 1$
       \inter $+= 1$
       
       \If{\inter == \n}{
-        \return \p.time
+        \return $\p_{time}$
       }
-    }
-
+  }
+  
   \If{\p is \eT}{
     \End = 0
     
     \inter $-= 1$
-
-    \ti $\gets \frac{2}{\p.\unit * (\n + 1)} + \p.\ti$
-
-    \li $\gets$ MakeTimePoints(\ti, p.\unit, p.\run, \li)
- }
+    
+    \ti $\gets \frac{2}{\p_{\unit} * (\n + 1)} + \p.\ti$
+    
+    \li $\gets$ MakeTimePoints(\ti, $p_{\unit}$, $p_{\run}$, \li)
+  }
   
   \If{\p is \finish}{
-      \End += 1
-  
-      \If{\End == \n}{
-        
-        \return \no
-        
-      }
+    \If{\rTime == $-1$}{
+      
+      \rTime $\gets \p_{time}$
+      
+      \lFinish $\gets 0$ 
+      
+    }
+    
+    \If{$\p_{time}$ == \rTime \and $\p_{\run}$ == \lFinish}{
+   
+     \End $+= 1$\;
+
+     \lFinish $+= 1$
+    
+     
+     \If{\End == \n}{  
+       \return \no
+     }
+     
+     
+    }
+    \uElse(hello){
+      
+      \rTime $\gets -1$
+   
+      \End $\gets 0$
+      
+      \lFinish $\gets -1$
+      
+    }
+    
   }
 }
 \end{algorithm}
+
 
 \subsection{Number Theoretic}
 

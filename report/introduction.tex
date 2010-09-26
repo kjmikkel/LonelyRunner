@@ -15,16 +15,17 @@ for each $i = 1, 2, \ldots, n$, where for a real number $x$, $\Vert x \Vert$ is 
 
 There exist 2 equivalent descriptions, which are more colourful:
 \begin{enumerate}
-\item Assume there are $n$ runners at a circular track (with unit length), where every runner has pairwise, constant, different speed (which, without loss of generality can be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions} \todo{Should I instead point to Zwei Sate uber inhomogene diophntische Approximation von Irrationalzahlen?}), there will then be a time where all the runners are at least $\frac{1}{n + 1}$ distance from the start line.\\
+\item Assume there are $n$ runners at a circular, unit length, track, where every runner runs with a constant,  pairwise different speeds\footnote{These speeds can, without loss of generality can be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions}}\todo{Should I instead point to Zwei Sate uber inhomogene diophntische Approximation von Irrationalzahlen instead?}, there will then be a time where all the runners are at least $\frac{1}{n + 1}$ distance away from the start line.\\
 
-\item Instead of n runners, we now have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner, everything else is the same \cite{Bienia97flows.view-obstructions}.\\
+\item Instead of n runners, we now have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner, everything else is the same as in the first example \cite{Bienia97flows.view-obstructions}.\\
 \end{enumerate}
 
 \subsection{Scope and Limitations}
 \label{scope}
 \todo{Scope and limitations}
 In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-I will work to make the program give a result (within a reasonable time) with up to 1000 runners. While the program may work with more than 1000 runners, I will not dedicate any time to this.
+I will work to make the program return a result within a reasonable time, for up to 1000 runners. While the final program should work with more than 1000 runners, no time garantiues will be made for very large numbers (say, 10.000 runners).
+The program will include an interactive counterexample search system.
 
 \subsection{Expectations to the reader}
 \label{expectations}
@@ -33,7 +34,7 @@ I expect the reader to be able to understand the Lonely Runner Conjecture in all
 
 \subsection{Terminology}
 \label{Termonolgy}
-In this report I will refer to the track interval [$\frac{1}{n + 1}$: $\frac{n}{n+1}$] as being in the \zone.
+In this report I will refer to the track interval [$\frac{1}{n + 1}$: $\frac{n}{n+1}$] as the \zone, and a runner who is in this interval, as being in the \zone.
 
 \subsection{Learning targets and objectives}
 \label{learning}
@@ -49,7 +50,7 @@ For this project I have used ``Computational Geometry'' \cite{citeulike:3347056}
 In this section I give a quick overview of what the different sections in report will cover.
 \begin{description}
 \item[Section \ref{introduction}] The introduction to the report, which will introduce the subject and explain my goals
-\item[Section \ref{choiceOfMethod}] A survey of the different methods for Author Attribution  
+\item[Section \ref{choiceOfMethod}] A discussion of the two different approches that can decide whether or not the Lonely Runner conjecture holds for a given configuration
 \item[Section \ref{method}] Explanation of the Authorship Attribution method used in my project
 \item[Section \ref{implementation}] Description of the implementation details and an analysis of the scalability of the implementation
 \item[Section \ref{test}] The test results
