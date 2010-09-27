@@ -59,6 +59,7 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \newcommand{\R}{\mathbb{R}}
 %\newcommand{\dfrac}[4]{\frac{\frac{#1}{#2}}{\frac{#3}{#4}}}
 \newcommand{\eqa}[1]{\begin{eqnarray*}#1\end{eqnarray*}}
+\newcommand{\eqn}[1]{\begin{eqnarray}#1\end{eqnarray}}
 \newcommand{\limTO}[2]{\lim_{#1 \rightarrow #2}}
 \newcommand{\LHop}{=^{[0/0]}}
 \newcommand{\parDif}[1]{\frac{\partial }{\partial #1}}
@@ -67,6 +68,7 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \newcommand{\todo}[1]{\fixme{#1}}
 \newcommand{\pref}[1]{See section \ref{#1} p. \pageref{#1}}
 \newcommand{\nref}[1]{see section \ref{#1} p. \pageref{#1}}
+\newcommand{\zone}{Zone}
 \newcommand{\comStart}{startTimePoint}
 \newcommand{\comEnd}{endTimePoint}
 \newcommand{\comFin}{FinishingLinePoint}
@@ -74,7 +76,7 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \SetKwData{return}{return}
   \SetKwData{s}{speeds}
   \SetKwData{ti}{time}
-  \SetKwData{li}{timelist} 
+  \SetKwData{li}{priorityQueue} 
   \SetKwData{startT}{\comStart} 
   \SetKwData{eT}{\comEnd}
   \SetKwData{finish}{\comFin}

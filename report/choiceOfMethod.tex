@@ -11,11 +11,45 @@ I will in this subsection describe the different methods I have thought of using
 \end{description}
 
 \subsection{Computational Geometry}
-The following solution is based on the first intuitive description of the conjecture. Since we are interested when the runners are $\frac{1}{n + 1}$ units, or more, from the starting point, it is clear that we are interested when the runners are in the interval [$\frac{1}{n + 1}$, $\frac{n}{n + 1}$] on the track. However, we are not interested about the interval on the track, but rather, if a solution exist, the time-point when all the runners are $\frac{1}{n+1}$. So one possible solution to the problem would be to calculate all the time intervals when a given runner is $\frac{1}{n+1}$ units from the start position. 
 
-In that case it becomes a matter of finding out whether there is a overlap of all the intervals, for instance using a Plane Sweep Algorithm. Since the Lonely Runner conjecture has not been proved, we have to make sure the algorithm also terminates in the case where the Lonely Runner conjecture does not hold.
+The following solution is based on the first intiutive description of the conjecture. It is clear that we are interested in the time interval when the runners are in the \zone. However, we are interested in the time they are in the \zone - i.e. when a runner with a speed $s$ enters and leaves the \zone.\\ 
 
+Let $s$ be the speed and $t$ be the time, then from \ref{mainProb} we have 
 
+\begin{equation}
+\label{speedOne}
+\begin{split}
+s * t &= \frac{1}{n+1} \\
+t &= \frac{1}{s * (n+1)}
+\end{split}
+\end{equation}
+
+and 
+
+\begin{equation}
+\label{speedTwo}
+\begin{split}
+s * t &= \frac{n}{n+1} \\
+t &= \frac{n}{s * (n+1)}
+\end{split}
+\end{equation}
+
+From \ref{speedOne} and \ref{speedOne} it is clear that the time interval for the first the runner is in the \zone will be 
+\begin{displaymath}
+\left[\frac{1}{s * (n+1)}, \frac{n}{s * (n+1)}\right]
+\end{displaymath}
+
+More generally, a given runner with speed $s$ will be in the \zone at time 
+
+\begin{displaymath}
+\left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
+\end{displaymath}
+
+So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure that the plane sweep algorithm will always terminate, but always find a valid solution to the conjecture, if its exists.
+
+My solution to this problem would be to terminate the algorithm if all the runners crosses the start-line at the same time - since everything after that will only be a repitition of what had already happened.
+
+\subsubsection{Points}
 
 [description about intervals and finish line]
 
@@ -26,6 +60,22 @@ In order to distinguish these 3 cases we need to introduce 3 different points:
 \item[\comFin] The time at which the runner passes the start-line. As explained above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
 \end{description}
 
+\subsubsection{Order of points}
+In order to ensure this approch will work, I introduce the order $\prec$. For the timepoints $p$ and $q$, $p \prec q$ iff \\
+
+\begin{center}
+$p_{time} < q_{time}$\\
+or \\
+$p_{time} == q_{time}$ and type($p$) == \comFin and type($q$) != type($p$)\\
+or \\
+$p_{time} == q_{time}$ and type($p$) == \comStart and type($q$) == \comEnd \\
+or \\
+$p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
+\end{center}
+
+Using this order there is no ambiguity where to place the points, and we also avoid the degernate case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd and a \comStart, both at the same time. Since the \zone is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd comes first, then the case would not be reported - therefore \comStart must be placed before \comEnd.
+
+\subsubsection{Algorithm}
 \begin{algorithm}[H]
 \caption{MakeTimePoints}
 \highlights
@@ -33,13 +83,13 @@ In order to distinguish these 3 cases we need to introduce 3 different points:
 \Input{A start-time \ti and the \unit used to run $\frac{1}{(\n + 1)}$ part of the track, the number \run of the runner, and the time queue \li}
 \Output{The time queue \li, with a new \startT, \eT and \finish inserted for \run runner}
  
-Make new \startT $start$ from \start as its start-time, and \run as its runner 
+Make new \startT $start$ from \start as its start-time, and \run as its runner
   
 Make new \eT $end$ from \start + \unit * \n as its start-time, \unit as its speed, and \run as its runner
   
 Make new \finish $finish$ with \start + \unit * (n+1) as its time, and \run as its runner
   
-Add $start$, $end$ and $line$ to \li
+Add $start$, $end$ and $finish$ to \li
 
 \return \li
 \end{algorithm}
@@ -47,6 +97,9 @@ Add $start$, $end$ and $line$ to \li
 \begin{algorithm}[H]
   \caption{FindLonelyRunnerTime}
   \highlights
+  \SetKwData{rTime}{finishTime}
+  \SetKwData{lFinish}{LastRunnerToFinish}
+  \SetKwData{and}{and}
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
@@ -56,18 +109,23 @@ Add $start$, $end$ and $line$ to \li
 
 \inter $\gets 0$
 
+\rTime $\gets -1$
+
+\lFinish $\gets -1$
+
 \n $\gets$ size(\s)
 
 $runnerNum \gets 1$
 
 \ForEach{speed $\in$ \s}{
-
+  
   \unit $\gets \frac{1}{speed * (\n + 1)}$  
-
+  
   \li $\gets$ MakeTimePoints(\unit, \unit, $runnerNum$, \li)
   
   $runnerNum += 1$
 }
+
 \While{\li is not empty}{
   \p $\gets$ firstPoint(\li)
   
@@ -77,31 +135,56 @@ $runnerNum \gets 1$
       \inter $+= 1$
       
       \If{\inter == \n}{
-        \return \p.time
+        \return $\p_{time}$
       }
-    }
-
+  }
+  
   \If{\p is \eT}{
     \End = 0
     
     \inter $-= 1$
-
-    \ti $\gets \frac{2}{\p.\unit * (\n + 1)} + \p.\ti$
-
-    \li $\gets$ MakeTimePoints(\ti, p.\unit, p.\run, \li)
- }
+    
+    \ti $\gets \frac{2}{\p_{\unit} * (\n + 1)} + \p.\ti$
+    
+    \li $\gets$ MakeTimePoints(\ti, $p_{\unit}$, $p_{\run}$, \li)
+  }
   
   \If{\p is \finish}{
-      \End += 1
-  
-      \If{\End == \n}{
-        
-        \return \no
-        
-      }
+    \If{\rTime == $-1$}{
+      
+      \rTime $\gets \p_{time}$
+      
+      \lFinish $\gets 0$ 
+      
+    }
+    
+    \If{$\p_{time}$ == \rTime \and $\p_{\run}$ == \lFinish}{
+   
+     \End $+= 1$\;
+
+     \lFinish $+= 1$
+    
+     
+     \If{\End == \n}{  
+       \return \no
+     }
+     
+     
+    }
+    \uElse(hello){
+      
+      \rTime $\gets -1$
+   
+      \End $\gets 0$
+      
+      \lFinish $\gets -1$
+      
+    }
+    
   }
 }
 \end{algorithm}
+
 
 \subsection{Number Theoretic}
 
