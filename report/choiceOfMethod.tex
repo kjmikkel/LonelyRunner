@@ -152,39 +152,92 @@ $runnerNum \gets 1$
   \If{\p is \finish}{
     \If{\rTime == $-1$}{
       
-      \rTime $\gets \p_{time}$
-      
-      \lFinish $\gets 0$ 
+      \rTime $\gets \p_{time}$ 
       
     }
     
     \If{$\p_{time}$ == \rTime \and $\p_{\run}$ == \lFinish}{
    
-     \End $+= 1$\;
-
-     \lFinish $+= 1$
-    
+     \End $+= 1$\; 
      
      \If{\End == \n}{  
        \return \no
      }
      
      
-    }
-    \uElse(hello){
+    } \uElse{
       
       \rTime $\gets -1$
    
-      \End $\gets 0$
-      
-      \lFinish $\gets -1$
-      
+      \End $\gets 0$       
     }
     
   }
 }
 \end{algorithm}
 
+\subsubsection{Proofs of the Geometric algorithm}
+\algProof{
+?
+}{
+It is clear that the algorithm terminates iff the Lonely Runner conjecture holds or if there is a time $t$ where all $n$ runners hits the starting line.
 
-\subsection{Number Theoretic}
+If the Lonely Runner conjecture holds, then the algorithm will eventually find an intersection of the intervals, and return it, as per the proof above. If the Lonely Runner conjecture does not hold, then there still might be a solution to the given instance, which will be reported. If the Lonely Runner conjecture does not hold, and there is not a solution to the given instance, then the algorithm can only terminate if there is a time $t$ where all the $n$ runners hit the starting line.  
 
+It is clear that a runner with speed $s$ takes $\frac{1}{s}$ time units to complete a single lap around the track, and so in order for all the runners to arrive at starting line at the same time, I need to find a time $t$ that all the $n$ runner's speeds divide. This is obviously true for the time $t = s_1 s_2 \ldots s_n$, so such a time clearly exists. If not all of the runner's speeds are co-prime, then $t$ can be smaller. 
+}{
+In the worst case the Lonely Runner Conjecture does not hold, and all the speeds of the runner's are co-prime. In that case the algorithm will only terminate after having made the runner's 
+}
+
+\subsection{Number Theory}
+
+A Number Theory alternative to the Geometric Algorithm can be made by applying the results of \cite{invs}. I have sketched the algorithm described from \cite{invs} below\todo{Make sure you have the correct algorithm} .
+
+\begin{algorithm}[H]
+  \caption{NumericalLonelyRunner}
+  \highlights
+  \Input{A list \s which contains n pairwise different speeds for n runners}
+  \Output{A time \ti such that all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  
+  $n \gets size(\s)$
+
+  \ForEach{$d \in \s$}{
+    
+    \ForEach{$d\prime \in \s \setminus \E{d}$}{
+      
+      $k \gets d + d\prime$
+      
+      $m \gets \lceil \frac{k}{n + 1} \rceil $
+      
+      \For{$a \leftarrow m$ \KwTo $n$}{
+        
+        $testValid \gets true$
+        
+        \ForEach{$s \in \s$}{
+          
+          $testValid = testValid \and (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
+          
+        }
+        
+        \If{testValid}{
+          
+          \return $\frac{a}{k}$
+          
+        }
+      }
+    }
+  }
+  \return \no
+\end{algorithm}
+
+\subsubsection{Proofs for the numerical algorithm}
+
+\algProof{
+In \cite{invs} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
+}{
+It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
+}{
+Let us first analyse how many [Something about k and how it influences the runtime]
+
+Let $n$ be the number of runners, then the algorithm runs in $O(n^4)$ time, since the algorithm uses 4 nested For loops, and in the worst case each loop will run through all the runners.
+}

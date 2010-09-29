@@ -57,7 +57,6 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \newcommand{\E}[1]{\{#1\}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\R}{\mathbb{R}}
-%\newcommand{\dfrac}[4]{\frac{\frac{#1}{#2}}{\frac{#3}{#4}}}
 \newcommand{\eqa}[1]{\begin{eqnarray*}#1\end{eqnarray*}}
 \newcommand{\eqn}[1]{\begin{eqnarray}#1\end{eqnarray}}
 \newcommand{\limTO}[2]{\lim_{#1 \rightarrow #2}}
@@ -87,9 +86,20 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
   \SetKwData{End}{End} 
   \SetKwData{inter}{intersect} 
   \SetKwData{n}{numRunners}
+  \SetKwData{true}{True}
+  \SetKwData{false}{False}
   \SetKwInOut{Input}{input}
   \SetKwInOut{Output}{output}
 }
+
+\newcommand{\algProof}[3]{
+\begin{description}
+\item[Correctness:] #1.
+\item[Termination:] #2
+\item[Time analysis:] #3
+\end{description}
+}
+
 \newcommand{\src}[1]{
 \subsection{#1.py}
 \label{code:#1}
