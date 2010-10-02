@@ -12,7 +12,7 @@ I will in this subsection describe the different methods I have thought of using
 
 \subsection{Computational Geometry}
 
-The following solution is based on the first intiutive description of the conjecture. It is clear that we are interested in the time interval when the runners are in the \zone. However, we are interested in the time they are in the \zone - i.e. when a runner with a speed $s$ enters and leaves the \zone.\\ 
+The following solution is based on the first intiutive description of the conjecture. It is clear that we are interested in the time interval when the runners are in the \zone. However, we are interested in the time they are in the \zone\, - i.e. when a runner with a speed $s$ enters and leaves the \zone.\\ 
 
 Let $s$ be the speed and $t$ be the time, then from \ref{mainProb} we have 
 
@@ -34,29 +34,28 @@ t &= \frac{n}{s * (n+1)}
 \end{split}
 \end{equation}
 
-From \ref{speedOne} and \ref{speedOne} it is clear that the time interval for the first the runner is in the \zone will be 
+From \ref{speedOne} and \ref{speedOne} it is clear that the time interval for the first the runner is in the \zone\, will be 
 \begin{displaymath}
 \left[\frac{1}{s * (n+1)}, \frac{n}{s * (n+1)}\right]
 \end{displaymath}
 
-More generally, a given runner with speed $s$ will be in the \zone at time 
+More generally, a given runner with speed $s$ will be in the \zone\, at time 
 
 \begin{displaymath}
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{displaymath}
 
-So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm. Since the Lonely Runner Conjecture has not been proven, we have to make sure that the plane sweep algorithm will always terminate, but always find a valid solution to the conjecture, if its exists.
+So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm, where the interesting cases are when the runner enters, and leaves the \zone. However, since the Lonely Runner conjecture has not been proven, the plane sweep algorithm must also have a terminating condition, other than finding a time where the conjecture holds for the current configuration.
 
-My solution to this problem would be to terminate the algorithm if all the runners crosses the start-line at the same time - since everything after that will only be a repitition of what had already happened.
+My solution to this is to terminate the algorithm if all the runners crosses the start-line at the same time - everything after that will only be a repitition of what had already happened\todo{needs proof}. This also means that the plane sweeping algorithm needs to take care of the case where the runner crosses the start line.
+
 
 \subsubsection{Points}
 
-[description about intervals and finish line]
-
 In order to distinguish these 3 cases we need to introduce 3 different points:
 \begin{description}
-\item[\comStart] The first point where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart will contain the time it took to reach that location, and which runner it belongs to.
-\item[\comEnd] The first point after the \comStart where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm \comEnd has the responsibility of finding the next interval its runner is at least $\frac{1}{n+1}$ units away from the start-line. I place this responsibility on \comEnd, on the grounds it is the first point where we know the current interval is not going to give a solution to the Lonely Runner conjecture. \comEnd needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
+\item[\comStart] The first point where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart\, will contain the time it took to reach that location, and which runner it belongs to.
+\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm \comEnd\, has the responsibility of finding the next interval its runner is at least $\frac{1}{n+1}$ units away from the start-line. I place this responsibility on \comEnd, on the grounds it is the first point where we know the current interval is not going to give a solution to the Lonely Runner conjecture. \comEnd\, needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
 \item[\comFin] The time at which the runner passes the start-line. As explained above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
 \end{description}
 
@@ -66,14 +65,16 @@ In order to ensure this approch will work, I introduce the order $\prec$. For th
 \begin{center}
 $p_{time} < q_{time}$\\
 or \\
-$p_{time} == q_{time}$ and type($p$) == \comFin and type($q$) != type($p$)\\
+$p_{time} == q_{time}$ and type($p$) == \comFin\, and type($q$) != type($p$)\\
 or \\
-$p_{time} == q_{time}$ and type($p$) == \comStart and type($q$) == \comEnd \\
+$p_{time} == q_{time}$ and type($p$) == \comStart\, and type($q$) == \comEnd \\
 or \\
 $p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
 \end{center}
 
-Using this order there is no ambiguity where to place the points, and we also avoid the degernate case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd and a \comStart, both at the same time. Since the \zone is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd comes first, then the case would not be reported - therefore \comStart must be placed before \comEnd.
+Using this order there is no ambiguity where to place the points, and we also avoid the degernate case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the \zone\, is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd\, comes first, then the case would not be reported - therefore \comStart\, must be placed before \comEnd.
+
+In order to efficiently process the points I will use a minimum heap for the Prirority Queue, since it uses O($\log n$) for insertions and deletions, and O($1$) for finding the next value.
 
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
@@ -81,7 +82,7 @@ Using this order there is no ambiguity where to place the points, and we also av
 \highlights
 \SetKwData{start}{startTime}
 \Input{A start-time \ti and the \unit used to run $\frac{1}{(\n + 1)}$ part of the track, the number \run of the runner, and the time queue \li}
-\Output{The time queue \li, with a new \startT, \eT and \finish inserted for \run runner}
+\Output{The time queue \li, with a new \startT, \eT and \finish inserted for \run as its runner}
  
 Make new \startT $start$ from \start as its start-time, and \run as its runner
   
@@ -184,9 +185,9 @@ It is clear that the algorithm terminates iff the Lonely Runner conjecture holds
 
 If the Lonely Runner conjecture holds, then the algorithm will eventually find an intersection of the intervals, and return it, as per the proof above. If the Lonely Runner conjecture does not hold, then there still might be a solution to the given instance, which will be reported. If the Lonely Runner conjecture does not hold, and there is not a solution to the given instance, then the algorithm can only terminate if there is a time $t$ where all the $n$ runners hit the starting line.  
 
-It is clear that a runner with speed $s$ takes $\frac{1}{s}$ time units to complete a single lap around the track, and so in order for all the runners to arrive at starting line at the same time, I need to find a time $t$ that all the $n$ runner's speeds divide. This is obviously true for the time $t = s_1 s_2 \ldots s_n$, so such a time clearly exists. If not all of the runner's speeds are co-prime, then $t$ can be smaller. 
+It is clear that a runner with speed $s$ takes $\frac{1}{s}$ time units to complete a single lap around the track, and so in order for all the runners to arrive at starting line at the same time, I need to find a time $t$ that all the $n$ runner's speeds divide. This is obviously true for the smallest common multiple of the numbers. In the case where all the runner speeds are co-prime the time is $t = s_1 s_2 \cdots s_n$. 
 }{
-In the worst case the Lonely Runner Conjecture does not hold, and all the speeds of the runner's are co-prime. In that case the algorithm will only terminate after having made the runner's 
+At any given time there can at most be $3n + 1$ points in the Priority Queue (specificly when an \comEnd\, has been handeled), and every insertion and removel takes O($\log(n)$) time. However it is clear from the termination proof above, that in the case where the Lonely Runner conjecture does not hold, then the time required is not defined by the number of runners, but rather the smallest common multiple of their speeds, denoted here by $c$. As noted above, in the case where all the numbers are co-prime, $c = s_1 s_2 \cdots s_n$. So in all we have that O($cn\log(n)$) \todo{is this entirely correct?}
 }
 
 \subsection{Number Theory}
