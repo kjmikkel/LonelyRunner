@@ -55,41 +55,43 @@ My solution to this is to introduce a ``fake'' runner to the race. This fake run
 \label{eventPoints}
 In this section I will discuss the role of event points in the Plane Sweep algorithm, as well as define them.
 
-One question that has to be answered before we go any further is whether or not we will create all interesting Event Points before the main part of the algorithm starts (if indeed we can) or create some of them and let any remaining be generated at run-time. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. Since I have already established that we do not need to produce any event points that happen after time 1, it is clear that we can create all the event points before entering the main loop. 
+One question that has to be answered before we go any further is whether or not we will create all interesting Event Points before the main part of the algorithm starts (if indeed we can) or create some of them and let any remaining be generated at run-time. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. Since I have already established that we do not need to produce any event points that happen after time 1, it is clear that we can create all the event points before entering the main loop.\\ 
 
 \adDis{
 Creating Event points before entering the main loop
 }{
-The advantage of creating the points in advance would be that this is a embarrassingly parallel task, which could be sped up by using modern computers multiple cores. After this the main loop could simply be run without having to dedicate any resources to creating new events.
+\item The advantage of creating the points in advance would be that this is a embarrassingly parallel task, which could be sped up by using modern computers multiple cores. After this the main loop could simply be run without having to dedicate any resources to creating new events.
 
-It would also make the Priority Queue simpler, since instead of a heap, we could simply use a Linked List structure. 
+\item It would also make the Priority Queue simpler, since instead of a heap, we could simply use a Linked List structure. 
 }{
-Since all the points are generated at the beginning, this would sharply increase the memory footprint on the system, and if implemented in a programming language without garbage collection, and would require a lot of work.
+\item Since all the points are generated at the beginning, this would sharply increase the memory footprint on the system, and if implemented in a programming language without garbage collection, and would require a lot of work.
 
-Also, while the event points themselves could be generated in parallel, they would still have to be inserted into Priority Queue, which would serve as a bottleneck. Even if this was done while all the other event points were still being generated, it would slow down the procedure enormously, loosing a lot of time. The Priority Queue would also still have to be sorted, which in any case would take O$(n\log(n))$, though of course a parallel version of the sort could be used.
+\item Also, while the event points themselves could be generated in parallel, they would still have to be inserted into Priority Queue, which would serve as a bottleneck. Even if this was done while all the other event points were still being generated, it would slow down the procedure enormously, loosing a lot of time. The Priority Queue would also still have to be sorted, which in any case would take O$(n\log(n))$, though of course a parallel version of the sort could be used.
 
-If done correctly it would add quite a bit of complexity to the program
+\item If done correctly it would add quite a bit of complexity to the program
 }{
 Given that generating an event point should be trivial (it being a very simple data structure), one can question the worth of this implementation.
-}\\
+}
 
 \adDis{
 Creating event points on the fly
 }{
-Compared to creating all the event points up front, only making them when needed would reduce the memory footprint drastically, since new event points would only be made when needed. Doing so would also be much simpler than the parallel version. Since we would only work with relatively few event points in the Priority Queue, insertions and 
+\item It would reduce the memory footprint drastically, since new event points would only be made when needed (and after old ones had been removed).
+
+\item Adding the new event points sequentially would also be much simpler than in the parallel version, where I would not have to protect the Priority Queue.  
 }{
-Creating each event point sequentially could potentially take a lot more time than the parallel solution.
+\item Creating each event point sequentially could potentially take a lot more time than the parallel solution.
 }{
 Creating the event points as needed is far simpler than the parallel version, although it is potentially slower in situations where the speed of the runners is large, or where the solution to the conjecture is close to $1$, or no solution exist. 
 }
 
-Thus I feel justified in saying that creating the event points on the fly is the preferred solution, as the possible gains by creating all the points at once would be minimal at best, and would unduely increase the complexity of the algorithm. 
+Thus I feel justified in saying that creating the event points on the fly is the preferred solution, as any possible gains by creating all the points at once would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an arguemnt, since the parrallel and sequential version each uses a different data structure, optimized for their operation.}, and would unduely increase the complexity of the program I would have to create. 
 
 In order to distinguish entering and leaving the Zone, as well as the ``fake'' runner I introduce 3 different points:
 \begin{description}
 \item[\comStart] The first point represents the time where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart\, will contain the time it took to reach that location, and which runner it belongs to.
 \item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last event point for any given runner in the Priority Queue, \comEnd\, is used to signal to the algorithm that a new \comStart\, and \comEnd\, needs to be added to the Priority Queue. \comEnd\, needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
-\item[\comFin] The final point in that will be processed - its time is always set to $1$. If this point is ever reached, then there exists no solution for the given configuration of runners and speeds, and the Lonely Runner conjecture does not hold.
+\item[\comFin] The final point in that will be processed --- its time is always set to $1$. If this point is ever reached, then there exists no solution for the given configuration of runners and speeds, and the Lonely Runner conjecture does not hold.
 \end{description}
 
 \subsubsection{Order of points}
@@ -113,7 +115,7 @@ $p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
 \highlights
 \SetKwData{start}{startTime}
 \Input{A start-time \ti and the \unit used to run $\frac{1}{(\n + 1)}$ part of the track, the number \run of the runner, and the time queue \li}
-\Output{The time queue \li, with a new \startT, \eT and \finish inserted for \run as its runner}
+\Output{The time queue \li, with a new \startT and \eT inserted for \run as its runner}
  
 Make new \startT $start$ from \start as its start-time, and \run as its runner
   

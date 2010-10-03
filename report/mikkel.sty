@@ -101,16 +101,21 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 }
 
 \newcommand{\adDis}[4]{
-#1
-
+\begin{flushleft}
+#1:
+\end{flushleft}
 \emph{Advantages:}\\ 
+\begin{itemize}
 #2
+\end{itemize}
 
 \emph{Disadvantages:}\\
+\begin{itemize}
 #3
+\end{itemize}
 
 \emph{Conclusion:}\\
-#4
+#4\\
 }
 
 \newcommand{\src}[1]{
