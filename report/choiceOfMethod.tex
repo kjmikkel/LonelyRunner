@@ -196,21 +196,7 @@ A Number Theory alternative to the Geometric Algorithm can be made by applying t
 $$
 k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
 $$
-where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 in \cite{invis}). If there exists at least one solution to the Lonely Runner conjecture for a given configuration of runners and speeds, it then becomes a problem of finding the value of $a$. It is clear that if the value of $a$ must satisfy the conjecture for all speeds, then specificly it must be true for both $d_i$ and $d_j$, hence we can decrease the search space by calculating minimum and maximum values for when $a$ satisfy for $d_i$ and $d_j$. In practice this means finding the values for a of $\frac{a}{k}d_k = \frac{1}{n+1}$ and $\frac{a}{k}d_k = \frac{n}{n+1}$, where $k \in \E{i, j}$, which solves to 
-
-\eqn{
-\label{eqn:numFirst}
-a = \frac{k}{d_k(n+1)}
-}
-
-and
-
-\eqn{
-\label{eqn:numLast}
-a = \frac{nk}{d_k(n+1)}
-}
-
-\todo{perhaps this should not be so prominently displayed}
+where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 in \cite{invis}). It is clear that $a < k$, since if $a = k$ then $a/k$ would evaluate to $1$ and then $\Vert \frac{a}{k} d\Vert, d \in D$ would evaluate to 0, which is not a valid solution to the Lonely Runner conjecture.
 
 \todo{Make sure you have the correct algorithm} .
 
@@ -223,23 +209,27 @@ a = \frac{nk}{d_k(n+1)}
   
   $n \gets size(\s)$
 
-  \ForEach{$d \in \s$}{
+  \For{$i \gets 1$ \KwTo $n-1$}{
     
-    \ForEach{$d^{\prime} \in \s \setminus \E{d}$}{
+    $d \gets \s_i$
+ 
+    \For{$j \gets i + 1$ \KwTo $n$}{
       
+      $d^{\prime} \gets \s_j$
+
       $k \gets d + d^{\prime}$
       
-      $start \gets max(\lfloor\frac{k}{d(n+1)}\rfloor, \lfloor\frac{k}{d^{\prime}(n+1)}\rfloor)$
-
-      $stop \gets min(\lceil\frac{nk}{d(n+1)}\rceil, \lceil\frac{nk}{d^{\prime}(n+1)}\rceil)$ 
-
-      \For{$a \leftarrow start$ \KwTo $stop$}{
+      \For{$a \leftarrow 1$ \KwTo $k-1$}{
         
         $testValid \gets true$
         
         \ForEach{$s \in \s$}{
           
           $testValid \gets testValid\; \and\; (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
+
+          \If{!$testValid$} {
+            break
+            }
           
         }
         
@@ -257,11 +247,15 @@ a = \frac{nk}{d_k(n+1)}
 \subsubsection{Proofs for the numerical algorithm}
 
 \algProof{
-In \cite{invis} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
+In \cite{invis} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution to it. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
 }{
 It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
 }{
-Let us first analyse how many [Something about k and how it influences the runtime]
+It is clear that the meat of NumericalLonelyRunner is 4 nested for-loops. The 2 first loops are dependent on each other, the third is based on the speed for the two runners that have been chosen, and the last loop goes through all the runners.\\
 
-Let $n$ be the number of runners, then the algorithm runs in $O(n^4)$ time, since the algorithm uses 4 nested For loops, and in the worst case each loop will run through all the runners.
+The first 2 loops gives us $\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}1 = n-1 + n-2 + \ldots 2 + 1$, which reduces to $O(n^2)$. The third loop must iterate $k-1$ times, where $k$ is the sum of 2 runner's speed.\\
+
+If we are to give a worst case time, then it is clear $k$ must be the sum of the speed of the two fastest runners - so if we let $speed_1 = max(\comS)$ and $speed_2 = max(\comS \setminus \E{speed_1})$ then $k = speed_1 + speed_2$\\
+
+And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(k * n^3)$.
 }
