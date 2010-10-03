@@ -192,11 +192,20 @@ At any given time there can at most be $3n + 1$ points in the Priority Queue (sp
 
 \subsection{Number Theory}
 
-A Number Theory alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. I have sketched the algorithm described from \cite{invis} below\todo{Make sure you have the correct algorithm} .
+A Number Theory alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
+$$
+k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
+$$
+where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 in \cite{invis}). If there exists at least one solution to the Lonely Runner conjecture for a given configuration of runners and speeds, it then becomes a problem of finding the value of $a$. It is clear that $a < k$ since if $a = k$ then $\Vert \frac{a}{k} d_i \Vert$ would evaluate to 0, which always will be less than $\frac{1}{n+1}$.  
+
+ if the Lonely Runner conjecture holds, then 
+
+\todo{Make sure you have the correct algorithm} .
 
 \begin{algorithm}[H]
   \caption{NumericalLonelyRunner}
   \highlights
+  \SetKwData{and}{and}
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti such that all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
@@ -204,19 +213,17 @@ A Number Theory alternative to the Geometric Algorithm can be made by applying t
 
   \ForEach{$d \in \s$}{
     
-    \ForEach{$d\prime \in \s \setminus \E{d}$}{
+    \ForEach{$d^{\prime} \in \s \setminus \E{d}$}{
       
-      $k \gets d + d\prime$
+      $k \gets d + d^{\prime}$
       
-      $m \gets \lceil \frac{k}{n + 1} \rceil $
-      
-      \For{$a \leftarrow m$ \KwTo $n$}{
+      \For{$a \leftarrow 1$ \KwTo $k$}{
         
         $testValid \gets true$
         
         \ForEach{$s \in \s$}{
           
-          $testValid = testValid \and (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
+          $testValid = testValid\; \and\; (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
           
         }
         
