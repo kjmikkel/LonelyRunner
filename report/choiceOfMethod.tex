@@ -196,9 +196,21 @@ A Number Theory alternative to the Geometric Algorithm can be made by applying t
 $$
 k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
 $$
-where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 in \cite{invis}). If there exists at least one solution to the Lonely Runner conjecture for a given configuration of runners and speeds, it then becomes a problem of finding the value of $a$. It is clear that $a < k$ since if $a = k$ then $\Vert \frac{a}{k} d_i \Vert$ would evaluate to 0, which always will be less than $\frac{1}{n+1}$.  
+where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 in \cite{invis}). If there exists at least one solution to the Lonely Runner conjecture for a given configuration of runners and speeds, it then becomes a problem of finding the value of $a$. It is clear that if the value of $a$ must satisfy the conjecture for all speeds, then specificly it must be true for both $d_i$ and $d_j$, hence we can decrease the search space by calculating minimum and maximum values for when $a$ satisfy for $d_i$ and $d_j$. In practice this means finding the values for a of $\frac{a}{k}d_k = \frac{1}{n+1}$ and $\frac{a}{k}d_k = \frac{n}{n+1}$, where $k \in \E{i, j}$, which solves to 
 
- if the Lonely Runner conjecture holds, then 
+\eqn{
+\label{eqn:numFirst}
+a = \frac{k}{d_k(n+1)}
+}
+
+and
+
+\eqn{
+\label{eqn:numLast}
+a = \frac{nk}{d_k(n+1)}
+}
+
+\todo{perhaps this should not be so prominently displayed}
 
 \todo{Make sure you have the correct algorithm} .
 
@@ -217,13 +229,17 @@ where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the res
       
       $k \gets d + d^{\prime}$
       
-      \For{$a \leftarrow 1$ \KwTo $k$}{
+      $start \gets max(\lfloor\frac{k}{d(n+1)}\rfloor, \lfloor\frac{k}{d^{\prime}(n+1)}\rfloor)$
+
+      $stop \gets min(\lceil\frac{nk}{d(n+1)}\rceil, \lceil\frac{nk}{d^{\prime}(n+1)}\rceil)$ 
+
+      \For{$a \leftarrow start$ \KwTo $stop$}{
         
         $testValid \gets true$
         
         \ForEach{$s \in \s$}{
           
-          $testValid = testValid\; \and\; (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
+          $testValid \gets testValid\; \and\; (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
           
         }
         
