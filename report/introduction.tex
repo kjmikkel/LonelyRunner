@@ -2,42 +2,44 @@
 \label{introduction}
 \todo{Introduction}
 
-The Lonely Runner conjecture states that given 
+There exist 2 equivalent interpretations of the Lonely Runner conjecture that are widely used:\todo{have a footnote where it was named}
+\begin{enumerate}
+\item Assume there are $n$ runners at a circular, unit length, track, where every runner runs with a constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions}}, there will then be a time when all runners will be at least $\frac{1}{n + 1}$ distance away from their common start-point.\\
 
-The most succinct description I have seen of the problem is found in \cite{ANote} which has the following description of the problem:\\
+\item Alternatively, imagine we have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner. Everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
+\end{enumerate}
+
+More formally the problem can be stated thus:\\
 
 Given any n positive integers $w_1, w_2, \ldots, w_n$, there is a real number $x$ such that 
 \eqn{
-\label{mainProb} \Vert w_i x\Vert \geq \frac{1}{n+1}
+\label{eqa:lonelyRunner} \Vert w_i x\Vert \geq \frac{1}{n+1}
 }
 
-for each $i = 1, 2, \ldots, n$, where for a real number $x$, $\Vert x \Vert$ is the distance from $x$ from the nearest integer.
-
-There exist 2 equivalent interpretations of this, which are more colourful, and which are used in almost all of the articles detailing the Lonely Runner problem, I have surveyed:
-\begin{enumerate}
-\item Assume there are $n$ runners at a circular, unit length, track, where every runner runs with a constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions}}, there will then be a time when all runners will be at least $\frac{1}{n + 1}$ distance away from the start line.\\
-
-\item Alternatively, imagine we have n + 1 runners, and then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner, everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
-\end{enumerate}
-
-\subsection{Scope and Limitations}
-\label{scope}
-\todo{Scope and limitations}
-In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-I will work to make the program return a result within a reasonable time, for up to 1000 runners. While the final program should work with more than 1000 runners, I will not try to optimize the program further. The program will include an interactive counterexample search system.
+for each $i = 1, 2, \ldots, n$, where for a real number $y$, $\Vert y \Vert$ is the distance from $x$ from the nearest integer. I owe this formulation of the problem to \cite{ANote}.
 
 \subsection{Expectations to the reader}
 \label{expectations}
 \todo{Expectations}
 I expect the reader to be able to understand the Lonely Runner Conjecture in all its formulations, as well as being mathematically mature, and having a basic understanding of Plane Sweep algorithms.
 
+\subsection{Scope and Limitations}
+\label{scope}
+\todo{Scope and limitations}
+In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
+I will work to make the program return a result within a reasonable time, for up to 1000 runners. While the final program should work with more than 1000 runners, I will not try to optimize the program further. The program will include an interactive counterexample search system.
+One of the reasons I in this report will only focus on runners with \todo{spørg jakob om dette}.
+
 \subsection{Terminology}
 \label{Termonolgy}
-In this report I will refer to the track interval [$\frac{1}{n + 1}$: $\frac{n}{n+1}$] as the \zone, and a runner who is in this interval, as being in the \zone.
+In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as being in the Zone.
 
 \subsection{Background material used}
 \label{background}
-For this project I have used ``Computational Geometry'' \cite{citeulike:3347056} and Algebra \todo{Fix cite to Algebra by Anders Thorup} 
+For this project I have read the following papers dealing with the Lonely Runner conjecture: ``View-Obstruction Problems''\cite{Bienia97flows.view-obstructions}, ``The lonely runner problem with seven runners'' \cite{serra_thelonely}, ``Regular chromatic number and the lonely runner problem'' \cite{Barajas2007479}, ``View-Obstruction Problems'' \cite{springerlink:10.1007/BF01832623}, ``Tight Instances of the Lonely Runner'' \cite{Goddyn96tightinstances}, ``A Note on the Lonely Runner Conjecture'' \cite{ANote} and ``Invisible runners in finite fields'' \cite{invis}.
+
+I have also used the follow support literature:
+``Computational Geometry'' \cite{citeulike:3347056} Algebra \todo{Fix cite to Algebra by Anders Thorup}, and ``Kalkulus'' \cite{kalkulus}.
 
 \subsection{Overview}
 \todo{Make sure overview fits with the actual content}

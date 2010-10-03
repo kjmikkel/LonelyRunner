@@ -12,12 +12,12 @@ I will in this subsection describe the different methods I have thought of using
 
 \subsection{Computational Geometry}
 
-The following solution is based on the first intiutive description of the conjecture. It is clear that we are interested in the time interval when the runners are in the \zone. However, we are interested in the time they are in the \zone\, - i.e. when a runner with a speed $s$ enters and leaves the \zone.\\ 
+The following solution is based on the first intuitive description of the conjecture. It is clear that we are interested in the time interval when the runners are in the Zone. However, we are interested in the time they are in the Zone - i.e. when a runner with a speed $s$ enters and leaves the Zone.\\ 
 
-Let $s$ be the speed and $t$ be the time, then from \ref{mainProb} we have 
+Let $s$ be the speed and $t$ be the time, then from \eqaref{eqa:lonelyRunner} we have 
 
 \begin{equation}
-\label{speedOne}
+\label{eqa:speedOne}
 \begin{split}
 s * t &= \frac{1}{n+1} \\
 t &= \frac{1}{s * (n+1)}
@@ -27,54 +27,85 @@ t &= \frac{1}{s * (n+1)}
 and 
 
 \begin{equation}
-\label{speedTwo}
+\label{eqa:speedTwo}
 \begin{split}
 s * t &= \frac{n}{n+1} \\
 t &= \frac{n}{s * (n+1)}
 \end{split}
 \end{equation}
 
-From \ref{speedOne} and \ref{speedOne} it is clear that the time interval for the first the runner is in the \zone\, will be 
+From \eqaref{eqa:speedOne} and \eqaref{eqa:speedTwo} it is clear that the time interval for the first the runner is in the Zone will be 
 \begin{displaymath}
 \left[\frac{1}{s * (n+1)}, \frac{n}{s * (n+1)}\right]
 \end{displaymath}
 
-More generally, a given runner with speed $s$ will be in the \zone\, at time 
+More generally, a runner with speed $s$ will be in the zone of the $k$'th time, where $k \in \N \cup \E{0}$, in the interval 
 
 \begin{displaymath}
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{displaymath}
 
-So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm, where the interesting cases are when the runner enters, and leaves the \zone. However, since the Lonely Runner conjecture has not been proven, the plane sweep algorithm must also have a terminating condition, other than finding a time where the conjecture holds for the current configuration.
+So now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or similar}, where the interesting cases are when a runner enters, and leaves the Zone. 
 
-My solution to this is to terminate the algorithm if all the runners crosses the start-line at the same time - everything after that will only be a repitition of what had already happened\todo{needs proof}. This also means that the plane sweeping algorithm needs to take care of the case where the runner crosses the start line.
+However, since the Lonely Runner conjecture has not been proved, there must be a means to terminate the algorithm if such a solution does not exist for a given configuration.
 
+My solution to this is to introduce a ``fake'' runner to the race. This fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in [0,1)$, and therefore if we reach the time $1$, no such solution can exist. \todo{needs proof}
 
-\subsubsection{Points}
+\subsubsection{Event Points}
+\label{eventPoints}
+In this section I will discuss the role of event points in the Plane Sweep algorithm, as well as define them.
 
-In order to distinguish these 3 cases we need to introduce 3 different points:
+One question that has to be answered before we go any further is whether or not we will create all interesting Event Points before the main part of the algorithm starts (if indeed we can) or create some of them and let any remaining be generated at run-time. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. Since I have already established that we do not need to produce any event points that happen after time 1, it is clear that we can create all the event points before entering the main loop. 
+
+\adDis{
+Creating Event points before entering the main loop
+}{
+The advantage of creating the points in advance would be that this is a embarrassingly parallel task, which could be sped up by using modern computers multiple cores. After this the main loop could simply be run without having to dedicate any resources to creating new events.
+
+It would also make the Priority Queue simpler, since instead of a heap, we could simply use a Linked List structure. 
+}{
+Since all the points are generated at the beginning, this would sharply increase the memory footprint on the system, and if implemented in a programming language without garbage collection, and would require a lot of work.
+
+Also, while the event points themselves could be generated in parallel, they would still have to be inserted into Priority Queue, which would serve as a bottleneck. Even if this was done while all the other event points were still being generated, it would slow down the procedure enormously, loosing a lot of time. The Priority Queue would also still have to be sorted, which in any case would take O$(n\log(n))$, though of course a parallel version of the sort could be used.
+
+If done correctly it would add quite a bit of complexity to the program
+}{
+Given that generating an event point should be trivial (it being a very simple data structure), one can question the worth of this implementation.
+}\\
+
+\adDis{
+Creating event points on the fly
+}{
+Compared to creating all the event points up front, only making them when needed would reduce the memory footprint drastically, since new event points would only be made when needed. Doing so would also be much simpler than the parallel version. Since we would only work with relatively few event points in the Priority Queue, insertions and 
+}{
+Creating each event point sequentially could potentially take a lot more time than the parallel solution.
+}{
+Creating the event points as needed is far simpler than the parallel version, although it is potentially slower in situations where the speed of the runners is large, or where the solution to the conjecture is close to $1$, or no solution exist. 
+}
+
+Thus I feel justified in saying that creating the event points on the fly is the preferred solution, as the possible gains by creating all the points at once would be minimal at best, and would unduely increase the complexity of the algorithm. 
+
+In order to distinguish entering and leaving the Zone, as well as the ``fake'' runner I introduce 3 different points:
 \begin{description}
-\item[\comStart] The first point where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart\, will contain the time it took to reach that location, and which runner it belongs to.
-\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm \comEnd\, has the responsibility of finding the next interval its runner is at least $\frac{1}{n+1}$ units away from the start-line. I place this responsibility on \comEnd, on the grounds it is the first point where we know the current interval is not going to give a solution to the Lonely Runner conjecture. \comEnd\, needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
-\item[\comFin] The time at which the runner passes the start-line. As explained above \todo{explain it above}, this is needed in order to ensure that the algorithm will always terminate, even if there is no solution to the Lonely Runner in that instance.
+\item[\comStart] The first point represents the time where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart\, will contain the time it took to reach that location, and which runner it belongs to.
+\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last event point for any given runner in the Priority Queue, \comEnd\, is used to signal to the algorithm that a new \comStart\, and \comEnd\, needs to be added to the Priority Queue. \comEnd\, needs to know the time its runner will pass it, the amount of time used to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
+\item[\comFin] The final point in that will be processed - its time is always set to $1$. If this point is ever reached, then there exists no solution for the given configuration of runners and speeds, and the Lonely Runner conjecture does not hold.
 \end{description}
 
 \subsubsection{Order of points}
-In order to ensure this approch will work, I introduce the order $\prec$. For the timepoints $p$ and $q$, $p \prec q$ iff \\
+In order to avoid any ambiguity concerning the order of the points, I will now introduce an order $\prec$. One of the degenerate cases we need to avoid is when we have (n-1) runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd. 
+
+For the time points $p$ and $q$, $p \prec q$ iff \\
 
 \begin{center}
 $p_{time} < q_{time}$\\
 or \\
-$p_{time} == q_{time}$ and type($p$) == \comFin\, and type($q$) != type($p$)\\
+$p_{time} == q_{time}$ and type($q$) == \comFin\, and type($q$) != type($p$)\\
 or \\
 $p_{time} == q_{time}$ and type($p$) == \comStart\, and type($q$) == \comEnd \\
 or \\
 $p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
 \end{center}
-
-Using this order there is no ambiguity where to place the points, and we also avoid the degernate case where we have (n-1) runners are in the \zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the \zone\, is a closed set, it is clear that this instance should return a valid solution to the conjecture, but if \comEnd\, comes first, then the case would not be reported - therefore \comStart\, must be placed before \comEnd.
-
-In order to efficiently process the points I will use a minimum heap for the Prirority Queue, since it uses O($\log n$) for insertions and deletions, and O($1$) for finding the next value.
 
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
@@ -87,10 +118,8 @@ In order to efficiently process the points I will use a minimum heap for the Pri
 Make new \startT $start$ from \start as its start-time, and \run as its runner
   
 Make new \eT $end$ from \start + \unit * \n as its start-time, \unit as its speed, and \run as its runner
-  
-Make new \finish $finish$ with \start + \unit * (n+1) as its time, and \run as its runner
-  
-Add $start$, $end$ and $finish$ to \li
+    
+Add $start$ and $end$ to \li
 
 \return \li
 \end{algorithm}
@@ -98,25 +127,19 @@ Add $start$, $end$ and $finish$ to \li
 \begin{algorithm}[H]
   \caption{FindLonelyRunnerTime}
   \highlights
-  \SetKwData{rTime}{finishTime}
-  \SetKwData{lFinish}{LastRunnerToFinish}
   \SetKwData{and}{and}
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
   Create and initialise \li
   
-\End $\gets 0$
-
 \inter $\gets 0$
-
-\rTime $\gets -1$
-
-\lFinish $\gets -1$
 
 \n $\gets$ size(\s)
 
 $runnerNum \gets 1$
+
+Make \finish with time $1$ and add it to \li
 
 \ForEach{speed $\in$ \s}{
   
@@ -130,18 +153,14 @@ $runnerNum \gets 1$
 \While{\li is not empty}{
   \p $\gets$ firstPoint(\li)
   
-  \If{\p is \startT}{
-      \End = 0
-      
+  \If{\p is \startT}{      
       \inter $+= 1$
       
       \If{\inter == \n}{
         \return $\p_{time}$
       }
   }
-  
-  \If{\p is \eT}{
-    \End = 0
+  \uElseIf{\p is \eT}{
     
     \inter $-= 1$
     
@@ -149,31 +168,10 @@ $runnerNum \gets 1$
     
     \li $\gets$ MakeTimePoints(\ti, $p_{\unit}$, $p_{\run}$, \li)
   }
-  
-  \If{\p is \finish}{
-    \If{\rTime == $-1$}{
-      
-      \rTime $\gets \p_{time}$ 
-      
-    }
-    
-    \If{$\p_{time}$ == \rTime \and $\p_{\run}$ == \lFinish}{
-   
-     \End $+= 1$\; 
-     
-     \If{\End == \n}{  
-       \return \no
-     }
-     
-     
-    } \uElse{
-      
-      \rTime $\gets -1$
-   
-      \End $\gets 0$       
-    }
-    
+  \ElseIf{\p is \finish}{
+    \return \no
   }
+   
 }
 \end{algorithm}
 
@@ -187,12 +185,12 @@ If the Lonely Runner conjecture holds, then the algorithm will eventually find a
 
 It is clear that a runner with speed $s$ takes $\frac{1}{s}$ time units to complete a single lap around the track, and so in order for all the runners to arrive at starting line at the same time, I need to find a time $t$ that all the $n$ runner's speeds divide. This is obviously true for the smallest common multiple of the numbers. In the case where all the runner speeds are co-prime the time is $t = s_1 s_2 \cdots s_n$. 
 }{
-At any given time there can at most be $3n + 1$ points in the Priority Queue (specificly when an \comEnd\, has been handeled), and every insertion and removel takes O($\log(n)$) time. However it is clear from the termination proof above, that in the case where the Lonely Runner conjecture does not hold, then the time required is not defined by the number of runners, but rather the smallest common multiple of their speeds, denoted here by $c$. As noted above, in the case where all the numbers are co-prime, $c = s_1 s_2 \cdots s_n$. So in all we have that O($cn\log(n)$) \todo{is this entirely correct?}
+At any given time there can at most be $3n + 1$ points in the Priority Queue (specifically when an \comEnd\, has been handled), and every insertion and removal takes O($\log(n)$) time. However it is clear from the termination proof above, that in the case where the Lonely Runner conjecture does not hold, then the time required is not defined by the number of runners, but rather the smallest common multiple of their speeds, denoted here by $c$. As noted above, in the case where all the numbers are co-prime, $c = s_1 s_2 \cdots s_n$. So in all we have that O($cn\log(n)$) \todo{is this entirely correct?}
 }
 
 \subsection{Number Theory}
 
-A Number Theory alternative to the Geometric Algorithm can be made by applying the results of \cite{invs}. I have sketched the algorithm described from \cite{invs} below\todo{Make sure you have the correct algorithm} .
+A Number Theory alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. I have sketched the algorithm described from \cite{invis} below\todo{Make sure you have the correct algorithm} .
 
 \begin{algorithm}[H]
   \caption{NumericalLonelyRunner}
@@ -234,7 +232,7 @@ A Number Theory alternative to the Geometric Algorithm can be made by applying t
 \subsubsection{Proofs for the numerical algorithm}
 
 \algProof{
-In \cite{invs} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
+In \cite{invis} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
 }{
 It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
 }{

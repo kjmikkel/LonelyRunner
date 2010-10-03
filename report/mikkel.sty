@@ -65,9 +65,9 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \newcommand{\grad}[3]{\nabla #1(#2) = (#3)}
 \newcommand{\gra}[3]{\nabla #1(#2)}
 \newcommand{\todo}[1]{\fixme{#1}}
+\newcommand{\eqaref}[1]{(\ref{#1})}
 \newcommand{\pref}[1]{See section \ref{#1} p. \pageref{#1}}
 \newcommand{\nref}[1]{see section \ref{#1} p. \pageref{#1}}
-\newcommand{\zone}{Zone}
 \newcommand{\comStart}{startTimePoint}
 \newcommand{\comEnd}{endTimePoint}
 \newcommand{\comFin}{FinishingLinePoint}
@@ -98,6 +98,19 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \item[Termination:] #2
 \item[Time analysis:] #3
 \end{description}
+}
+
+\newcommand{\adDis}[4]{
+#1
+
+\emph{Advantages:}\\ 
+#2
+
+\emph{Disadvantages:}\\
+#3
+
+\emph{Conclusion:}\\
+#4
 }
 
 \newcommand{\src}[1]{
