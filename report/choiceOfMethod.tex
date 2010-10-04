@@ -181,13 +181,13 @@ Make \finish with time $1$ and add it to \li
 \algProof{
 ?
 }{
-It is clear that the algorithm terminates iff the Lonely Runner conjecture holds or if there is a time $t$ where all $n$ runners hits the starting line.
-
-If the Lonely Runner conjecture holds, then the algorithm will eventually find an intersection of the intervals, and return it, as per the proof above. If the Lonely Runner conjecture does not hold, then there still might be a solution to the given instance, which will be reported. If the Lonely Runner conjecture does not hold, and there is not a solution to the given instance, then the algorithm can only terminate if there is a time $t$ where all the $n$ runners hit the starting line.  
-
-It is clear that a runner with speed $s$ takes $\frac{1}{s}$ time units to complete a single lap around the track, and so in order for all the runners to arrive at starting line at the same time, I need to find a time $t$ that all the $n$ runner's speeds divide. This is obviously true for the smallest common multiple of the numbers. In the case where all the runner speeds are co-prime the time is $t = s_1 s_2 \cdots s_n$. 
+It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin (which cannot be removed prematurely).
 }{
-At any given time there can at most be $3n + 1$ points in the Priority Queue (specifically when an \comEnd\, has been handled), and every insertion and removal takes O($\log(n)$) time. However it is clear from the termination proof above, that in the case where the Lonely Runner conjecture does not hold, then the time required is not defined by the number of runners, but rather the smallest common multiple of their speeds, denoted here by $c$. As noted above, in the case where all the numbers are co-prime, $c = s_1 s_2 \cdots s_n$. So in all we have that O($cn\log(n)$) \todo{is this entirely correct?}
+If we analyse the algorithm amotized\todo{what is it really called - its not amotized}, the first loop of the algorithm takes $O(n\log(n))$ time, since it has to add $2n$ event points tto the Priority Queue, where each insertion taking $O(\log(n))$.\\
+
+After the first loop, there will at most be $2n + 1$ or $O(n)$ Event Points in the Priority Queue, since each time we encounter a \comEnd, two new Event Points are added to the Priority Queue.\\ 
+
+It is clear that the second loop is dependent on how many Event Points are processed before \comFin, at time $1$, is the minimum Event Point in the Priority Queue. For any given runner with speed $s$, it is clear that it will make a $s$ rounds before the ``fake'' runner arrives at the finnishing line, and for each round the system will have to deal with 2 Event Points --- a \comStart\; and an \comEnd. The \comStart\; event will take $O(1)$ to process, while the \comEnd\; will take $O(\log(n))$ time, as there will always be $O(n)$ Event Points in the Priority Queue. Therefore it is clear that if $k = \sum \comS$. Since all the speeds are positive and pairwise different, it is easily seen that either $k = n = 1$, or $k > n$, which means $O(k\log(n))$.
 }
 
 \subsection{Number Theory}
