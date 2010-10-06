@@ -4,13 +4,12 @@
 
 There exist 2 equivalent interpretations of the Lonely Runner conjecture that are widely used:\todo{have a footnote where it was named}
 \begin{enumerate}
-\item Assume there are $n$ runners at a circular, unit length, track, where every runner runs with a constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions}}, there will then be a time when all runners will be at least $\frac{1}{n + 1}$ distance away from their common start-point.\\
+\item Imagine $n$ runners at a circular, unit length track\footnote{I.E. the track has a circumference of 1}, where every runner runs with a constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions}}, there will then be a time when all runners will be at least $\frac{1}{n + 1}$ units away from their common start-point.\\
 
-\item Alternatively, imagine we have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner. Everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
+\item Alternatively, imagine that we instead have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner. Everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
 \end{enumerate}
 
-More formally the problem can be stated thus:\\
-
+More formally the problem can be stated thus: 
 Given any n positive integers $w_1, w_2, \ldots, w_n$, there is a real number $x$ such that 
 \eqn{
 \label{eqa:lonelyRunner} \Vert w_i x\Vert \geq \frac{1}{n+1}
@@ -26,13 +25,21 @@ I expect the reader to be able to understand the Lonely Runner Conjecture in all
 \subsection{Scope and Limitations}
 \label{scope}
 \todo{Scope and limitations}
-In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-I will work to make the program return a result within a reasonable time, for up to 1000 runners. While the final program should work with more than 1000 runners, I will not try to optimize the program further. The program will include an interactive counterexample search system.
-One of the reasons I in this report will only focus on runners with \todo{spørg jakob om dette}.
+\begin{itemize}
+\item In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
+\item I will work to make the program return a result within a reasonable time, for up to 1000 runners, and with speeds up to 1000. The final program should work with more than 1000 runners, and with speeds in excess to 1000, but I will not optimise it further. \item The program will include an interactive counterexample search system.
+\item I will only focus on runners with \todo{ask Jakob about this}.
+\end{itemize}
 
 \subsection{Terminology}
 \label{Termonolgy}
-In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as being in the Zone.
+In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as ``being in the Zone''.
+
+When forced to use a pronoun by the English language, I will use the male pronoun to the refer to the runners. This is done purely for convenience, and to make the text flow better. Not because I believe that male runners are more numerous or in any way inherently better than female runners.
+
+Configurations of runners, will in this report refer to a set S of $n \in \N$ runners, where for all runners $r \in S$, $r_{speed} \in \N$, and $r\prime_{speed} \neq r_{speed}$ where $r\prime \in S \setminus r$.
+
+When talking about the fake runner, I will be referring to a runner that is not actually in race (or any attempt to find a value that would make the Lonely Runner conjecture valid for the given configuration of runners), but rather a runner that has been introduced for convince.   
 
 \subsection{Background material used}
 \label{background}
