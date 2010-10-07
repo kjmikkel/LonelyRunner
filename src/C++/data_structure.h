@@ -1,3 +1,7 @@
+#ifndef D_STRUCT_H
+#define D_STRUCT_H
+
+enum point_type { START, END, FINAL };
 
 struct event_point {
   unsigned int local_position;
@@ -5,7 +9,7 @@ struct event_point {
   unsigned int rounds;
   unsigned int speed;
   unsigned int runnerNumber;
-  unsigned int type;
+  point_type type;
 };
 
 struct time_result {
@@ -13,6 +17,9 @@ struct time_result {
   float result_time;
 
   // whether we could find a solution to equation (1)
-  bool result;
+  int result;
 };
-  
+
+
+
+#endif
