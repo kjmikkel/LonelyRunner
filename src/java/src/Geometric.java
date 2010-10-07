@@ -41,10 +41,6 @@ class pointComparatorNoFloat implements Comparator<Points> {
 
 	@Override
 	public int compare(Points p, Points q) {
-
-		if (p instanceof finishingLinePoint || q instanceof finishingLinePoint) {
-			boolean finish = true;
-		}
 		
 		int time1 = (p.local_placement + p.rounds * (p.num_runners + 1)) * q.speed;
 		int time2 = (q.local_placement + q.rounds * (p.num_runners + 1)) * p.speed;
