@@ -17,7 +17,7 @@ struct time_result {
   float result_time;
 
   // whether we could find a solution to equation (1)
-  int result;
+  bool result;
 };
 
 

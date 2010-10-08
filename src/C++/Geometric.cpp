@@ -1,7 +1,6 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <stdio.h>true
 #include <queue>
-#include <deque>
 #include <vector>
 #include "data_structure.h"
 
@@ -23,7 +22,7 @@ struct compare_event_point_pointers {
     } else if (first->runnerNumber < second->runnerNumber) {
       return false;
     }
-		
+    
     return true;
   }
 };
@@ -31,7 +30,7 @@ struct compare_event_point_pointers {
 typedef std::priority_queue<event_point*,std::vector<event_point*>, compare_event_point_pointers > event_point_priority_queue;
 // use object(s) of type event_point_priority_queue where required
 
-event_point* make_point(event_point* old_point, unsigned int position, point_type type) {
+static event_point* make_point(event_point* old_point, unsigned int position, point_type type) {
   event_point* point = new event_point;
   point->number_of_runners = old_point->number_of_runners;
   point->rounds = old_point->rounds + 1;
@@ -42,7 +41,7 @@ event_point* make_point(event_point* old_point, unsigned int position, point_typ
   return point;
 }
 
-void MakeTimePoints(event_point* old_end_point, event_point_priority_queue* queue) {
+static void MakeTimePoints(event_point* old_end_point, event_point_priority_queue* queue) {
 
   event_point* start = make_point(old_end_point, 1, START);
   event_point* end = make_point(old_end_point, old_end_point->number_of_runners, END);
@@ -51,7 +50,7 @@ void MakeTimePoints(event_point* old_end_point, event_point_priority_queue* queu
   queue->push(end);
   }
 
-void freeQueue(event_point_priority_queue* queue) {
+static void freeQueue(event_point_priority_queue* queue) {
   
   // First we remove and free all the points
   while(queue->size() > 0) {
@@ -74,14 +73,14 @@ time_result* Geometric_method (int speed_array[], const int length) {
   final_point->rounds = 1;
   final_point->speed = 1;
   final_point->runnerNumber = length + 1;
-  final_point->local_position = length + 1;
+  final_point->local_position = length;
   final_point->type = FINAL;
   queue->push(final_point);
 
   for(int pointIndex = 0; pointIndex < length; pointIndex++) {
     event_point point;
     point.number_of_runners = length;
-    point.rounds = 0;
+    point.rounds = -1; // It is important that rounds = -1, otherwise there will be a problem when the points are made
     point.speed = speed_array[pointIndex];
     point.runnerNumber = pointIndex;
     point.local_position = 0;
@@ -101,13 +100,15 @@ time_result* Geometric_method (int speed_array[], const int length) {
       
       if (intersection == length) {
 	
-	float top = float(p->local_position + p->rounds * (length + 1)); 
-	float down = float((p->speed * (length + 1)));
+	float top = p->local_position + p->rounds * (length + 1.0); 
+	float down = p->speed * (length + 1.0);
 	
+	printf("Top: %f\nDown: %f\nIntersections: %i\n", top, down, intersection);
+
 	time_result* has_result = new time_result;
-	has_result->result = 1;
+	has_result->result = true;
 	has_result->result_time = top / down;
-	
+	printf("found result\n");
 	freeQueue(queue); // Free the queue
 	free(p); // Free the Point
 	return has_result;
