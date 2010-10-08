@@ -21,7 +21,7 @@ time_result* Numerical_method (int speed_array[], const int length) {
 
       for(int a = 1; a < k; a++) {
 	bool testValid = true;
-	float x = float (a) / float(k);
+	double x = double (a) / double(k);
 
 	for(int speed_index = 0; speed_index < length; speed_index++) {
 	  

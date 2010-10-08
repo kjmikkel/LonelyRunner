@@ -10,6 +10,9 @@ struct compare_event_point_pointers {
 
     int time1 = (first->local_position + first->rounds * (first->number_of_runners + 1)) * second->speed;
     int time2 = (second->local_position + second->rounds * (second->number_of_runners + 1)) * first->speed;;
+
+    if (time1 < second->speed || time2 < first->speed) 
+      printf("time1: %i and time2: %i\n", time1, time2);
     
     if(time1 < time2) {
       return false;
@@ -100,10 +103,10 @@ time_result* Geometric_method (int speed_array[], const int length) {
       
       if (intersection == length) {
 	
-	float top = p->local_position + p->rounds * (length + 1.0); 
-	float down = p->speed * (length + 1.0);
+	double top = p->local_position + p->rounds * (length + 1.0); 
+	double down = p->speed * (length + 1.0);
 	
-	printf("Top: %f\nDown: %f\nIntersections: %i\n", top, down, intersection);
+	printf("Top: %f\nDown: %f\n", top, down);
 
 	time_result* has_result = new time_result;
 	has_result->result = true;

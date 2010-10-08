@@ -99,7 +99,7 @@ static void testCustom() {
   int array[length];
 
   for(int index = 0; index < length; index++) {
-    array[index] = index + 1050;
+    array[index] = index + 3050;
   }
   
   
