@@ -11,6 +11,31 @@ double closeToInteger(double x, int w) {
   return fmin(1.0 - input, input);  
 }
 
+static bool checkForSolution(int speedArray[], int length) {
+  
+  for(int numberIndex = 2; numberIndex < length + 2; numberIndex++) {
+    // get a number in the the set {2, ..., n+1}
+    int number = numberIndex;
+    
+    bool doesDevide = false;
+    
+    for(int speedIndex = 0; speedIndex < length; speedIndex++) {
+      doesDevide |= (speedArray[speedIndex] % number == 0);
+      
+      // If the number does devide one of the speeds, then we can move on to the next number
+      if(doesDevide) {
+	break;
+      }
+    }
+    
+    if (!doesDevide) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 time_result* Numerical_method (int speed_array[], const int length) {
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];

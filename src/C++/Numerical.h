@@ -5,6 +5,8 @@
 
 time_result* Numerical_method (int speed_array[], int length);
 
+static bool checkForSolution(int speedArray[], int length);
+
 double closeToInteger(double x, int w);
 
 #endif
