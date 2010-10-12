@@ -36,16 +36,17 @@ t &= \frac{n}{s * (n+1)}
 \end{split}
 \end{equation}
 
-From \eqaref{eqa:speedOne} and \eqaref{eqa:speedTwo} it is clear that the time interval for the first the runner is in the Zone will be 
+From \eqaref{eqa:speedOne} and \eqaref{eqa:speedTwo} it is clear that the time interval for the first time the runner is in the Zone will be 
 \begin{displaymath}
 \left[\frac{1}{s * (n+1)}, \frac{n}{s * (n+1)}\right]
 \end{displaymath}
 
 More generally, a runner with speed $s$ will be in the Zone for the $k$'th time, where $k \in \N \cup \E{0}$, in the time interval 
 
-\begin{displaymath}
+\begin{equation}
+\label{eqa:genericZone}
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
-\end{displaymath}
+\end{equation}
 
 Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
 
@@ -89,15 +90,27 @@ Creating the event points as needed is far simpler than the parallel version, al
 
 Thus I feel justified in saying that creating the event points on the fly is the preferred solution, as any possible gains by creating all the points at once would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program I would have to create. 
 
+One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Since we \todo{Should this be here or in the implementation section?} want to run this on a computer with no special floating point number hardware, it would be nice if we could represent the time as an integer. Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
+  
+\eqa{
+\label{eqa:integerTime}
+\frac{a_i + k_i * (n+1)}{s_i (n+1)} &<& \frac{a_j + k_j * (n+1)}{s_j (n+1)} \Leftrightarrow\\
+\frac{a_i + k_i * (n+1)}{s_i} &<& \frac{a_j + k_j * (n+1)}{s_j} \Leftrightarrow\\
+(a_i + k_i * (n+1)) * s_j &<& (a_j + k_j * (n+1)) * s_i \Leftrightarrow\\
+}
+
+So each Event Point must at least record its local postion $a$, the number of rounds $k$ the runner has made, and the speed $s$ of the runner. Besides that, each Event Point should remember the number of its runner, so that all forms of ambigueity can be removed.
+
 In order to distinguish entering and leaving the Zone, as well as the ``fake'' runner I introduce 3 different points:
 \begin{description}
-\item[\comStart] The first point represents the time where the runner is $\frac{1}{n + 1}$ units away from the start line. In the following algorithm the \comStart\, will contain the time it took to reach that location, and which runner it belongs to.
-\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last event point for any given runner in the Priority Queue, \comEnd\, is used to signal to the algorithm that a new \comStart\, and \comEnd\, needs to be added to the Priority Queue. \comEnd\, needs to know the time its runner will pass it, the amount of time its runner has to pass $\frac{1}{n+1}$ units, and to which runner it belongs to.
-\item[\comFin] The final point in that will be processed --- its time is always set to $1$. If this point is ever reached, then there exists no solution for the given configuration of runners and speeds, and the Lonely Runner conjecture does not hold, for the given configuration.
+\item[\comStart] The first point represents the time where the runner is $\frac{1}{n + 1}$ units away from the start line.
+\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last event point for any given runner in the Priority Queue, \comEnd\, will be used to signal that the algorithm must add a \comStart\, and a \comEnd\ to the Priority Queue.
+\item[\comFin] The final point in that will be processed --- which has set values of $a = n+1$, $k = 1$ and $s = 1$ and with its runner set to $n+1$. If this point is ever reached, then there exists no solution to \eqaref{eqa:lonelyRunner} for the given configuration of runners and speeds - and the configuration serves as a counter example to the Lonely Runner conjecture.
 \end{description}
 
 \subsubsection{Order of points}
-In order to avoid any ambiguity concerning the order of the points, I will now introduce an order $\prec$. One of the degenerate cases we need to avoid is when we have (n-1) runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd. 
+\label{order}
+In order to avoid any ambiguity concerning the order of the points, I will now introduce an order $\prec$. One of the degenerate cases we need to avoid is when we have (n-1) runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd.
 
 For the time points $p$ and $q$, $p \prec q$ iff \\
 
@@ -110,6 +123,8 @@ $p_{time} == q_{time}$ and type($p$) == \comStart and type($q$) == \comEnd \\
 or \\
 $p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
 \end{center}
+
+
 
 \subsubsection{Algorithm}
 \begin{algorithm}[H]
