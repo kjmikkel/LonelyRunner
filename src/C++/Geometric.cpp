@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>true
+#include <stdio.h>
 #include <queue>
 #include <vector>
 #include "data_structure.h"
@@ -11,8 +11,8 @@ struct compare_event_point_pointers {
     int time1 = (first->local_position + first->rounds * (first->number_of_runners + 1)) * second->speed;
     int time2 = (second->local_position + second->rounds * (second->number_of_runners + 1)) * first->speed;;
 
-    if (time1 < second->speed || time2 < first->speed) 
-      printf("time1: %i and time2: %i\n", time1, time2);
+    // if (time1 < second->speed || time2 < first->speed) 
+    //  printf("time1: %i and time2: %i\n", time1, time2);
     
     if(time1 < time2) {
       return false;
