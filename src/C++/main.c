@@ -61,30 +61,18 @@ static void testValues(int startRunners,
       time_result* result = Geometric_method(array, runnerNum);
       gettimeofday(end, NULL);
       
-      bool valid = true;
-      bool print = true;
-      float compareTo = 1.0 / (runnerNum + 1.0);
-      for(int index = 0; index < runnerNum; index++) {
-	valid &= closeToInteger(result->result_time, array[index]) >= compareTo;
-      }
+      bool valid = isValid(result, array, runnerNum); 
       
-      printf("val1: %f, val: %f\n", (float)start->tv_usec, (float)end->tv_usec);
-      
-      printf("Time: %f, Valid: %i, Time: %f \n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
+      printf("Time: %f, Valid: %i, Time: %d\n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
       free(result);
       
       gettimeofday(start, NULL);
       result = Numerical_method(array, runnerNum);
       gettimeofday(end, NULL);
       
-      valid = true;
-      for(int index = 0; index < runnerNum; index++) {
-	valid &= closeToInteger(result->result_time, array[index]) >= compareTo;
-      }
-      
-      printf("val1: %f, val: %f\n", (float)start->tv_usec, (float)end->tv_usec);
-      
-      printf("Time: %f, Valid: %d, Time: %f \n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
+      valid = isValid(result, array, runnerNum);
+          
+      printf("Time: %f, Valid: %d, Time: %d\n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
       
       free(end);
       free(start);
@@ -99,7 +87,7 @@ static void testCustom() {
   int array[length];
 
   for(int index = 0; index < length; index++) {
-    array[index] = index + 3050;
+    array[index] = index + 30050;
   }
   
   

@@ -11,6 +11,17 @@ double closeToInteger(double x, int w) {
   return fmin(1.0 - input, input);  
 }
 
+bool isValid(time_result* result, int* array, unsigned int number_runners) {
+  bool valid = true;
+  float compareTo = 1.0 / (number_runners + 1.0);
+  for(int index = 0; index < number_runners; index++) {
+    valid &= closeToInteger(result->result_time, array[index]) >= compareTo;
+    if (!valid)
+      break;
+  }
+  return valid;
+}
+
 static bool checkForSolution(int speedArray[], int length) {
   
   for(int numberIndex = 2; numberIndex < length + 2; numberIndex++) {
