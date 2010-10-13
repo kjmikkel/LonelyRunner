@@ -27,6 +27,12 @@ void array_to_json_array(unsigned long* array, json_object* json_array, int arra
   }
 }
 
+void add_to_json_object(json_object* json_obj, unsigned long array, int needed_mem, string name) {
+  json_object* json_array = json_object_new_array();
+  array_to_json_array(array, json_array, needed_mem);
+  json_object_object_add(json_obj, name, json_array);     
+}
+
 void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
     
@@ -50,14 +56,25 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     // I allocate the needed memory for the results
     int needed_mem = speed_num - start_speed_index;
     
+    // The geo results and the array to contain any error
     unsigned long geo_results[needed_mem];
+    unsigned long geo_error[needed_mem];
+   
+    // The num results and the array to contain any error
     unsigned long num_results[needed_mem];
+    unsigned long num_error[needed_mem];
+    
     unsigned long speed_results[needed_mem];
+   
     
     // I allocate the memory for the speeds we are going to use as input
     int num_runners = runners[runner_index];
     int runner_speeds[num_runners];
     
+    // The bools used to indicate whether any error at all happened
+    bool b_geo_error = false;
+    bool b_num_error = false;
+
     for(int speed_index = start_speed_index; speed_index < speed_num; speed_index++) {
       
       int real_index = speed_index - start_speed_index;
@@ -91,11 +108,30 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       geo_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec);
       printf("Geo done\n");
 
+      // We check for errors
+      if(!geo_result->result || !isValid(geo_result, runner_speeds, num_runners)) {
+	// If there is an error the we record it
+	b_geo_error = true;
+	// We record the time it happened
+	geo_error[real_index] = runner_speeds[real_index];
+	} else {
+	// to be able to differentiate it from all the other values we set it to 0
+	geo_error[real_index] = 0;
+      }
+      
       gettimeofday(&start, &tz);
       time_result* num_result = Numerical_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz);
       num_results[real_index] = abs(((int)(end.tv_usec - start.tv_usec)));
-
+      
+      if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
+	b_num_error = true;
+	num_error[real_index] = runner_speeds[real_index];
+      } else {
+	num_error[real_index] = 0;
+      }
+      
+      
       printf("geo: %d, num: %d\n", geo_results[real_index], num_results[real_index]);
     }
     
@@ -103,17 +139,15 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     json_object *testInstance = json_object_new_object();
     
     /* Create the json arrays we are going to store the results in*/
-    json_object *json_geo_results = json_object_new_array();
-    array_to_json_array(geo_results, json_geo_results, needed_mem);
-    json_object_object_add(testInstance ,"Geometrical results", json_geo_results);
-
-    json_object *json_num_results = json_object_new_array();
-    array_to_json_array(num_results, json_num_results, needed_mem);
-    json_object_object_add(testInstance ,"Numerical results", json_num_results);
-
-    json_object *json_speeds = json_object_new_array();
-    array_to_json_array(speed_results, json_speeds, needed_mem);
-    json_object_object_add(testInstance ,"speeds used", json_speeds);
+    add_to_json_object(testInstance, geo_results, needed_mem, "Geometrical results");
+    if (b_geo_error)
+      add_to_json_object(testInstance, geo_error, needed_mem, "Geometrical errors");
+    
+    add_to_json_object(testInstance, num_results, needed_mem, "Numerical results");
+    if (b_num_error)
+      add_to_json_object(testInstance, num_error, needed_mem, "Numerical errors");
+    
+    add_to_json_object(testInstance, json_speeds, needed_mem, "Speeds used");
     
     printf ("The json object created: %s\n",json_object_to_json_string(testInstance));
     
