@@ -67,7 +67,7 @@ static void freeQueue(event_point_priority_queue* queue) {
   free(queue);
 }
 
-time_result* Geometric_method (int speed_array[], const int length) {
+time_result* Geometric_method (const int speed_array[], const int length) {
 
   event_point_priority_queue* queue = new event_point_priority_queue;
   

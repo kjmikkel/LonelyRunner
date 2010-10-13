@@ -84,7 +84,7 @@ int main (int argc, char *argv[]) {
       break;
       */
       
-
+      // The tests themselves
       struct timeval start;
       struct timeval end;
       
@@ -92,10 +92,14 @@ int main (int argc, char *argv[]) {
       struct tm *tm;
       
       gettimeofday(&start, &tz);
-      time_result* result = Geometric_method(runner_speeds, num_runners);
+      time_result* geo_result = Geometric_method(runner_speeds, num_runners);
+      gettimeofday(&end, &tz); 
+      geo_results[real_index] = end.tv_usec - start.tv_usec;
+      
+      gettimeofday(&start, &tz);
+      time_result* num_result = Numerical_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz);
-      
-      
+      num_results[real_index] = end.tv_usec - start.tv_usec;
 
       //char * string = "{\"name\" : \"joys of programming\"}";
       //json_object * jobj = json_tokener_parse(string);

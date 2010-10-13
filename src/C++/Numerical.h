@@ -3,7 +3,7 @@
 
 #include "data_structure.h"
 
-time_result* Numerical_method (int speed_array[], int length);
+time_result* Numerical_method (const int speed_array[], const int length);
 
 bool isValid(time_result* result, int* array, unsigned int number_runners);
 

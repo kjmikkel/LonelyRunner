@@ -47,14 +47,16 @@ static bool checkForSolution(int speedArray[], int length) {
   return false;
 }
 
-time_result* Numerical_method (int speed_array[], const int length) {
+time_result* Numerical_method (const int speed_array[], const int length) {
+  
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
     
     for(int second_index = first_index + 1; second_index < length; second_index++) {
-      int second_speed = speed_array[second_speed];
+      
+      int second_speed = speed_array[second_index];
       int k = first_speed + second_speed;
-
+      
       for(int a = 1; a < k; a++) {
 	bool testValid = true;
 	double x = double (a) / double(k);
