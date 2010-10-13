@@ -12,20 +12,15 @@
 #include <fstream>
 #include <sys/time.h>
 #include <sstream>
+#include <cmath>
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <json/json.h>
 
-struct time_record {
-  unsigned int geo_result;
-  unsigned int num_result;
-  unsigned int speed;
-};
-
 using namespace std;
 
-void array_to_json_array(unsigned int* array, json_object* json_array, int array_length) {
+void array_to_json_array(unsigned long* array, json_object* json_array, int array_length) {
   for(int array_index = 0; array_index < array_length; array_index++) {
     json_object *jint = json_object_new_int(array[array_index]);
     json_object_array_add(json_array, jint);
@@ -54,11 +49,10 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     
     // I allocate the needed memory for the results
     int needed_mem = speed_num - start_speed_index;
-    // time_record* records[needed_mem];
     
-    unsigned int geo_results[needed_mem];
-    unsigned int num_results[needed_mem];
-    unsigned int speed_results[needed_mem];
+    unsigned long geo_results[needed_mem];
+    unsigned long num_results[needed_mem];
+    unsigned long speed_results[needed_mem];
     
     // I allocate the memory for the speeds we are going to use as input
     int num_runners = runners[runner_index];
@@ -94,13 +88,13 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       gettimeofday(&start, &tz);
       time_result* geo_result = Geometric_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz); 
-      geo_results[real_index] = end.tv_usec - start.tv_usec;
+      geo_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec);
       printf("Geo done\n");
 
       gettimeofday(&start, &tz);
       time_result* num_result = Numerical_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz);
-      num_results[real_index] = end.tv_usec - start.tv_usec;
+      num_results[real_index] = abs(((int)(end.tv_usec - start.tv_usec)));
 
       printf("geo: %d, num: %d\n", geo_results[real_index], num_results[real_index]);
     }
@@ -131,11 +125,11 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 
 int main (int argc, char *argv[]) {
   
-  const int runner_num = 5;
-  const int speed_num = 20;
-  const int max_number = 50000;
+  const int runner_num = 6;
+  const int speed_num = 50;
+  const int max_number = 500000;
   
-  int runners[runner_num] = {10, 50, 100, 500, 1000};
+  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000};
   int speeds[speed_num]; 
   for(int speed_index = 0; speed_index < speed_num; speed_index++) {
     speeds[speed_index] = (speed_index + 1) * 100;
