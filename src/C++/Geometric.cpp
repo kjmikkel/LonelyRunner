@@ -106,12 +106,12 @@ time_result* Geometric_method (const int speed_array[], const int length) {
 	double top = p->local_position + p->rounds * (length + 1.0); 
 	double down = p->speed * (length + 1.0);
 	
-	printf("Top: %f\nDown: %f\n", top, down);
+	//	printf("Top: %f\nDown: %f\n", top, down);
 
 	time_result* has_result = new time_result;
 	has_result->result = true;
 	has_result->result_time = top / down;
-	printf("found result\n");
+	//	printf("found result\n");
 	freeQueue(queue); // Free the queue
 	free(p); // Free the Point
 	return has_result;

@@ -49,6 +49,7 @@ static bool checkForSolution(int speedArray[], int length) {
 
 time_result* Numerical_method (const int speed_array[], const int length) {
   
+  double compare_to = (1.0 / (length + 1.0));
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
     
@@ -61,9 +62,10 @@ time_result* Numerical_method (const int speed_array[], const int length) {
 	bool testValid = true;
 	double x = double (a) / double(k);
 
+       
 	for(int speed_index = 0; speed_index < length; speed_index++) {
 	  
-	  testValid &= closeToInteger(x, speed_array[speed_index]) >= (1.0 / (length + 1));
+	  testValid &= closeToInteger(x, speed_array[speed_index]) >= compare_to;
 	  
 	  if(!testValid) 
 	    break;
