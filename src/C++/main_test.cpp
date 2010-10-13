@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string>
 #include <string.h>
 #include <iostream>
 #include <fstream>
@@ -24,6 +23,8 @@ struct time_record {
   unsigned int speed;
 };
 
+using namespace std;
+
 void array_to_json_array(unsigned int* array, json_object* json_array, int array_length) {
   for(int array_index = 0; array_index < array_length; array_index++) {
     json_object *jint = json_object_new_int(array[array_index]);
@@ -34,11 +35,11 @@ void array_to_json_array(unsigned int* array, json_object* json_array, int array
 void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
     
-    std::stringstream ss;
+    stringstream ss;
     ss << runners[runner_index];
     
     
-    std::string filename = "test" + ss.str() + "runners";
+    string filename = "../data/test" + ss.str() + "runners.json";
     
     int start_speed_index = 0;
     int num_speeds = 0;
@@ -90,8 +91,6 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       struct timezone tz;
       struct tm *tm;
       
-      
-
       gettimeofday(&start, &tz);
       time_result* geo_result = Geometric_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz); 
@@ -103,17 +102,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       gettimeofday(&end, &tz);
       num_results[real_index] = end.tv_usec - start.tv_usec;
 
-      // The record
-      //     time_record *record = new time_record;
-      //record->geo_result = end.tv_usec - start.tv_usec;
-      //record->num_result = end.tv_usec - start.tv_usec;
-      //record->speed = speeds[speed_index];
-      //records[real_index] = record;
-      
-      // json_object json_record = json_object_new_object(record);
-      
-      //free(record)
-      //      printf("geo: %d, num: %d\n", geo_results[real_index], num_results[real_index]);
+      printf("geo: %d, num: %d\n", geo_results[real_index], num_results[real_index]);
     }
     
     // Create the json object we are going to store the tests in
@@ -131,10 +120,12 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     json_object *json_speeds = json_object_new_array();
     array_to_json_array(speed_results, json_speeds, needed_mem);
     json_object_object_add(testInstance ,"speeds used", json_speeds);
-
     
-
-     printf ("The json object created: %s\n",json_object_to_json_string(testInstance));
+    printf ("The json object created: %s\n",json_object_to_json_string(testInstance));
+    
+    ofstream out(filename.c_str());
+    out << json_object_to_json_string(testInstance);
+    out.close();
   }
 }
 

@@ -56,15 +56,16 @@ static void MakeTimePoints(event_point* old_end_point, event_point_priority_queu
 static void freeQueue(event_point_priority_queue* queue) {
   
   // First we remove and free all the points
+  
   while(queue->size() > 0) {
     event_point* p = queue->top();
     queue->pop();
     
-    free(p);
+    delete p;
   }
-
+  
   // Free the queue itself;
-  free(queue);
+  delete queue;
 }
 
 time_result* Geometric_method (const int speed_array[], const int length) {
@@ -113,18 +114,18 @@ time_result* Geometric_method (const int speed_array[], const int length) {
 	has_result->result_time = top / down;
 	//	printf("found result\n");
 	freeQueue(queue); // Free the queue
-	free(p); // Free the Point
+	delete p; // Free the Point
 	return has_result;
       }
     } else if (p->type == END) {
       intersection--;
       MakeTimePoints(p, queue);
-      free(p); // free the point
+      delete p; // free the point
 
     } else if (p->type == FINAL) {
       // There can be no solution, so free the entire queue
       freeQueue(queue);
-      free(p); //... and the point
+      delete p; //... and the point
       
       time_result* no_result = new time_result;
       no_result->result = 0;

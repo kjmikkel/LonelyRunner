@@ -64,8 +64,7 @@ static void testValues(int startRunners,
       bool valid = isValid(result, array, runnerNum); 
       
       printf("Time: %f, Valid: %i, Time: %d\n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
-      free(result);
-      
+            
       gettimeofday(start, NULL);
       result = Numerical_method(array, runnerNum);
       gettimeofday(end, NULL);
@@ -74,8 +73,9 @@ static void testValues(int startRunners,
           
       printf("Time: %f, Valid: %d, Time: %d\n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
       
-      free(end);
-      free(start);
+      delete result;
+      delete end;
+      delete start;
     }	
   } 
 }
@@ -111,7 +111,6 @@ static void testCustom() {
   
   
   printf("Time: %f, Valid: %i, Time: %f \n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
-  free(result);
   
   gettimeofday(start, NULL);
   result = Numerical_method(array, length);
@@ -126,8 +125,9 @@ static void testCustom() {
 
   printf("Time: %f, Valid: %d, Time: %f \n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
   
-  free(end);
-  free(start);
+  delete result;
+  delete end;
+  delete start;
 }
 
 int main (int argc, char *argv[])
