@@ -14,7 +14,7 @@ struct event_point {
 
 struct time_result {
   // the time we are returning
-  double result_time;
+  long double result_time;
 
   // whether we could find a solution to equation (1)
   bool result;

@@ -5,17 +5,20 @@
 #include <math.h>
 #include "data_structure.h"
 
-double closeToInteger(double x, int w) {
-  double input = fmod(x * w, 1.0);
+long double closeToInteger(long double x, int w) {
+  long double input = fmod(x * w, 1.0);
   
   return fmin(1.0 - input, input);  
 }
 
 bool isValid(time_result* result, int* array, unsigned int number_runners) {
   bool valid = true;
-  float compareTo = 1.0 / (number_runners + 1.0);
+  double compareTo = 1.0 / (number_runners + 1.0);
+  double nudge = 0.0000000001;
   for(int index = 0; index < number_runners; index++) {
-    valid &= closeToInteger(result->result_time, array[index]) >= compareTo;
+    double left_compare = closeToInteger(result->result_time, array[index]) + nudge;
+    valid = left_compare >= compareTo;
+    
     if (!valid)
       break;
   }
@@ -53,8 +56,12 @@ time_result* Numerical_method (const int speed_array[], const int length) {
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
     
+    //    printf("Num first index: %d\n", first_index);
+    
     for(int second_index = first_index + 1; second_index < length; second_index++) {
-      
+      // if (second_index % 100 == 0)
+	//	printf("Num second index: %d\n", second_index);
+
       int second_speed = speed_array[second_index];
       int k = first_speed + second_speed;
       

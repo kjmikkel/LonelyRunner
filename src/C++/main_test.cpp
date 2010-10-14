@@ -27,20 +27,20 @@ void array_to_json_array(unsigned long* array, json_object* json_array, int arra
   }
 }
 
-void add_to_json_object(json_object* json_obj, unsigned long array, int needed_mem, string name) {
+void add_to_json_object(json_object* json_obj, unsigned long* array, int needed_mem, string name) {
   json_object* json_array = json_object_new_array();
   array_to_json_array(array, json_array, needed_mem);
-  json_object_object_add(json_obj, name, json_array);     
+  json_object_object_add(json_obj, name.c_str(), json_array);
 }
 
-void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num) {  
+void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
     
     stringstream ss;
     ss << runners[runner_index];
     
     
-    string filename = "../data/test" + ss.str() + "runners.json";
+    string filename = "../data/test" + name + ss.str() + "runners.json";
     
     int start_speed_index = 0;
     int num_speeds = 0;
@@ -110,6 +110,8 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 
       // We check for errors
       if(!geo_result->result || !isValid(geo_result, runner_speeds, num_runners)) {
+	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds, num_runners));
+	return;
 	// If there is an error the we record it
 	b_geo_error = true;
 	// We record the time it happened
@@ -147,7 +149,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     if (b_num_error)
       add_to_json_object(testInstance, num_error, needed_mem, "Numerical errors");
     
-    add_to_json_object(testInstance, json_speeds, needed_mem, "Speeds used");
+    add_to_json_object(testInstance, speed_results, needed_mem, "Speeds used");
     
     printf ("The json object created: %s\n",json_object_to_json_string(testInstance));
     
@@ -171,13 +173,13 @@ int main (int argc, char *argv[]) {
 
   // We find the primes which are going as the speeds
   int* primes = findPrimes(max_number);
-  doTest(runners, speeds, primes, runner_num, speed_num);
+  doTest(runners, speeds, primes, runner_num, speed_num, "Primes");
   
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
   
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num);
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, "Sequential");
     
 }
