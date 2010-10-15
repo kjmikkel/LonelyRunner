@@ -127,6 +127,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       num_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
       
       if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
+	printf("*error*: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	b_num_error = true;
 	num_error[real_index] = runner_speeds[real_index];
       } else {

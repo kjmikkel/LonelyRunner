@@ -3,6 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <math.h>
+#include <algorithm>
 #include "data_structure.h"
 
 long double closeToInteger(long double x, int w) {
@@ -53,6 +54,7 @@ static bool checkForSolution(int speedArray[], int length) {
 time_result* Numerical_method (const int speed_array[], const int length) {
   
   double compare_to = (1.0 / (length + 1.0));
+  double nudge = 0.0000000001;
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
     
@@ -64,15 +66,30 @@ time_result* Numerical_method (const int speed_array[], const int length) {
 
       int second_speed = speed_array[second_index];
       int k = first_speed + second_speed;
-      
-      for(int a = 1; a < k; a++) {
-	bool testValid = true;
-	double x = double (a) / double(k);
 
-       
+      // int start = k / (length+1);
+      // Look into this code - it might lead to extreme speedups, but currently there is a problem 
+      
+      int start = 0;
+      int start_candidate_1 = k / (first_speed * (length + 1)) - 1;
+      int start_candidate_2 = k / (second_speed * (length + 1)) - 1;
+      if (start_candidate_1 > start_candidate_2)
+	start = start_candidate_1;
+      else
+	start = start_candidate_2;
+      //     printf("index_1: %d, index_2: %d\n",start_candidate_1, start_candidate_2);
+      
+      
+      for(int a = start; a < k; a++) {
+	bool testValid = true;
+	double d_a = double(a);
+	double d_k = double(k);
+	double x = d_a / d_k;
+
+	
 	for(int speed_index = 0; speed_index < length; speed_index++) {
-	  
-	  testValid &= closeToInteger(x, speed_array[speed_index]) >= compare_to;
+	  double close = closeToInteger(x, speed_array[speed_index]);
+	  testValid &= close >= compare_to;
 	  
 	  if(!testValid) 
 	    break;
