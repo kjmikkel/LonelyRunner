@@ -119,10 +119,20 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 #4\\
 }
 
+\newcommand{\adDisTwo}[2]{
+\emph{Advantages:}\\
+\begin{itemize}
+#1
+\end{itemize}
+\emph{Disadvantages:}\\
+\begin{itemize}
+#2
+\end{itemize}
+}
 \newcommand{\src}[1]{
-\subsection{#1.py}
+\subsection{#1.cpp}
 \label{code:#1}
-\lstinputlisting{../src/src/#1.py}
+\lstinputlisting{../src/C++/#1.cpp}
 }
 \newcommand\ps@Standard{
 \renewcommand\@oddhead{Mikkel Kjær Jensen, CPR: 2501851747}
