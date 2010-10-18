@@ -62,11 +62,11 @@ time_result* Numerical_method (const int speed_array[], const int length) {
     
     for(int second_index = first_index + 1; second_index < length; second_index++) {
       // if (second_index % 100 == 0)
-	//	printf("Num second index: %d\n", second_index);
-
+      //	printf("Num second index: %d\n", second_index);
+      
       int second_speed = speed_array[second_index];
       int k = first_speed + second_speed;
-
+      
       // int start = k / (length+1);
       // Look into this code - it might lead to extreme speedups, but currently there is a problem 
       

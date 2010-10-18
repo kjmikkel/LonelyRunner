@@ -8,9 +8,12 @@ struct compare_event_point_pointers {
   bool operator() ( const event_point* first, const event_point* second ) const
   {
 
+    int time1 = first->pre_computed * second->speed;
+    int time2 = second->pre_computed * first->speed;;
+    /*
     int time1 = (first->local_position + first->rounds * (first->number_of_runners + 1)) * second->speed;
     int time2 = (second->local_position + second->rounds * (second->number_of_runners + 1)) * first->speed;;
-
+    */
     // if (time1 < second->speed || time2 < first->speed) 
     //  printf("time1: %i and time2: %i\n", time1, time2);
     
@@ -33,21 +36,22 @@ struct compare_event_point_pointers {
 typedef std::priority_queue<event_point*,std::vector<event_point*>, compare_event_point_pointers > event_point_priority_queue;
 // use object(s) of type event_point_priority_queue where required
 
-static event_point* make_point(event_point* old_point, unsigned int position, point_type type) {
+static event_point* make_point(event_point* old_point, unsigned int position, unsigned int length, point_type type) {
   event_point* point = new event_point;
-  point->number_of_runners = old_point->number_of_runners;
+  //point->number_of_runners = old_point->number_of_runners;
   point->rounds = old_point->rounds + 1;
   point->speed = old_point->speed;
   point->runnerNumber = old_point->runnerNumber;
-  point->local_position = position;
+  //point->local_position = position;
+  point->pre_computed = position + (old_point->rounds + 1) * (length + 1);
   point->type = type;
   return point;
 }
 
-static void MakeTimePoints(event_point* old_end_point, event_point_priority_queue* queue) {
+static void MakeTimePoints(event_point* old_end_point, event_point_priority_queue* queue, unsigned int length) {
 
-  event_point* start = make_point(old_end_point, 1, START);
-  event_point* end = make_point(old_end_point, old_end_point->number_of_runners, END);
+  event_point* start = make_point(old_end_point, 1, length, START);
+  event_point* end = make_point(old_end_point, length, length, END);
 
   queue->push(start);
   queue->push(end);
@@ -73,24 +77,25 @@ time_result* Geometric_method (const int speed_array[], const int length) {
   event_point_priority_queue* queue = new event_point_priority_queue;
   
   event_point* final_point = new event_point;
-  final_point->number_of_runners = length;
+  //final_point->number_of_runners = length;
   final_point->rounds = 1;
   final_point->speed = 1;
   final_point->runnerNumber = length + 1;
-  final_point->local_position = length;
+  //final_point->local_position = length;
+  final_point->pre_computed = (length + 1) + 1 * (length + 1);
   final_point->type = FINAL;
   queue->push(final_point);
 
   for(int pointIndex = 0; pointIndex < length; pointIndex++) {
     event_point point;
-    point.number_of_runners = length;
+    // point.number_of_runners = length;
     point.rounds = -1; // It is important that rounds = -1, otherwise there will be a problem when the points are made
     point.speed = speed_array[pointIndex];
     point.runnerNumber = pointIndex;
-    point.local_position = 0;
+    // point.local_position = 0;
     point.type = START;
     
-    MakeTimePoints(&point, queue);
+    MakeTimePoints(&point, queue, length);
   }
 
   int intersection = 0;
@@ -104,7 +109,7 @@ time_result* Geometric_method (const int speed_array[], const int length) {
       
       if (intersection == length) {
 	
-	double top = p->local_position + p->rounds * (length + 1.0); 
+	double top = p->pre_computed; 
 	double down = p->speed * (length + 1.0);
 	
 	//	printf("Top: %f\nDown: %f\n", top, down);
@@ -119,7 +124,7 @@ time_result* Geometric_method (const int speed_array[], const int length) {
       }
     } else if (p->type == END) {
       intersection--;
-      MakeTimePoints(p, queue);
+      MakeTimePoints(p, queue, length);
       delete p; // free the point
 
     } else if (p->type == FINAL) {

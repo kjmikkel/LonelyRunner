@@ -4,11 +4,12 @@
 enum point_type { START, END, FINAL };
 
 struct event_point {
-  unsigned int local_position;
-  unsigned int number_of_runners;
+  //  unsigned int local_position;
+  //  unsigned int number_of_runners;
   unsigned int rounds;
   unsigned int speed;
   unsigned int runnerNumber;
+  unsigned int pre_computed;
   point_type type;
 };
 
