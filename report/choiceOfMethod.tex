@@ -13,7 +13,6 @@ Possible methods:
 
 \subsection{Computational Geometry}
 \label{compGeo}
-
 The following solution is based on the first intuitive description of the conjecture, found in \eqaref{eqa:lonelyRunner}. It is clear that we are interested in the time interval when the runners are in the Zone, but not particularly where they are - more specifically we are interested when a runner enters and leaves the Zone. 
 
 Let $s$ be the speed of a given runner then the runner enters the Zone for the first time when he is $\frac{1}{n+1}$ units away form the start line, so: 
@@ -48,7 +47,13 @@ More generally, a runner with speed $s$ will be in the Zone for the $k$'th time,
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{equation}
 
-Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
+Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the algorithm. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{./images/algoIlluPng}
+  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm. The big dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point, ignoring all time points in-between. In this instance the line is at the first solution for the runner configuration for \eqaref{eqa:lonelyRunner}}
+\end{figure}
 
 However, since the Lonely Runner conjecture has not been proved, there must be a means to terminate the algorithm if for a given configuration of runners there exists a time that make equation \eqaref{eqa:lonelyRunner} true.
 
@@ -281,6 +286,6 @@ And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(
 
 From the above we results we can see that neither of the algorithm are better in all cases. The Geometrical algorithm has a better run-time when we have many runners with low speeds, while the numerical algorithm is better when we have few runners with very high speeds. It is also clear that the numerical algorithm is far easier to implement, relying on no extra data structures than integers and decimal/floating numbers.
 
-However, since they both are so short, and so easy to implement, I will try to implement them both and compare their run-times for a variety of configurations, in order to truly test their strengths and weaknesses. 
+However, since they both are very short, and do not have much in the way of dependencies, I will try to implement them both and compare their run-times for a variety of configurations, in order to truly test their strengths and weaknesses. 
 
 In this section I have presented two different \todo{decide whether to use numbers or words to define the size of sets} methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the correct solution to equation \eqaref{eqa:lonelyRunner}, is one such exists, and otherwise inform the caller that no such value exists.
