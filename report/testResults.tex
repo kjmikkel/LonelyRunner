@@ -2,3 +2,23 @@
 \label{test}
 \todo{make tests and describe them}
 
+\subsection{Introduction}
+In this section I will introduce how I am going to test the algorithms, which parameters I am going to test them on, which software and hardware setup I have tested them on, description of the test themselves, and finally the results.
+
+\subsection{How to test the Algorithms}
+Since a configuration of the Lonely Runner conjecture requires $n$ runners and each runner needs a distinct speed, it is clear that the parameters we must test the algorithms for are the number of runners, and their speed. Since the speeds have to be different, I will use the maximum speed to be the defining factor.
+
+To do this test in practice I have choosen to do it in increments, with the number of runners being the deciding factor. If we have to test for $n$ runners, then we let the first configuration to test contain the first $n$ numbers, the second contain from ($n+1$)'th number to the ($2n+1$)'th number and so on.
+
+For example if we have to test 10 runners for values up to 100 with sequential numbers, then the first array to be tested will be [2, 3, 4, $\ldots$, 9, 10, 11], the second array to be tested [12, 13, 14, $\ldots$, 19, 20, 21] and so on.
+
+Since the Lonely Runner conjecture is about the relation between numbers, it would be interesting to test the algorithms in the cases where the numbers are pairwise prime. To do this I have simply calculated the prime numbers up to the maximum value, and used them as the speed.
+
+As a stress test I have also tried calculating the sequential numbers for the 
+
+\subsection{Hardware and software setup}
+As mentioned in the implementation part I have implemented the software in C++ using g++ 4.4.3 compiler for Ubuntu. The test was run on a [] \todo{name computer type, hardware, os and so forth once final tests have been made}.
+
+\subsection{Test made} 
+
+I will test both alorithms with 10, 50, 100, 500, 1000 and 2000 runners with a max speed up to 5000 - both for sequential,and prime number speed. For a given configuration the number runners will of course be their minimum speed
