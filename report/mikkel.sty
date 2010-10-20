@@ -101,7 +101,14 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \item[Time analysis:] #3
 \end{description}
 }
-
+\newcommand{\testTemplate}[4]{
+\begin{description}
+\item[Test name:] #1
+\item[Number of Runners:] #2
+\item[Maximum speed:] #3
+\item[Type:] #4
+\end{description}
+}
 \newcommand{\adDis}[4]{
 \begin{flushleft}
 #1:
