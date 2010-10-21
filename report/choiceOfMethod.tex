@@ -52,23 +52,25 @@ Now it becomes a matter find out whether there is a time where the time interval
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{./images/algoIlluPng}
-  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm. The big dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point, ignoring all time points in-between. In this instance the line is at the first solution for the runner configuration for \eqaref{eqa:lonelyRunner}}
+  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm. The large dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point, ignoring all time points in-between. In this instance the line is at the first solution for the runner configuration for \eqaref{eqa:lonelyRunner}}
 \end{figure}
 
+\subsubsection{Termination criterium}
+\label{termination}
 However, since the Lonely Runner conjecture has not been proved, there must be a means to terminate the algorithm if for a given configuration of runners there exists a time that make equation \eqaref{eqa:lonelyRunner} true.
 
-My solution to this is to introduce a fake runner. This fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in [0,1)$, and therefore if we reach the time $1$, no solution to equation \eqaref{eqa:lonelyRunner} exists. \todo{needs proof}
+My solution to this is to introduce the fake runner. This fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in [0,1)$, and therefore if we reach the time $1$, no solution to equation \eqaref{eqa:lonelyRunner} exists. \todo{needs proof}
 
 \subsubsection{Event Points}
 \label{eventPoints}
 In this section I will discuss the role of Event Points in the Plane Sweep algorithm, as well as define them. As stated in section \ref{compGeo} we are only interested in whether or not a runner is in the Zone, not his exact position on the track. Therefore i introduce the Event Points, which are used to indicate whether a runner is entering a Zone or leaving it, ignoring everything else that might happen for the runner --- say, passing the finishing line. 
 
-One question that must be answered before we go any further, is whether or not we will create all Event Points before the main part of the algorithm begins (if indeed this is possible) or create some of them and generate the remaining be generated at run-time. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. Since I have already established that we do not need to produce any Event Points that happen after time 1, it is clear that we can create all the Event Points before entering the main loop.\\ 
+One question that must be answered before we go any further, is whether or not we will create all Event Points before the main part of the algorithm begins (if indeed this is possible) or create some of them and generate the remaining once inside the main part of the algorithm. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. Since I have already established that we do not need to produce any Event Points that happen after time 1, it is clear that we can create all the Event Points before entering the main loop.\\ 
 
 \adDis{
-Creating Event points before entering the main loop
+Creating all the Event Points in parallel before entering the main loop
 }{
-\item The advantage of creating the points in advance would be that the generation of all the Event Points themselves are an task that can be made in parallel. After this the main loop could simply be run without having to dedicate any resources to creating new events.
+\item The advantage of creating the points in advance would be that the generation of all the Event Points themselves is a task that can be done in parallel. After this the main loop could simply be run without having to dedicate any resources to creating new events.
 
 \item It would also make the Priority Queue simpler, since instead of a heap, we could simply use a Linked List structure. 
 }{
@@ -90,12 +92,12 @@ Creating event points on the fly
 }{
 \item Creating every Event Point sequentially could potentially take a lot more time than the parallel solution.
 }{
-Creating the event points as needed is far simpler than the parallel version, although it is potentially slower in situations where the speed of the runners is large, or where the solution to equation \eqaref{eqa:lonelyRunner} is close to $1$, or no solution to the equation exist for the given configuration of runners. 
+Creating the event points on the fly is far simpler than making all the points before the algorithm starts, although it is potentially slower in situations where the speed of the runners is large, or where the solution to equation \eqaref{eqa:lonelyRunner} is close to $1$/no solution to the equation exist for the given configuration of runners. 
 }
 
-Thus I feel justified in saying that creating the event points on the fly is the preferred solution, as any possible gains by creating all the points at once would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program I would have to create. 
+Based on the above I would argue that creating the Event Points on the fly is the preferred solution, as any possible gains by creating all the Event Points in parrallel before entering the main loop would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program. 
 
-One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Since we \todo{Should this be here or in the implementation section?} want to run this on a computer with no special floating point number hardware, it would be nice if we could represent the time as an integer. Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
+One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Based on the computer specifications I defined in \pref{specs}, it is clear that I do not want to have the algorithm rely on any special floating point number hardware, it would be nice if we could represent the time as an integer. Based on my Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
   
 \eqa{
 \label{eqa:integerTime}
@@ -115,20 +117,21 @@ In order to distinguish entering and leaving the Zone, as well as the ``fake'' r
 
 \subsubsection{Order of points}
 \label{order}
-In order to avoid any ambiguity concerning the order of the points, I will now introduce an order $\prec$. One of the degenerate cases we need to avoid is when we have (n-1) runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd.
+In order to avoid any ambiguity concerning the order of the points, I will now define an order $\prec$. One of the degenerate cases we need to avoid is when we have $(n-1)$ runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd.
 
-For the time points $p$ and $q$, $p \prec q$ iff \\
-
+\begin{defi}[Order of points]
+For the Event Points $p$ and $q$, $p \prec q$ iff
 \begin{center}
+\label{orderOfPoints}
 $p_{time} < q_{time}$\\
 or \\
-$p_{time} == q_{time}$ and type($q$) == \comFin\\
+$p_{time} = q_{time}$ and type($q$) = \comFin\\
 or \\
-$p_{time} == q_{time}$ and type($p$) == \comStart and type($q$) == \comEnd \\
+$p_{time} = q_{time}$ and type($p$) = \comStart and type($q$) = \comEnd \\
 or \\
-$p_{time} == q_{time}$ and type($p$) == type($q$) and $p_{runner} < q_{runner}$
+$p_{time} = q_{time}$ and type($p$) = type($q$) and $p_{runner} < q_{runner}$
 \end{center}
-
+\end{defi}
 
 
 \subsubsection{Algorithm}
@@ -289,5 +292,3 @@ From the above we results we can see that neither of the algorithm are better in
 However, since they both are very short, and do not have much in the way of dependencies, I will try to implement them both and compare their run-times for a variety of configurations, in order to truly test their strengths and weaknesses. 
 
 In this section I have presented two different \todo{decide whether to use numbers or words to define the size of sets} methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the correct solution to equation \eqaref{eqa:lonelyRunner}, is one such exists, and otherwise inform the caller that no such value exists.
-
-\input{data/tables/testPrimes10runners}

@@ -5,7 +5,17 @@ In this section I will try to describe the implementation choices I have made in
 
 
 \subsection{Choice of programming language}
-The point of this project is to make a program that can increase our belief in the Lonely Runner conjecture. It would only do so if it could go through a large number of configurations - therefore speed becomes an issue.
+I will in this section discuss the factors that decided my choice of programming languages for this project, as well as the final choice.
+
+I have used the following parameters to decide my choice of programming language:
+\begin{description}
+\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to run through a large number of configurations in short time.
+\item[Memory footprint:] Memory is slightly less essential than speed, but if the memory footprint is smaller, then we can have more runners in a given configuration. A smaller memory footprint would also seem to indicate that the program will be faster, since less has to be allocated and cleaned up. 
+\item[Already implemented data-structures:] I would rather avoid having to implement the Priority Queue, and all the bugs that could bring with it, and instead relying on a built-in implementation that has proved itself to be free of bugs.
+\item[My familiarity with the language:] Familiarity with the language would enable me to get create a bug free implementation of the algorithms faster.
+\end{description}
+
+
 
 For this project I have considered 3 programming languages: Java, Haskell and C++.
 
@@ -22,7 +32,7 @@ For this project I have considered 3 programming languages: Java, Haskell and C+
 \adDisTwo{
 \item Haskell is generally faster than Java, but generally less so than C++
 \item It would be easy to implement the Event Points as a general data-structure
-\item It would be interesting to see whether the jump to functional programming might revel any insights that might help optimize the algorithm
+\item It would be interesting to see whether the jump to functional programming might revel any insights that might help optimise the algorithm
 }{
 \item As described in section \ref{choiceOfMethod}, the two algorithms cannot be implemented as written, and some interpretation will be necessary.
 \item I do not feel very comfortable with Haskell, and I have not had much experience with it
@@ -71,7 +81,7 @@ s_ia_j - s_ja_i \leq (n+1)(k_is_j - k_js_i)
 }
 which still requires $s$ to be multiplied with $a$, making the speed of the runner and the local position (which in the worst case is $n$) the bottleneck. A possible alternative, that I have not proved nor tried implementing, would be to make the a, the local position, $a \in \E{1, 3}$ instead of $a \in \E{1, n}$ and replace all instances of $(n+1)$ with a value greater than any found in a, say 5..
 
-Let us calculate the maximum number allowable by \eqaref{eqa:firstCOmpare}. Since we are not sure whether or not the Lonely Runner Conjecture holds, we must make sure that the expression does cause arithicmitic overflow, even if the algorithm has terminate by finding the Final Event Point. We must therefore assume the maximum values for the variables that change - namely the local position $a$ and the number of rounds $k$ that the runner has run. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
+Let us calculate the maximum number allowable by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner Conjecture holds, we must make sure that the expression does cause arithicmitic overflow, even if the algorithm has terminate by finding the Final Event Point. We must therefore assume the maximum values for the variables that change - namely the local position $a$ and the number of rounds $k$ that the runner has run. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
 \eqa{
 (n + s * (n+1)) * s &=& d\\
 s^2(n+1) + sn &=& d\\
