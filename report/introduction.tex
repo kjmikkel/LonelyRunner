@@ -32,6 +32,14 @@ I expect the reader to be able to understand the Lonely Runner Conjecture in all
 \item I will only focus on runners with integer speeds - see \ref{integerSpeeds} for an justification of this.
 \end{itemize}
 
+\subsection{Minimum computer specifications}
+\label{specs}\todo{Look at this once more}
+Before I go any further I would like to define which kind of computer I would require for running my algorithm. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and Colouring of regular chromatic graphs, and the theorists who base their ideas on the conjecture. None of people working with the previous has any special reason to work with any a exceedingly powerful computer, or with computer hardware that cannot be found in a standard modern computer.
+
+ 
+Based on the above I would argue that any algorithm I devise and implement should be implementable on a standard computer with no special hardware (say hardware dedicated to fast floating point calculations, besides any graphic card the computer may have). The minimum specs for the computer therefore becomes a 2 Ghz computer with more than 2 GB over the recommended amount of Ram for the OS the computer is running. 
+
+
 \subsection{Integer speeds}
 In this section I will argue that I need only focus on integer speeds.
 Let us assume there is a non-empty set S of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that it only makes sense either all elements in S belong to $\mathbb{Q}$ or where at least one of the elements in S is a irrational number:
@@ -45,16 +53,25 @@ Let us assume there is a non-empty set S of runner speeds that are not integers.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.3\textwidth]{./images/circleZonePng.png}
-  \caption{\label{circleZoneImg}An illustration of the Runner track. The grayed out part is the Zone}
+  \caption{\label{circleZoneImg}An illustration of the Runner track. The greyed out part is the Zone}
 \end{figure}
-
-In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as ``being in the Zone''.
 
 When forced to use a pronoun by the English language, I will use the male pronoun to the refer to the runners. This is done purely for convenience, and to make the text flow better. Not because I believe that male runners are more numerous or in any way inherently better than female runners.
 
-Configurations of runners, will in this report refer to a set S of $n \in \N$ runners, where for all runners $r \in S$, $r_{speed} \in \N$, and $r\prime_{speed} \neq r_{speed}$ where $r\prime \in S \setminus r$.
+\begin{defi}
+\label{def:theZone}
+In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as ``being in the Zone''.
+\end{defi}
 
-When talking about the fake runner, I will be referring to a runner that is not actually in race (or any attempt to find a value that would make the Lonely Runner conjecture valid for the given configuration of runners), but rather a runner that has been introduced for convince.   
+\begin{defi}
+\label{def:config}
+Configurations of runners, will in this report refer to a set S of $n \in \N$ runners, where for all runners $r \in S$, $r_{speed} \in \N$, and $r\prime_{speed} \neq r_{speed}$ where $r\prime \in S \setminus r$.
+\end{defi}
+
+\begin{defi}
+\label{def:fakeRunner}
+When talking about the fake runner, I will be referring to a runner that is not actually in race, but rather a runner with speed 1, who I have introduced in order to have a convenient termination criterion for my algorithm. See section \ref{termination} page \pageref{termination} for an elaboration for the reasons behind it.
+\end{defi}  
 
 \subsection{Background material used}
 \label{background}
