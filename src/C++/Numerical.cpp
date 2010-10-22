@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <vector>
 #include <cmath>
 #include <math.h>
@@ -7,6 +8,7 @@
 #include <NTL/ZZ.h>
 #include <NTL/ZZ_pXFactoring.h>
 #include "data_structure.h"
+
 
 NTL_CLIENT
 
@@ -91,7 +93,37 @@ static bool checkForSolution(int speedArray[], int length) {
   return false;
 }
 
-num_time_result* Numerical_method (const int speed_array[], const int length) {
+num_time_result* Numerical_method (int speed_array[], const int length, bool randomPermutate, bool reverse) {
+  
+  // Randomize the order of the numbers
+  if (randomPermutate) {
+    srand ( time(NULL) );
+    
+    int temp;
+    int random_to_index;
+    
+    for(int randomize_index = 0; randomize_index < length; randomize_index++) {
+      random_to_index = rand() % length;
+
+      temp = speed_array[randomize_index];
+      speed_array[randomize_index] = speed_array[random_to_index];
+      speed_array[random_to_index] = temp;
+      
+    }
+  }
+  
+
+  if (reverse) {
+    int temp;
+
+    for(int reverse_index = 0; reverse_index < length / 2; reverse_index++) {
+      temp = speed_array[length - 1 - reverse_index];
+
+      speed_array[length - 1 - reverse_index] = speed_array[reverse_index];
+
+      speed_array[reverse_index] = temp;
+    }
+  }
   
   //  double compare_to = (1.0 / (length + 1.0));
   for(int first_index = 0; first_index < length - 1; first_index++) {
@@ -102,7 +134,7 @@ num_time_result* Numerical_method (const int speed_array[], const int length) {
     ZZ first_div;
 
     for(int second_index = first_index + 1; second_index < length; second_index++) {
-      if (second_index % 25 == 0)
+      if (second_index % 10 == 0)
 	 printf("Num second index: %d\n", second_index);
       
       int second_speed = speed_array[second_index];
@@ -111,8 +143,8 @@ num_time_result* Numerical_method (const int speed_array[], const int length) {
       // int start = k / (length+1);
       // Look into this code - it might lead to extreme speedups, but currently there is a problem 
       
-      ZZ start;
-      
+      int start = 0;
+      /*
       if (!cal_first_div) {
 	cal_first_div = true;
 	first_div = (first_speed * (length + 1)) ;
@@ -122,7 +154,8 @@ num_time_result* Numerical_method (const int speed_array[], const int length) {
       if (k > 1000000) {
 	cout << "K: " << k << "\n";
       }
-
+      */
+      /*
       ZZ start_candidate_1 = k / first_div - 1;
       ZZ start_candidate_2 = k / (second_speed * (length + 1)) - 1;
       
@@ -134,16 +167,16 @@ num_time_result* Numerical_method (const int speed_array[], const int length) {
       else
 	start = start_candidate_1;
       //     printf("index_1: %d, index_2: %d\n",start_candidate_1, start_candidate_2);
-      
+      */
       
       ZZ distance_from_start;
       ZZ distance_to_end;
-      ZZ compare;
-
-      for(ZZ a = start; a < k; a++) {
+      ZZ compare;      
+      for(int a = start; a < k; a++) {
 	bool testValid = true;
+
 	for(int speed_index = 0; speed_index < length; speed_index++) {
-	  distance_from_start = ZZ_mod(a * speed_array[speed_index], k);
+	  distance_from_start = ZZ_mod(to_ZZ(a) * speed_array[speed_index], k);
 	  distance_to_end = k - distance_from_start;
 	  
 	  if (distance_from_start > distance_to_end) {
@@ -152,19 +185,24 @@ num_time_result* Numerical_method (const int speed_array[], const int length) {
 	    compare = distance_from_start;
 	  }
 	  
-	  testValid &= compare * (length + 1) >= 1;	  
+	  testValid &= compare * (length + 1) >= k;	  
 	  if(!testValid) 
 	    break;
 	}
 	
 	if (testValid) {
+	  cout << "Final second_index: " << second_index << "\n";
 	  num_time_result* result = new num_time_result;
 	  result->result = true;
 	  result->k1 = first_speed;
 	  result->k2 = second_speed;
-	  result->a = 2;
+	  result->a = a;
 	  return result;
 	}
+	if (a % 1000 == 0)
+	  cout << a << " out of " << k << "\n";
+	//	cout << "Index " << (a+1) << " out of " << k << " is done\n";
+
       }
     }
   }
