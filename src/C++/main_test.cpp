@@ -103,13 +103,14 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       struct tm *tm;
       
       gettimeofday(&start, &tz);
-      time_result* geo_result = Geometric_method(runner_speeds, num_runners);
+      geo_time_result* geo_result = Geometric_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz); 
       geo_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
-      printf("Geo done: seconds %d\n", (end.tv_sec - start.tv_sec));
-      
+      cout << "Geo done: " << (end.tv_sec - start.tv_sec) << " seconds\n";
+
       // We check for errors
       if(!geo_result->result || !isValid(geo_result, runner_speeds, num_runners)) {
+	
 	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds, num_runners));
 	return;
 	// If there is an error the we record it
@@ -122,7 +123,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       }
       
       gettimeofday(&start, &tz);
-      time_result* num_result = Numerical_method(runner_speeds, num_runners);
+      num_time_result* num_result = Numerical_method(runner_speeds, num_runners);
       gettimeofday(&end, &tz);
       num_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
       
@@ -135,7 +136,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       }
       
       
-      printf("geo: %d, num: %d\n", geo_results[real_index], num_results[real_index]);
+      cout << "geo: " <<  geo_results[real_index] << ", num: " << num_results[real_index] << "\n";
     }
     
     // Create the json object we are going to store the tests in
@@ -162,11 +163,13 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 
 int main (int argc, char *argv[]) {
   
-  const int runner_num = 6;
+  const int runner_num = 1;
   const int speed_num = 50;
   int max_number = 5000000;
   
-  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000};
+  //  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000};
+  //  runner_num = 2;
+  int runners[runner_num] = {5000};
   int speeds[speed_num]; 
   for(int speed_index = 0; speed_index < speed_num; speed_index++) {
     speeds[speed_index] = (speed_index + 1) * 100;
@@ -174,16 +177,17 @@ int main (int argc, char *argv[]) {
 
   // We find the primes which are going as the speeds
   int* primes = findPrimes(max_number);
-  doTest(runners, speeds, primes, runner_num, speed_num, "Primes");
+  //  doTest(runners, speeds, primes, runner_num, speed_num, "Primes");
   printf("done prime\n");
   
   free(primes);
   
-  max_number = 2500000;
+  max_number = 5000;
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
+  sequential_numbers[max_number - 1] = 1000000;
   
   doTest(runners, speeds, sequential_numbers, runner_num, speed_num, "Sequential");
     

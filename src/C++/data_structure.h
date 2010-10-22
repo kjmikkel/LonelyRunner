@@ -1,26 +1,34 @@
-#ifndef D_STRUCT_H
-#define D_STRUCT_H
+#ifndef DATA_STRUCT_H
+#define DATA_STRUCT_H
 
 enum point_type { START, END, FINAL };
 
-struct event_point {
-  //  unsigned int local_position;
-  //  unsigned int number_of_runners;
+struct event_point  {
+  unsigned int local_position;
+  unsigned int number_of_runners;
   unsigned int rounds;
   unsigned int speed;
   unsigned int runnerNumber;
-  unsigned int pre_computed;
   point_type type;
 };
-
-struct time_result {
+		    
+struct geo_time_result {
   // the time we are returning
-  long double result_time;
+  event_point* point;
 
   // whether we could find a solution to equation (1)
   bool result;
 };
 
 
-
+struct num_time_result {
+  // the time we are returning
+  unsigned int k1;
+  unsigned int k2;
+  unsigned int a;
+  
+  // whether we could find a solution to equation (1)
+  bool result;
+};
+		  
 #endif

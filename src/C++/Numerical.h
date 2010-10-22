@@ -3,9 +3,11 @@
 
 #include "data_structure.h"
 
-time_result* Numerical_method (const int speed_array[], const int length);
+num_time_result* Numerical_method (const int speed_array[], const int length);
 
-bool isValid(time_result* result, int* array, unsigned int number_runners);
+bool isValid(num_time_result* result, int* array, unsigned int number_runners);
+
+bool isValid(geo_time_result* result, int* array, unsigned int number_runners);
 
 static bool checkForSolution(int speedArray[], int length);
 

@@ -3,6 +3,6 @@
 
 #include "data_structure.h"
 
-time_result* Geometric_method (const int speed_array[], int length);
+geo_time_result* Geometric_method (const int speed_array[], int length);
 
 #endif
