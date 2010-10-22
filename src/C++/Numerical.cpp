@@ -50,6 +50,7 @@ bool isValidInternal(ZZ P, ZZ Q, int* array, unsigned int number_runners) {
     if (!valid)
       break;
   }
+
   return valid;
 }
 

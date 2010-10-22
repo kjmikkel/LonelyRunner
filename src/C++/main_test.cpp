@@ -35,34 +35,60 @@ void add_to_json_object(json_object* json_obj, unsigned long* array, int needed_
 
 void recursive_array(int* array, int* number_array, 
 		     int count_up, int last_index, 
-		     int count_down, int num_runners) {
+		     int array_index, int max_number, const int num_runners) {
 
-  for(int index = last_index + 1; index < count_up + 1; index++) {
-    
-    cout << "Index: " << index << ", " << count_up << "\n";
-    array[last_index + 1] = number_array[index];
-    
-    if(count_down > 0) {
+  for(int index = last_index + 1; index < count_up + 1; index++) { 
+    array[array_index] = number_array[index];
+    /*  
+cout << "Index: " << index << ", " << count_up << ", array_index: " << array_index  << ", array_val" << array[array_index]  << "\n";
+    int val2;
+    cin >> val2;
+    */
+    if(array_index < num_runners) {
+      if (array_index == 0) {
+	cout << "The first Index is at " << array[array_index] << "\n";
+      }
+      
       recursive_array(array, number_array, 
 		      count_up + 1, last_index + 1, 
-		      count_down - 1, num_runners);
+		      array_index + 1, max_number,
+		      num_runners);
+      
     } else {
-     
-      geo_time_result* geo_result = Geometric_method(array,		     
-						     num_runners);
-    
+           
+      //    geo_time_result* geo_result = NULL;
 
+      
+      geo_time_result* geo_result = Geometric_method(array,		     
+					   	     num_runners);
+      
+      /*
+      cout << array[0] << " " << array[1] << " " << array[2] << "\n";
+      int val;
+      cin >> val;
+      */
+      
       // We check for errors
-      if(!geo_result->result || !isValid(geo_result, 
-					 number_array, 
-					 num_runners)) {
+      /*
+      if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, 
+								array, 
+								num_runners))) {
 	
 	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, 
-							      number_array, 
+							      array, 
 							      num_runners));
 	cout << "For the values: [";
 	stringstream ss;
-	
+		
+	for(int index = 0; index < num_runners; index++) {
+	  ss << array[index] << ", ";
+	  
+	  cout << ss.str();
+	  
+	  ss.seekp(0);
+	  ss.str("");
+	}
+	cout << "]\n\n";
 	
 	for(int index = 0; index < num_runners; index++) {
 	  ss << array[index];
@@ -71,6 +97,10 @@ void recursive_array(int* array, int* number_array,
 	}
 	cout << "]\n\n";
       }
+      */
+      delete geo_result->point;
+      delete geo_result;
+      
     }
   }
 }
@@ -88,27 +118,33 @@ void ultimateTest() {
   int test_array[array_number];
 
   // The array that is going to contain the values we are going to check
-  int max_number = 100;
+  int max_number = 15;
   int real_number_array[max_number];
   
   for(int index = 0; index < max_number; index++) {
     real_number_array[index] = 2 + index;
   }
-  
+ 
   // Now to populate the array with 10 values
   gettimeofday(&start, &tz);
+  
   recursive_array(test_array, real_number_array, 
 		  max_number - array_number - 1, 
 		  -1,
-		  array_number,
-		  max_number);
+		  0,
+		  max_number, array_number);
+  
   gettimeofday(&end, &tz);
   cout << "\nDone. Making this took ";
   
   stringstream ss;
   ss << (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
-  cout << ss.str() << " microseconds.";
-
+  cout << ss.str() << " microseconds.\n";
+  //delete start;
+  //delete tz;
+  
+  // delete end;
+  // delete tm;
 }
 
 void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, string name) {  
