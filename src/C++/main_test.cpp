@@ -130,13 +130,17 @@ void ultimateTest() {
   int test_array[array_number];
 
   // The array that is going to contain the values we are going to check
-  int max_number = 15;
+  int max_number = 100;
   int real_number_array[max_number];
   
   for(int index = 0; index < max_number; index++) {
     real_number_array[index] = 2 + index;
   }
  
+  FILE *stream ;
+  if((stream = freopen("output", "w", stdout)) == NULL)
+    exit(-1);
+
   // Now to populate the array with 10 values
   gettimeofday(&start, &tz);
   
@@ -344,10 +348,11 @@ void sequential_prime_test() {
   for(int seq_index = 1; seq_index <= max_number - offset; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
+
   doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, "Sequential");
 }
 
 int main (int argc, char *argv[]) {
-  sequential_prime_test();
-  // ultimateTest();
+  //sequential_prime_test();
+  ultimateTest();
 }
