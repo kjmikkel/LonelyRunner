@@ -22,17 +22,17 @@ long double closeToInteger(long double x, int w) {
 
 ZZ ZZ_mod(ZZ num, ZZ mod) {
   while (num >= mod) {
-    num = num - mod;
+    num -= mod;
   }
   return num;
 }
 
-bool isValidInternal(ZZ P, ZZ Q, int* array, unsigned int number_runners) {
+bool isValidInternal(ZZ P, ZZ Q, const int array[], unsigned int number_runners) {
   
-  bool valid = true;
   ZZ compare;
   ZZ distance_from_start;
   ZZ distance_to_end;
+  bool valid = true;
 
   for(int index = 0; index < number_runners; index++) {
     // Look into getting the mod code working
@@ -48,25 +48,32 @@ bool isValidInternal(ZZ P, ZZ Q, int* array, unsigned int number_runners) {
     valid = compare * (number_runners + 1) >=  Q;
     
     if (!valid)
+      cout << compare * (number_runners + 1) << ", " << Q << ", " << array[index]  << "\n";
       break;
   }
 
   return valid;
 }
 
-bool isValid(num_time_result* result, int* array, unsigned int number_runners) {
+bool isValid(num_time_result* result, const int array[], unsigned int number_runners) {
   
   ZZ P = to_ZZ(result->a);    
   ZZ Q = to_ZZ(result->k1 + result->k2);
   return isValidInternal(P, Q, array, number_runners);
 }
 
-bool isValid(geo_time_result* result, int* array, unsigned int number_runners) {
+bool isValid(geo_time_result* result, const int array[]) {
   event_point* point = result->point;
-
+  if (point == NULL) return false;
+  
   ZZ P = to_ZZ(point->local_position + point->rounds * (point->number_of_runners + 1));
   ZZ Q = to_ZZ(point->speed * (point->number_of_runners + 1));
-  return isValidInternal(P, Q, array, number_runners);
+  
+  bool b_result = isValidInternal(P, Q, array, point->number_of_runners);
+  if (!b_result) {
+    cout << "Local position: " << point->local_position << ", rounds: " << point->rounds << " number of runners: " << point-> number_of_runners << ", speed: " << point->speed << "\n";
+  }
+  return b_result;
 }
 
 static bool checkForSolution(int speedArray[], int length) {
@@ -129,14 +136,16 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
   //  double compare_to = (1.0 / (length + 1.0));
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
-    
-    printf("Num first index: %d\n", first_index);
+    cout << "first index: " << first_speed << ", " << first_index << "\n";
+    //    printf("Num first index: %d\n", first_index);
+    /*
     bool cal_first_div = false;
     ZZ first_div;
+    */
 
     for(int second_index = first_index + 1; second_index < length; second_index++) {
-      if (second_index % 10 == 0)
-	 printf("Num second index: %d\n", second_index);
+      //if (second_index % 10 == 0)
+      printf("Num second index: %d\n", second_index);
       
       int second_speed = speed_array[second_index];
       ZZ k = to_ZZ(first_speed + second_speed);
@@ -175,7 +184,8 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
       ZZ compare;      
       for(int a = start; a < k; a++) {
 	bool testValid = true;
-
+	cout << "Check " << a << " out of " << k << "\n";
+	
 	for(int speed_index = 0; speed_index < length; speed_index++) {
 	  distance_from_start = ZZ_mod(to_ZZ(a) * speed_array[speed_index], k);
 	  distance_to_end = k - distance_from_start;
@@ -192,7 +202,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
 	}
 	
 	if (testValid) {
-	  cout << "Final second_index: " << second_index << "\n";
+	  //	  cout << "Final second_index: " << second_index << "\n";
 	  num_time_result* result = new num_time_result;
 	  result->result = true;
 	  result->k1 = first_speed;
@@ -200,14 +210,11 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
 	  result->a = a;
 	  return result;
 	}
-	if (a % 1000 == 0)
-	  cout << a << " out of " << k << "\n";
-	//	cout << "Index " << (a+1) << " out of " << k << " is done\n";
-
       }
     }
   }
 
+  cout << "Return no solution";
   num_time_result* result = new num_time_result;
   result->result = false;
   result->k1 = 0;

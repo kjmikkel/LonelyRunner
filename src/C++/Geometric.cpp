@@ -3,6 +3,7 @@
 #include <NTL/ZZ.h>
 #include <queue>
 #include <vector>
+#include <math.h>
 #include "data_structure.h"
 
 NTL_CLIENT
@@ -10,16 +11,16 @@ NTL_CLIENT
 struct compare_event_point_pointers {
   bool operator() ( const event_point* first, const event_point* second ) const
   {
-
+    /*
     ZZ rounds1 = to_ZZ(first->rounds);
     ZZ rounds2 = to_ZZ(second->rounds);
-
-    ZZ time1 = (first->local_position + rounds1 * (first->number_of_runners + 1)) * second->speed;
-    // cout << first->local_position << ", " << rounds1 << ", " << first->number_of_runners << ", " << second->speed << "\n" << time1 << "\n";
-      //    return false;
-    ZZ time2 = (second->local_position + rounds2 * (second->number_of_runners + 1)) * first->speed;
+    */
     
-    ///    cout << rounds1 << ", " << rounds2 << "\n";
+    ZZ time1 = to_ZZ((first->local_position + first->rounds * (first->number_of_runners + 1)) * second->speed);
+    ZZ time2 = to_ZZ((second->local_position + second->rounds * (second->number_of_runners + 1)) * first->speed);
+   
+    if (time1 > pow(2, 32) || time2 > pow(2, 32))
+      cout << "above " << time1 << ", " << time2 << "\n";
 
     /*
     unsigned int time1 = first->pre_computed * second->speed;
@@ -125,6 +126,7 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
       intersection++;
       // cout << "+\n";
       if (intersection == length) {
+
 	/*
 	double top = p->pre_computed; 
 	double down = p->speed * (length + 1.0);
@@ -140,7 +142,7 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
 	return has_result;
       }
     } else if (p->type == END) {
-      //      cout << "-\n";
+      
       intersection--;
       MakeTimePoints(p, queue, length);
       delete p; // free the point

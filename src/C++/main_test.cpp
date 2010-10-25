@@ -17,8 +17,14 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <json/json.h>
+//#include <NTL/ZZ.h>
 
 using namespace std;
+
+struct long_pair {
+  unsigned long average;
+  unsigned long spread;
+};
 
 void array_to_json_array(unsigned long* array, json_object* json_array, int array_length) {
   for(int array_index = 0; array_index < array_length; array_index++) {
@@ -33,6 +39,28 @@ void add_to_json_object(json_object* json_obj, unsigned long* array, int needed_
   json_object_object_add(json_obj, name.c_str(), json_array);
 }
 
+long_pair find_spread(unsigned long* time_array, int number_of_times) {
+  unsigned long long  average = 0;
+  for(int index = 0; index < number_of_times; index++) {
+    average += time_array[index];
+  }
+  average /= number_of_times;
+  
+  long temp;
+  unsigned long long result = 0;
+  for(int index = 0; index < number_of_times; index++) {
+    temp = time_array[index] - average;
+    result += temp * temp;
+  }
+  
+  result = sqrt(result / number_of_times);
+  long_pair pair;
+
+  pair.average = (unsigned long)average;
+  pair.spread = (unsigned long)result;
+  return pair;
+} 
+
 void recursive_array(int* array, int* number_array, 
 		     int count_up, int last_index, 
 		     int array_index, int max_number, const int num_runners) {
@@ -46,7 +74,7 @@ cout << "Index: " << index << ", " << count_up << ", array_index: " << array_ind
     */
     if(array_index < num_runners) {
       if (array_index == 0) {
-	cout << "The first Index is at " << array[array_index] << "\n";
+	printf("The first Index is at %d\n", array[array_index]);
       }
       
       recursive_array(array, number_array, 
@@ -62,42 +90,26 @@ cout << "Index: " << index << ", " << count_up << ", array_index: " << array_ind
       geo_time_result* geo_result = Geometric_method(array,		     
 					   	     num_runners);
       
-      /*
-      cout << array[0] << " " << array[1] << " " << array[2] << "\n";
-      int val;
-      cin >> val;
-      */
+      
+      
+      
       
       // We check for errors
-      /*
-      if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, 
-								array, 
-								num_runners))) {
+      if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, array))) {
+	  
+	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, array));
+	printf("For the values: [");
+	//stringstream ss;
 	
-	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, 
-							      array, 
-							      num_runners));
-	cout << "For the values: [";
-	stringstream ss;
-		
-	for(int index = 0; index < num_runners; index++) {
-	  ss << array[index] << ", ";
-	  
-	  cout << ss.str();
-	  
+	for(int index = 0; index < num_runners; index++) {  
+	  printf(", %d", array[index]);
+	  /*
 	  ss.seekp(0);
 	  ss.str("");
+	  */
 	}
-	cout << "]\n\n";
-	
-	for(int index = 0; index < num_runners; index++) {
-	  ss << array[index];
-	  
-	  cout << ", " << ss.str();
-	}
-	cout << "]\n\n";
+	printf("]\n\n");
       }
-      */
       delete geo_result->point;
       delete geo_result;
       
@@ -147,7 +159,7 @@ void ultimateTest() {
   // delete tm;
 }
 
-void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, string name) {  
+void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, int times_to_do_test, string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
     
     stringstream ss;
@@ -172,21 +184,21 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 	break;
       }
     }
-    
     // I allocate the needed memory for the results
     int needed_mem = speed_num - start_speed_index;
     
     // The geo results and the array to contain any error
     unsigned long geo_results[needed_mem];
+    unsigned long geo_spread[needed_mem];
     unsigned long geo_error[needed_mem];
    
     // The num results and the array to contain any error
     unsigned long num_results[needed_mem];
+    unsigned long num_spread[needed_mem];
     unsigned long num_error[needed_mem];
     
     unsigned long speed_results[needed_mem];
    
-    
     // I allocate the memory for the speeds we are going to use as input
     int num_runners = runners[runner_index];
     int runner_speeds[num_runners];
@@ -200,20 +212,10 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       int real_index = speed_index - start_speed_index;
       speed_results[real_index] = speeds[speed_index];
       
-      printf("%d, %d\n", speeds[speed_index], num_runners); 
-      
       int prime_real_index = 0;
-      for(int copy_index = speeds[speed_index] - num_runners; copy_index < speeds[speed_index]; copy_index++) {
+      for(int copy_index = speeds[speed_index] - num_runners; copy_index < speeds[speed_index]; copy_index++, prime_real_index++) {
 	runner_speeds[prime_real_index] = actual_speeds[copy_index];
-	prime_real_index++;
       }
-      /*
-	for(int print_index = 0; print_index < num_runners; print_index++) {
-	printf("runner speeds: %d\n", runner_speeds[print_index]);
-	}
-	printf("\n");
-	break;
-      */
       
       // The tests themselves
       struct timeval start;
@@ -223,53 +225,82 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       struct tm *tm;
       
       cout << "before geo\n";
-
-      gettimeofday(&start, &tz);
-      geo_time_result* geo_result = Geometric_method(runner_speeds, num_runners);
-      gettimeofday(&end, &tz); 
-      geo_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
-      cout << "Geo done: " << (end.tv_sec - start.tv_sec) << " seconds\n";
-
-      // We check for errors
-      if(!geo_result->result || !isValid(geo_result, runner_speeds, num_runners)) {
+      unsigned long micro_seconds = 0;
+      unsigned long seconds = 0; 
+      
+      unsigned long time_test_array[times_to_do_test];
+      for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
+	gettimeofday(&start, &tz);
+	geo_time_result* geo_result = Geometric_method(runner_speeds, num_runners);
+	gettimeofday(&end, &tz); 
 	
-	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds, num_runners));
-	return;
-	// If there is an error the we record it
-	b_geo_error = true;
-	// We record the time it happened
-	geo_error[real_index] = runner_speeds[real_index];
+	time_test_array[time_test_index] = (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
+	
+	// We check for errors
+	if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, runner_speeds))) {	  
+	  printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds));
+	  
+	  num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
+	  printf("error num: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
+	  
+	  return;
+	  // If there is an error the we record it
+	  b_geo_error = true;
+	  // We record the time it happened
+	  geo_error[real_index] = runner_speeds[real_index];
 	} else {
-	// to be able to differentiate it from all the other values we set it to 0
-	geo_error[real_index] = 0;
+	  // to be able to differentiate it from all the other values we set it to 0
+	  geo_error[real_index] = 0;
+	}
+	if (geo_result != NULL)
+	  delete geo_result->point;
+	delete geo_result;
       }
-      /* 
-      gettimeofday(&start, &tz);
-           num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
-      gettimeofday(&end, &tz);
-      num_results[real_index] = (unsigned long)(end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
+      cout << "after geo\n";
+
+      // I record the values
+      long_pair pair = find_spread(time_test_array, times_to_do_test);
+      geo_results[real_index] = pair.average;
+      geo_spread[real_index] = pair.spread;
       
-      if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
-	printf("*error*: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
-	b_num_error = true;
-	num_error[real_index] = runner_speeds[real_index];
-      } else {
-	num_error[real_index] = 0;
+      cout << "before num\n";
+      for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
+	cout << "Index of num: " << (time_test_index + 1) << "\n";
+	gettimeofday(&start, &tz);
+	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
+	gettimeofday(&end, &tz);
+	time_test_array[time_test_index] = (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
+      
+	if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
+	  printf("*error*: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
+	 
+	  b_num_error = true;
+	  num_error[real_index] = runner_speeds[real_index];
+	} else {
+	  num_error[real_index] = 0;
+	}	
+	delete num_result;
       }
+      cout << "after num\n";
       
+      pair = find_spread(time_test_array, times_to_do_test);
+      num_results[real_index] = pair.average;
+      num_spread[real_index] = pair.spread;
       
-      cout << "geo: " <<  geo_results[real_index] << ", num: " << num_results[real_index] << "\n";*/
+      cout << "geo: " <<  geo_results[real_index] << ", num: " << num_results[real_index] << "\n";
     }
-    
+      
     // Create the json object we are going to store the tests in
     json_object *testInstance = json_object_new_object();
     
     /* Create the json arrays we are going to store the results in*/
     add_to_json_object(testInstance, geo_results, needed_mem, "Geometrical results");
+    add_to_json_object(testInstance, geo_spread, needed_mem, "Geometrical spread");
     if (b_geo_error)
       add_to_json_object(testInstance, geo_error, needed_mem, "Geometrical errors");
     
     add_to_json_object(testInstance, num_results, needed_mem, "Numerical results");
+    add_to_json_object(testInstance, num_spread, needed_mem, "Numerical spread");
     if (b_num_error)
       add_to_json_object(testInstance, num_error, needed_mem, "Numerical errors");
     
@@ -277,18 +308,21 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     
     printf ("The json object created: %s\n",json_object_to_json_string(testInstance));
     
+    
     ofstream out(filename.c_str());
     out << json_object_to_json_string(testInstance);
     out.close();
   }
+  cout << "done\n";
 }
 
 
 void sequential_prime_test() {
   const int runner_num = 8;
-  const int offset = 5;
+  const int offset = 0;
   const int speed_num = 80;
   int max_number = 500000;
+  int times_to_do_tests = 10;
   
   // The number of runners
   int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 8000};
@@ -300,22 +334,20 @@ void sequential_prime_test() {
   }
 
   // We find the primes which are going as the speeds
-  int* primes = findPrimes(max_number);
-  //  doTest(runners, speeds, primes, runner_num, speed_num, offset, "Primes");
+  //  int* primes = findPrimes(max_number);
+  //  doTest(runners, speeds, primes, runner_num, speed_num, offset, times_to_do_tests, "Primes");
   printf("done prime\n");
   
-  free(primes);
+  //free(primes);
   
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number - offset; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
-  
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, "Sequential");
-  free(sequential_numbers);
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, "Sequential");
 }
 
 int main (int argc, char *argv[]) {
-  //  sequential_prime_test();
-  ultimateTest();
+  sequential_prime_test();
+  // ultimateTest();
 }
