@@ -2,7 +2,7 @@
 \label{introduction}
 \todo{Introduction}
 
-There exist 2 equivalent interpretations of the Lonely Runner conjecture that are widely used:\todo{have a footnote where it was named}
+There exist 2 equivalent interpretations of the Lonely Runner conjecture\footnote{The Lonely Runner conjecture got its name from \cite{Bienia97flows.view-obstructions7}} that are widely used\footnote{See \cite{ANote}}:
 \begin{enumerate}
 \item Imagine $n$ runners at a circular, unit length track\footnote{I.E. the track has a circumference of 1}, where every runner runs with a constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions} - also see \ref{integerSpeeds}}, there will then be a time when all runners will be at least $\frac{1}{n + 1}$ units away from their common start-point.\\
 
@@ -20,7 +20,7 @@ for each $i = 1, 2, \ldots, n$, where for a real number $y$, $\Vert y \Vert$ is 
 \subsection{Expectations to the reader}
 \label{expectations}
 \todo{Expectations}
-I expect the reader to be able to understand the Lonely Runner Conjecture in all its formulations, as well as being mathematically mature, and having a basic understanding of Plane Sweep algorithms.
+I expect the reader to have read at lea be able to understand the Lonely Runner Conjecture in all its formulations, as well as being mathematically mature, and having a basic understanding of Plane Sweep algorithms.
 
 \subsection{Scope and Limitations}
 \label{scope}
@@ -32,13 +32,13 @@ I expect the reader to be able to understand the Lonely Runner Conjecture in all
 \item I will only focus on runners with integer speeds - see \ref{integerSpeeds} for an justification of this.
 \end{itemize}
 
-\subsection{Minimum computer specifications}
+\subsection{Computer specifications}
 \label{specs}\todo{Look at this once more}
-Before I go any further I would like to define which kind of computer I would require for running my algorithm. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and Colouring of regular chromatic graphs, and the theorists who base their ideas on the conjecture. None of people working with the previous has any special reason to work with any a exceedingly powerful computer, or with computer hardware that cannot be found in a standard modern computer.
-
+Before I go any further I would like to define which kind of computer I would require for running the solutions I come up with. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and Colouring of regular chromatic graphs. None of people working with the previous has any special reason to work with any a exceedingly powerful computer, or computers with non-standard hardware.
  
-Based on the above I would argue that any algorithm I devise and implement should be implementable on a standard computer with no special hardware (say hardware dedicated to fast floating point calculations, besides any graphic card the computer may have). The minimum specs for the computer therefore becomes a 2 Ghz computer with more than 2 GB over the recommended amount of Ram for the OS the computer is running. 
+Based on the above I would argue that any algorithm I devise and implement should be able to run on a standard computer with no special hardware (say hardware dedicated to fast floating point calculations). The minimum specs for the computer therefore becomes a 2 Ghz computer with more than 2 GB over the recommended amount of Ram for the OS the computer is running. 
 
+I do however reserve the right to make it depend on the third-party software libraries - as long as these can be freely distributed and installed.
 
 \subsection{Integer speeds}
 In this section I will argue that I need only focus on integer speeds.

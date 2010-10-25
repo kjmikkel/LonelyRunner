@@ -47,7 +47,50 @@ More generally, a runner with speed $s$ will be in the Zone for the $k$'th time,
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{equation}
 
-Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the algorithm. 
+Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
+
+\subsubsection{High level description of the algorithm}
+
+\begin{algorithm}[H]
+  \caption{SimpleLonelyRunner}
+  \highlights
+  \SetKwData{and}{and}
+  \Input{A list \s which contains n pairwise different speeds for n runners}
+  \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  
+  Make \finish with time $1$ and add it to \li
+
+  \ForEach{speed $\in$ \s}{
+    
+    Make the first \startT and \eT based on speed, and insert it in \li
+  }
+  
+  \While{\li is not empty}{
+
+    Get the first \p in \li
+    
+    \If{\p is \startT}{      
+      
+      Record that a runner has entered the Zone
+
+      \If{all the runners are in the Zone}{
+        \return $\p_{\ti}$
+      }
+    }
+    
+    \uElseIf{\p is \eT}{
+      
+      Record that a runner has left the Zone
+
+      Make the next \startT and \eT based on \eT)
+    }
+    \ElseIf{\p is \finish}{
+      \return \no
+    }
+  }
+\end{algorithm}
+
+See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the algorithm. 
 
 \begin{figure}[H]
   \centering
@@ -55,7 +98,7 @@ Now it becomes a matter find out whether there is a time where the time interval
   \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm. The large dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point, ignoring all time points in-between. In this instance the line is at the first solution for the runner configuration for \eqaref{eqa:lonelyRunner}}
 \end{figure}
 
-\subsubsection{Termination criterium}
+\subsubsection{Termination criteria}
 \label{termination}
 However, since the Lonely Runner conjecture has not been proved, there must be a means to terminate the algorithm if for a given configuration of runners there exists a time that make equation \eqaref{eqa:lonelyRunner} true.
 
