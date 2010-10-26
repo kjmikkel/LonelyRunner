@@ -9,55 +9,55 @@ I will in this section discuss the factors that decided my choice of programming
 
 I have used the following parameters to decide my choice of programming language:
 \begin{description}
-\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to run through a large number of configurations in short time.
+\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to run through a large number of configurations in short time. I have based these on \url{http://shootout.alioth.debian.org/u32q/which-programming-languages-are-fastest.php}
 \item[Memory footprint:] Memory is slightly less essential than speed, but if the memory footprint is smaller, then we can have more runners in a given configuration. A smaller memory footprint would also seem to indicate that the program will be faster, since less has to be allocated and cleaned up. 
 \item[Already implemented data-structures:] I would rather avoid having to implement the Priority Queue, and all the bugs that could bring with it, and instead relying on a built-in implementation that has proved itself to be free of bugs.
 \item[My familiarity with the language:] Familiarity with the language would enable me to get create a bug free implementation of the algorithms faster.
 \end{description}
 
-
+Based on these criterias I will give each programming language a value from 1 to 3, with 3 being the highest, and 1 being the smallest. 
 
 For this project I have considered 3 programming languages: Java, Haskell and C++.
 
-\subsubsection{Java}
-\adDisTwo{
-\item I am very comfortable with Java
-\item 
-}{
-\item While the speed of Java has improved a lot in the recent years, it is still not the fastest language around
-\item If I have to choose Java, then I will have to implement the Event Points as classes - even though they should only really be data containers.
-}
-
-\subsubsection{Haskell}
-\adDisTwo{
-\item Haskell is generally faster than Java, but generally less so than C++
-\item It would be easy to implement the Event Points as a general data-structure
-\item It would be interesting to see whether the jump to functional programming might revel any insights that might help optimise the algorithm
-}{
-\item As described in section \ref{choiceOfMethod}, the two algorithms cannot be implemented as written, and some interpretation will be necessary.
-\item I do not feel very comfortable with Haskell, and I have not had much experience with it
-}
-
-\subsubsection{C++}  
-\adDisTwo{
-\item C++ is a very fast language 
-\item C++'s struct data-structure is an excellent way to implement the points, without having to include classes 
-}{
-\item C++ is much more low level than the two other languages, so it is likely that more work has to be done
-\item I would have to deal with memory management, although it is unlikely that this is going to be much of a problem in this instance
-\item I am much less familiar with C++ than with Java, but more so than with Haskell
-}
+\begin{tabular}{l|c|c|c}
+        & Speed & Memory & Data-structures & Familiarity \\
+Java    & 2     &  1     &  3              &   3  \\
+Haskell & 1     &  2     &  1              &   1  \\
+C++     & 3     &  3     &  3              &   2  \\
+\end{tabular}
 
 \subsubsection{Conclusion}
-In the end I choose C++ on the grounds that it was the fastest of the 3 programming languages, that I could easily make a translation of the algorithms described in section \ref{choiceOfMethod}, and that it was familiar enough that I was sure I could implement an error free version in a reasonable time.
+Based on this I would argue that the best choice would be C++ on the grounds that it clearly scores the highest, and that it will be easy for me to implement the algorithms described in section \ref{choiceOfMethod} in the language.
 
 \subsection{Problems during implementation}
 In this section I will describe some of the major problems I encountered during my implementation of the algorithms, and what I have done to resolve them.
 
-\subsection{Rounding errors}
-Since the Lonely Runner conjecture in its nature deals with real numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, the automated check I had set up would not accept it. My solution to this was to add $10^{-10}$ to the result from the Geometrical algorithm, when doing the comparison. I think this is justifiable on the grounds that if we are just looking for whether a legal value exist or not, then changing the result from the Geometrical algorithm does not change whether it exists or not, and if we are trying to find a legal value, then doing the Geometrical algorithm and then adding $10^{-10}$ to the position of the runner after the $\Vert result * runner\_speed \Vert$ function has been applied to the result, is still a valid algorithm.
+\subsubsection{Rounding errors}
+Since the Lonely Runner conjecture in its nature deals with rational numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, it would not be valid according to \eqaref{eqa:lonelyRunner}. My solution to this was to make the check entirely discrete. As stated in \eqafref{eqa:lonelyRunner}, we have a Lonely Runner iff
+\eqa{
+\Vert w_i x\Vert \geq \frac{1}{n+1}
+} 
 
-It would, however, be interesting to see if this problem could be avoided all-together.
+The main problem here being $\Vert w_i x\Vert$ - however, since we can be sure that the solution will always be rational (since all the speeds are integers) we have that x can be written of the form $\frac{p}{q}$ for a given $p \in \N\cup\E{0}$ and $q \in \N$ (since all speeds must be positive and the runners cannot cover negative distance). So now we have
+
+\eqn{
+\Vert w_i * \frac{p}{q}\Vert &\geq& \frac{1}{n+1}\\
+min(\frac{w_i * p mod q}{q}, 1 - \frac{w_i * p mod q}{q}) &\geq& \frac{1}{n+1}\\
+min(\frac{w_i * p mod q}{q}, 1 - \frac{w_i * p mod q}{q}) * (n+1) &\geq& 1\\
+}
+
+Depending on whether \frac{w_i * p mod q}{q} or 1 - \frac{w_i * p mod q}{q} is the smallest value, the eqation then becomes
+
+\eqa{
+\frac{w_i * p mod q}{q} * (n+1) &\geq& 1\\
+(w_i * p mod q) * (n+1) &\geq& q 
+}
+
+or 
+
+\eqa{
+1 - \frac{w_i * p mod q}{q} * (n+1) &\geq& 1\\
+(q - (w_i * p mod q)) * (n+1) &\geq& q
 
 \subsection{Use of real numbers in the algorithm}
 As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precalculated, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation. A further optimization would be to pre-compute as much as possible - which also would save memory.
@@ -74,14 +74,16 @@ In current implementation of the comparison operator is that there is a limit on
 }
  from \eqaref{eqa:integerTime} with all the symbols mean the same as in \eqaref{eqa:integerTime}. The possible large numbers are here $a$, which in the worst case is $n$, $n$ itself and $s$. No matter which data-type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arthrichmic overflow.
 
+\hide{
 The best I have been able to come up with is rewriting the entire comparison to 
 \eqa{
 \label{eqa:secondCompare}
 s_ia_j - s_ja_i \leq (n+1)(k_is_j - k_js_i)
 }
-which still requires $s$ to be multiplied with $a$, making the speed of the runner and the local position (which in the worst case is $n$) the bottleneck. A possible alternative, that I have not proved nor tried implementing, would be to make the a, the local position, $a \in \E{1, 3}$ instead of $a \in \E{1, n}$ and replace all instances of $(n+1)$ with a value greater than any found in a, say 5..
+which still requires $s$ to be multiplied with $a$, making the speed of the runner and the local position (which in the worst case is $n$) the bottleneck.
+}
 
-Let us calculate the maximum number allowable by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner Conjecture holds, we must make sure that the expression does cause arithicmitic overflow, even if the algorithm has terminate by finding the Final Event Point. We must therefore assume the maximum values for the variables that change - namely the local position $a$ and the number of rounds $k$ that the runner has run. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
+The question then becomes what the maximum allowable value becomes by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner Conjecture holds, we must make sure that the expression does cause arithicmitic overflow, even if the algorithm for that configuration of runners will terminate by finding the Final Event Point. We must therefore assume the maximum values for the variables that change - namely the local position $a$ and the number of rounds $k$ that the runner has run. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
 \eqa{
 (n + s * (n+1)) * s &=& d\\
 s^2(n+1) + sn &=& d\\
@@ -113,9 +115,10 @@ n = \lfloor \frac{d - s^2}{s^2 + s} \rfloor
 
 So if we let $s = 1000$ and $d = 2^{32}-1$ then $n = 4289$
 
-This is admititly rather constraining, but if we use a 64 bit integer was to be used instead, then combinations such as $n = 10^6$ and $s = 4294964$ would become possible.
+This is rather constraining, but if we use a 64 bit integer was to be used instead, then combinations such as $n = 10^6$ and $s = 4294964$ would become possible.
 
-Of coures if arbitrary-precision arithmetic is used, then the algorithm is only limited by the amount of memory on the system.
+Since I in \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit arcitectures, I have made these, and other checks that might cause overflow, use arbitrary-precision arithmetic - limiting the possible comparisons only by the memory of the system, at the cost of speed.
 
 \subsubsection{Numerical algorithm}
-A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2 {32} - 1$ for 32 bit integers). This constraint is however far less severe than the one for the geometrical algorithm, as it is not constrained by the number of runners. This can again be overcome by using arbitrary-recision arithmetic.
+A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2 {32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
+
