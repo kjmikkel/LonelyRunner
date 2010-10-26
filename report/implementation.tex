@@ -60,7 +60,7 @@ or
 (q - (w_i * p mod q)) * (n+1) &\geq& q
 
 \subsection{Use of real numbers in the algorithm}
-As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precalculated, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation. A further optimisation would be to pre-compute as much as possible - which also would save memory.
+As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precalculated, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation.
 
 \subsection{Scalability of implementation}
 \label{scale}
@@ -120,7 +120,7 @@ This is rather constraining, but if we use a 64 bit integer was to be used inste
 Since I in section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made these, and other checks that might cause overflow, use arbitrary-precision arithmetic - limiting the possible comparisons only by the memory of the system, at the cost of speed.
 
 \subsubsection{Numerical algorithm}
-A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2 {32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
+A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2^{32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
 have a footnote where it was named}
 
 \subsection{Third party libraries used}

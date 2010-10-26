@@ -20,21 +20,25 @@ for each $i = 1, 2, \ldots, n$, where for a real number $y$, $\Vert y \Vert$ is 
 \subsection{Expectations to the reader}
 \label{expectations}
 \todo{Expectations}
-I expect the reader to have read at lea be able to understand the Lonely Runner Conjecture in all its formulations, as well as being mathematically mature, and having a basic understanding of Plane Sweep algorithms.
+I expect the reader to have the knowledge required to understand the
+both the formal and informal description of the Lonely Runner
+Conjecture, as well as having a basic understanding of the principles
+behind computational geometry\footnote{See ``Computational
+  Geometry'' \cite{citeulike:3347056} or similar}}.
 
 \subsection{Scope and Limitations}
 \label{scope}
 \todo{Scope and limitations}
 \begin{itemize}
 \item In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-\item I will work to make the program return a result within a reasonable time, for up to 1000 runners, and with speeds up to 1000. The final program should work with more than 1000 runners, and with speeds in excess to 1000, but I will not optimise it further. 
+\item I will work to make the program return a result within a reasonable time, for up to 1000 runners, and with speeds up to 1000. The final program should work with more than 1000 runners, and with speeds in excess to 1000, but I will not optimize it further. 
 \item The program will include an interactive counterexample search system.
 \item I will only focus on runners with integer speeds - see \ref{integerSpeeds} for an justification of this.
 \end{itemize}
 
 \subsection{Computer specifications}
 \label{specs}\todo{Look at this once more}
-Before I go any further I would like to define which kind of computer I would require for running the solutions I come up with. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and Colouring of regular chromatic graphs. None of people working with the previous has any special reason to work with any a exceedingly powerful computer, or computers with non-standard hardware.
+Before I go any further I would like to define which kind of computer I would require for running the solutions I come up with. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and Coloring of regular chromatic graphs. None of people working with the previous has any special reason to work with any a exceedingly powerful computer, or computers with non-standard hardware.
  
 Based on the above I would argue that any algorithm I devise and implement should be able to run on a standard computer with no special hardware (say hardware dedicated to fast floating point calculations). The minimum specs for the computer therefore becomes a 2 Ghz computer with more than 2 GB over the recommended amount of Ram for the OS the computer is running. 
 
@@ -53,7 +57,7 @@ Let us assume there is a non-empty set S of runner speeds that are not integers.
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.3\textwidth]{./images/circleZonePng.png}
-  \caption{\label{circleZoneImg}An illustration of the Runner track. The greyed out part is the Zone}
+  \caption{\label{circleZoneImg}An illustration of the Runner track. The grayed out part is the Zone}
 \end{figure}
 
 When forced to use a pronoun by the English language, I will use the male pronoun to the refer to the runners. This is done purely for convenience, and to make the text flow better. Not because I believe that male runners are more numerous or in any way inherently better than female runners.
@@ -72,6 +76,11 @@ Configurations of runners, will in this report refer to a set S of $n \in \N$ ru
 \label{def:fakeRunner}
 When talking about the fake runner, I will be referring to a runner that is not actually in race, but rather a runner with speed 1, who I have introduced in order to have a convenient termination criterion for my algorithm. See section \ref{termination} page \pageref{termination} for an elaboration for the reasons behind it.
 \end{defi}  
+
+\subsection{Canonical example}
+Through the rest of this report I will use the following configuration
+of runners to give an example:
+We have 4 runners with the speeds of 3, 5, 6, 9
 
 \subsection{Background material used}
 \label{background}

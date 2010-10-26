@@ -5,10 +5,56 @@
 \subsection{Introduction}
 In this section I will introduce how I am going to test the algorithms, which parameters I am going to test them on, which software and hardware setup I have tested them on, description of the test themselves, and finally the results.
 
+\subsection{Input parameters}
+For the Lonely Runner conjecture there are 2 parameters we can check
+on:
+\begin{enumerate}
+\item Number of runners
+\item The speeds of the runners
+\end{enumerate}
+
+Since it is a requirement that all speeds are to be pairwise distinct,
+it is not a directly obvious how to define the second
+parameter. Given a sequence of speeds, how should we define which
+speeds are to be used, and which are not? 
+
+Should the number we give be
+the maximum allowable speed (which means some tests have to be
+excluded because the number of runners needed exceeds the maximum speed) or
+should the number define the number of speeds (which means it becomes
+harder to talk about how either algorithm handles certain classes of
+numbers).
+
+I have chosen to try both methods, since both plays a crucial role in
+the time complexity of the respective algorithms, and in different ways.
+
+\subsection{Test input}
+In the following tests I will test 3 kinds of speeds for the runners
+\begin{enumerate}
+\item Prime numbers
+\item Sequential numbers
+\item Random numbers
+\end{enumerate}
+
+All of these will be positive, and all numbers in each set will be
+pair-wise unique.
+
+
+
+
+\subsection{Tests made on the Numerical method}
+As I stated back in (section \ref{numtheory:algo}) the numerical
+method's run-time is dependent on order that its input. I will
+therefore make multiple tests:
+\begin{enumerate}
+\item Where the input will not be changed
+\item Where the input is randomly permuted
+\end{enumerate} 
+
 \subsection{How to test the Algorithms}
 Since a configuration of the Lonely Runner conjecture requires $n$ runners and each runner needs a distinct speed, it is clear that the parameters we must test the algorithms for are the number of runners, and their speed. Since the speeds have to be different, I will use the maximum speed to be the defining factor.
 
-To do this test in practice I have choosen to do it in increments, with the number of runners being the deciding factor. If we have to test for $n$ runners, then we let the first configuration to test contain the first $n$ numbers, the second contain from ($n+1$)'th number to the ($2n+1$)'th number and so on.
+To do this test in practice I have chosen to do it in increments, with the number of runners being the deciding factor. If we have to test for $n$ runners, then we let the first configuration to test contain the first $n$ numbers, the second contain from ($n+1$)'th number to the ($2n+1$)'th number and so on.
 
 For example if we have to test 10 runners for values up to 100 with sequential numbers, then the first array to be tested will be [2, 3, 4, $\ldots$, 9, 10, 11], the second array to be tested [12, 13, 14, $\ldots$, 19, 20, 21] and so on.
 
@@ -21,4 +67,10 @@ As mentioned in the implementation part I have implemented the software in C++ u
 
 \subsection{Test made} 
 
-I will test both alorithms with 10, 50, 100, 500, 1000 and 2000 runners with a max speed up to 5000 - both for sequential,and prime number speed. For a given configuration the number runners will of course be their minimum speed
+\begin{description}
+\item[Runners:] I will test both algorithms with 10, 50, 100, 500, 1000 and 2000
+runners 
+\item[Speeds:] For the sequential and the prime numbers, I will use
+  500000 as the maximum speed. I wukk also randomly generate up to
+  500000 pairwise distinct numbers and test them on both algorithms.
+\end{description}
