@@ -15,7 +15,7 @@ I have used the following parameters to decide my choice of programming language
 \item[My familiarity with the language:] Familiarity with the language would enable me to get create a bug free implementation of the algorithms faster.
 \end{description}
 
-Based on these criterias I will give each programming language a value from 1 to 3, with 3 being the highest, and 1 being the smallest. 
+Based on these criteria I will give each programming language a value from 1 to 3, with 3 being the highest, and 1 being the smallest. 
 
 For this project I have considered 3 programming languages: Java, Haskell and C++.
 
@@ -46,7 +46,7 @@ min(\frac{w_i * p mod q}{q}, 1 - \frac{w_i * p mod q}{q}) &\geq& \frac{1}{n+1}\\
 min(\frac{w_i * p mod q}{q}, 1 - \frac{w_i * p mod q}{q}) * (n+1) &\geq& 1\\
 }
 
-Depending on whether \frac{w_i * p mod q}{q} or 1 - \frac{w_i * p mod q}{q} is the smallest value, the eqation then becomes
+Depending on whether \frac{w_i * p mod q}{q} or 1 - \frac{w_i * p mod q}{q} is the smallest value, the equation then becomes
 
 \eqa{
 \frac{w_i * p mod q}{q} * (n+1) &\geq& 1\\
@@ -60,7 +60,7 @@ or
 (q - (w_i * p mod q)) * (n+1) &\geq& q
 
 \subsection{Use of real numbers in the algorithm}
-As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precalculated, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation. A further optimization would be to pre-compute as much as possible - which also would save memory.
+As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precalculated, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation. A further optimisation would be to pre-compute as much as possible - which also would save memory.
 
 \subsection{Scalability of implementation}
 \label{scale}
@@ -72,7 +72,7 @@ In current implementation of the comparison operator is that there is a limit on
 \label{eqa:firstCompare}
 (a + k * (n+1)) * s
 }
- from \eqaref{eqa:integerTime} with all the symbols mean the same as in \eqaref{eqa:integerTime}. The possible large numbers are here $a$, which in the worst case is $n$, $n$ itself and $s$. No matter which data-type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arthrichmic overflow.
+ from \eqaref{eqa:integerTime} with all the symbols mean the same as in \eqaref{eqa:integerTime}. The possible large numbers are here $a$, which in the worst case is $n$, $n$ itself and $s$. No matter which data-type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
 
 \hide{
 The best I have been able to come up with is rewriting the entire comparison to 
@@ -83,7 +83,7 @@ s_ia_j - s_ja_i \leq (n+1)(k_is_j - k_js_i)
 which still requires $s$ to be multiplied with $a$, making the speed of the runner and the local position (which in the worst case is $n$) the bottleneck.
 }
 
-The question then becomes what the maximum allowable value becomes by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner Conjecture holds, we must make sure that the expression does cause arithicmitic overflow, even if the algorithm for that configuration of runners will terminate by finding the Final Event Point. We must therefore assume the maximum values for the variables that change - namely the local position $a$ and the number of rounds $k$ that the runner has run. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
+The question then becomes what the maximum allowable value becomes by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner Conjecture holds, we must make sure that the expression does cause arithmetic overflow, even if the algorithm for that configuration of runners will terminate by finding the Final Event Point. We must therefore assume the maximum values for the variables that change - namely the local position $a$ and the number of rounds $k$ that the runner has run. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
 \eqa{
 (n + s * (n+1)) * s &=& d\\
 s^2(n+1) + sn &=& d\\
@@ -93,7 +93,7 @@ It is clear that this a Quadratic equation with $s$ as the unknown - using the s
 \eqa{
 s = \frac{-n \pm \sqrt{n^2 + 4(n+1) * d}}{2(n+1)}
 }
-In practice we are only interested in
+In practise we are only interested in
 \eqa{
 s = \lfloor\frac{-n + \sqrt{n^2 + 4(n+1) * d}}{2(n+1)}\rfloor
 }
@@ -117,8 +117,15 @@ So if we let $s = 1000$ and $d = 2^{32}-1$ then $n = 4289$
 
 This is rather constraining, but if we use a 64 bit integer was to be used instead, then combinations such as $n = 10^6$ and $s = 4294964$ would become possible.
 
-Since I in \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit arcitectures, I have made these, and other checks that might cause overflow, use arbitrary-precision arithmetic - limiting the possible comparisons only by the memory of the system, at the cost of speed.
+Since I in section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made these, and other checks that might cause overflow, use arbitrary-precision arithmetic - limiting the possible comparisons only by the memory of the system, at the cost of speed.
 
 \subsubsection{Numerical algorithm}
 A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2 {32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
+have a footnote where it was named}
 
+\subsection{Third party libraries used}
+\begin{description}
+\item[NTL arbitrary-precision arithmetic (v. 5.5.2 ):] A software library to allow for arbitrary precision sized integers in both algorithms
+\item[The GNU Multiple Precision Arithmetic Library (GMP) (v. 5.0.1):] The NTL library is compiled towards the GMP to increase its efficiency. 
+\item[json-c (v. 0.9):] A C++ library used for importing and exporting data to/from the JSON file format.
+\end{description}
