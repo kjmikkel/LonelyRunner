@@ -317,7 +317,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     /* Create the json arrays we are going to store the results in*/
     add_to_json_object(testInstance, geo_results, needed_mem, "Geometrical results");
     add_to_json_object(testInstance, geo_spread, needed_mem, "Geometrical spread");
-    add_to_json_object(testInstance, geo_seconds, needed_mem, "Seconds used");
+    add_to_json_object(testInstance, geo_seconds, needed_mem, "Geometrical Seconds used");
     if (b_geo_error)
       add_to_json_object(testInstance, geo_error, needed_mem, "Geometrical errors");
     
