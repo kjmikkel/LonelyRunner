@@ -54,7 +54,7 @@ therefore make multiple tests:
 \subsection{How to test the Algorithms}
 Since a configuration of the Lonely Runner conjecture requires $n$ runners and each runner needs a distinct speed, it is clear that the parameters we must test the algorithms for are the number of runners, and their speed. Since the speeds have to be different, I will use the maximum speed to be the defining factor.
 
-To do this test in practice I have chosen to do it in increments, with the number of runners being the deciding factor. If we have to test for $n$ runners, then we let the first configuration to test contain the first $n$ numbers, the second contain from ($n+1$)'th number to the ($2n+1$)'th number and so on.
+To do this test in practise I have chosen to do it in increments, with the number of runners being the deciding factor. If we have to test for $n$ runners, then we let the first configuration to test contain the first $n$ numbers, the second contain from ($n+1$)'th number to the ($2n+1$)'th number and so on.
 
 For example if we have to test 10 runners for values up to 100 with sequential numbers, then the first array to be tested will be [2, 3, 4, $\ldots$, 9, 10, 11], the second array to be tested [12, 13, 14, $\ldots$, 19, 20, 21] and so on.
 
@@ -71,6 +71,6 @@ As mentioned in the implementation part I have implemented the software in C++ u
 \item[Runners:] I will test both algorithms with 10, 50, 100, 500, 1000 and 2000
 runners 
 \item[Speeds:] For the sequential and the prime numbers, I will use
-  500000 as the maximum speed. I wukk also randomly generate up to
+  500000 as the maximum speed. I will also randomly generate up to
   500000 pairwise distinct numbers and test them on both algorithms.
 \end{description}
