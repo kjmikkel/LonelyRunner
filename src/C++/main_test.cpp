@@ -4,7 +4,6 @@
 
 #include "data_structure.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +12,8 @@
 #include <sys/time.h>
 #include <sstream>
 #include <cmath>
+#include <ctime>
+#include <cstdlib>
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -163,7 +164,7 @@ void ultimateTest() {
   // delete tm;
 }
 
-void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, int times_to_do_test, string name) {  
+void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, int times_to_do_test, bool randomize, string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
     
     stringstream ss;
@@ -193,11 +194,13 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     
     // The geo results and the array to contain any error
     unsigned long geo_results[needed_mem];
+    unsigned long geo_seconds[needed_mem];
     unsigned long geo_spread[needed_mem];
     unsigned long geo_error[needed_mem];
    
     // The num results and the array to contain any error
     unsigned long num_results[needed_mem];
+    unsigned long num_seconds[needed_mem];
     unsigned long num_spread[needed_mem];
     unsigned long num_error[needed_mem];
     
@@ -229,16 +232,18 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       struct tm *tm;
       
       cout << "before geo\n";
-      unsigned long micro_seconds = 0;
+      //    unsigned long micro_seconds = 0;
       unsigned long seconds = 0; 
       
       unsigned long time_test_array[times_to_do_test];
+      unsigned long seconds_time_test_array[times_to_do_test];
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
 	gettimeofday(&start, &tz);
 	geo_time_result* geo_result = Geometric_method(runner_speeds, num_runners);
 	gettimeofday(&end, &tz); 
 	
 	time_test_array[time_test_index] = (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
+	seconds_time_test_array[time_test_index] = (end.tv_sec - start.tv_sec);
 	
 	// We check for errors
 	if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, runner_speeds))) {	  
@@ -266,15 +271,21 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       long_pair pair = find_spread(time_test_array, times_to_do_test);
       geo_results[real_index] = pair.average;
       geo_spread[real_index] = pair.spread;
-      
+      seconds = 0;
+      for(int index = 0; index < times_to_do_test; index++) {
+	seconds += seconds_time_test_array[index];
+      }
+      geo_seconds[real_index] = seconds / times_to_do_test;
+
       cout << "before num\n";
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
 	cout << "Index of num: " << (time_test_index + 1) << "\n";
 	gettimeofday(&start, &tz);
-	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
+	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, randomize, false);
 	gettimeofday(&end, &tz);
 	time_test_array[time_test_index] = (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
-      
+	seconds_time_test_array[time_test_index] = (end.tv_sec - start.tv_sec);
+
 	if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
 	  printf("*error*: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	 
@@ -290,6 +301,12 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       pair = find_spread(time_test_array, times_to_do_test);
       num_results[real_index] = pair.average;
       num_spread[real_index] = pair.spread;
+
+      seconds = 0;
+      for(int index = 0; index < times_to_do_test; index++) {
+	seconds += seconds_time_test_array[index];
+      }
+      num_seconds[real_index] = seconds / times_to_do_test;
       
       cout << "geo: " <<  geo_results[real_index] << ", num: " << num_results[real_index] << "\n";
     }
@@ -300,11 +317,13 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     /* Create the json arrays we are going to store the results in*/
     add_to_json_object(testInstance, geo_results, needed_mem, "Geometrical results");
     add_to_json_object(testInstance, geo_spread, needed_mem, "Geometrical spread");
+    add_to_json_object(testInstance, geo_seconds, needed_mem, "Seconds used");
     if (b_geo_error)
       add_to_json_object(testInstance, geo_error, needed_mem, "Geometrical errors");
     
     add_to_json_object(testInstance, num_results, needed_mem, "Numerical results");
     add_to_json_object(testInstance, num_spread, needed_mem, "Numerical spread");
+    add_to_json_object(testInstance, num_seconds, needed_mem, "Numerical seconds");
     if (b_num_error)
       add_to_json_object(testInstance, num_error, needed_mem, "Numerical errors");
     
@@ -338,21 +357,30 @@ void sequential_prime_test() {
   }
 
   // We find the primes which are going as the speeds
-  //  int* primes = findPrimes(max_number);
-  //  doTest(runners, speeds, primes, runner_num, speed_num, offset, times_to_do_tests, "Primes");
+  len_array primes = findPrimes(max_number);
+   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
+  doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, true, "Primes-Random");
   printf("done prime\n");
   
-  //free(primes);
+  delete primes.array;
   
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number - offset; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, "Sequential");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  
+  srand(time(0));
+  for(int random_index = 0; random_index < max_number; random_index++) {
+    sequential_numbers[random_index] = rand() + 2;
+  }
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false, "Random");
+  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false,  "Random");
 }
 
 int main (int argc, char *argv[]) {
-  //sequential_prime_test();
-  ultimateTest();
+  sequential_prime_test();
+  //ultimateTest();
 }

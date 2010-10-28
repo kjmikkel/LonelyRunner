@@ -1,21 +1,23 @@
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <stdlib.h>
 #include <assert.h>
 
+#include "data_structure.h"
+#include "util.h"
+
 // Found here: http://www.troubleshooters.com/codecorn/primenumbers/primenumbers.htm
 
-void printPrime(unsigned int bn)
-	{
-	static char buf[1000];
-
-	sprintf(buf, "%ull", bn);
-	buf[strlen(buf) - 2] = '\0';
-	printf("%s\n", buf);
-	}
-
-int* findPrimes(int upTo)
+len_array findPrimes(int upTo)
 {
+  std::string filename = "../prime_numbers.json";
+  char* file = const_cast<char *>(filename.c_str());
+  len_array arr = read_json_file_array(file);
+  return arr;
+}
+
+  
+int* primeAlgo(int upTo) {
   int *array = new int[upTo + 1];
   assert(array != NULL);
 

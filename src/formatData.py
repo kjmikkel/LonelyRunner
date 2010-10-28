@@ -32,7 +32,7 @@ def doGnuPlot(filename, maxYValue):
 	title = os.path.basename(filename)	
 	Gnu.title(title)
 
-	m = re.search('[a-zA-Z]+([0-9]+)[a-zA-Z]+', title)
+	m = re.search('[a-zA-Z_]+([0-9]+)[a-zA-Z_]+', title)
 	minNum = m.group(1)
 
 	Gnu.xlabel("Maximum speed")
@@ -81,7 +81,7 @@ def print_plot(info_list, filename):
 		maxValue = max(maxValue, bar.geo)
 	
 	saveFile(filename + ".dat", strAccum)
-#	doGnuPlot(filename, maxValue)
+	doGnuPlot(filename, maxValue)
 
 def processData():
 	for infile in glob.glob(os.path.join(inData, '*.json')):

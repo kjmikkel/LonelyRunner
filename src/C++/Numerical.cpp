@@ -136,7 +136,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
   //  double compare_to = (1.0 / (length + 1.0));
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
-    cout << "first index: " << first_speed << ", " << first_index << "\n";
+    // cout << "first index: " << first_speed << ", " << first_index << "\n";
     //    printf("Num first index: %d\n", first_index);
     /*
     bool cal_first_div = false;
@@ -145,7 +145,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
 
     for(int second_index = first_index + 1; second_index < length; second_index++) {
       //if (second_index % 10 == 0)
-      printf("Num second index: %d\n", second_index);
+      //  printf("Num second index: %d\n", second_index);
       
       int second_speed = speed_array[second_index];
       ZZ k = to_ZZ(first_speed + second_speed);
@@ -184,7 +184,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
       ZZ compare;      
       for(int a = start; a < k; a++) {
 	bool testValid = true;
-	cout << "Check " << a << " out of " << k << "\n";
+	//	cout << "Check " << a << " out of " << k << "\n";
 	
 	for(int speed_index = 0; speed_index < length; speed_index++) {
 	  distance_from_start = ZZ_mod(to_ZZ(a) * speed_array[speed_index], k);

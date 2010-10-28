@@ -1,6 +1,8 @@
 #ifndef PRINUM_H
 #define PRINUM_H
 
-int* findPrimes(int x);
+#include "data_structure.h"
+
+len_array findPrimes(int x);
 
 #endif
