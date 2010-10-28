@@ -20,6 +20,10 @@ struct geo_time_result {
   bool result;
 };
 
+struct len_array {
+  int* array;  
+  unsigned int len;
+};
 
 struct num_time_result {
   // the time we are returning

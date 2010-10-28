@@ -2,19 +2,19 @@
 
 op = -O2
 
-TestCode.out: main_test.o Geometric.o Numerical.o Prime_Number.o
-	g++ $(op) -o TestCode.out main_test.o Geometric.o Numerical.o Prime_Number.o -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm 
+TestCode.out: main_test.o Geometric.o Numerical.o Prime_Number.o util.o 
+	g++ $(op) -o TestCode.out main_test.o Geometric.o Numerical.o Prime_Number.o util.o -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm 
 
-LonelyRunner.out: main.o Geometric.o Numerical.o
-	g++ $(op) -o LonelyRunner.out main.o Geometric.o Numerical.o `pkg-config gtk+-2.0 --libs`
+LonelyRunner.out: main.o Geometric.o Numerical.o Prime_Number.o util.o
+	g++ $(op) -o LonelyRunner.out main.o Geometric.o Numerical.o util.o `pkg-config gtk+-2.0 --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm
 
 # above LonelyRunner.out depends on main.o, data_structure.o and Geometric.o
 
-main.o: main.c data_structure.o Geometric.h Numerical.h
-	g++ $(op)  -c main.c `pkg-config gtk+-2.0 --cflags --libs`
+main.o: main.c Geometric.h Numerical.h data_structure.h util.h
+	g++ $(op) -c main.c `pkg-config gtk+-2.0 --cflags --libs`
 
-main_test.o: main_test.cpp Geometric.h Numerical.h Prime_Number.h
-	g++ $(op)  -c main_test.cpp -ljson
+main_test.o: main_test.cpp Geometric.h Numerical.h util.h Prime_Number.h
+	g++ $(op) -c main_test.cpp -ljson
 
 # above we are saying main.o depends on main.cpp data_structure.h and Geometric.cpp, and to compile main.cpp if and only if main.cpp or data_structure.h or geometric.cpp
 # have changed since the last creation of main.o
@@ -22,14 +22,14 @@ main_test.o: main_test.cpp Geometric.h Numerical.h Prime_Number.h
 Geometric.o: Geometric.cpp data_structure.h
 	g++ $(op) -c Geometric.cpp -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -lgmp -lm
 
-#g++  -I$HOME/sw/include foo.c -o foo  -L$HOME/sw/lib -lntl -lgmp -lgf2x  -lm
-
-
 Numerical.o: Numerical.cpp data_structure.h
 	g++ $(op) -c Numerical.cpp -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -lgmp -lm
 
-Prime_Number.o: Prime_Number.cpp
-	g++ $(op) -c Prime_Number.cpp
+Prime_Number.o: Prime_Number.cpp util.o
+	g++ $(op) -c Prime_Number.cpp -l util.o
+
+util.o: util.cpp data_structure.h
+	g++ $(op) -c util.cpp -ljson
 
 clean:
 	rm *.o *~ *.out

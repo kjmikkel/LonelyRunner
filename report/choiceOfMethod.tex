@@ -260,7 +260,7 @@ It is clear that the second loop is dependent on how many Event Points are proce
 }
 
 \subsection{Number Theory}
-
+\label{numtheory:algo}
 A Number Theory alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
 $$
 k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
@@ -312,6 +312,12 @@ where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the res
   }
   \return \no
 \end{algorithm}
+
+Since the algorithm in worst case tries every single combination of
+$d$ and $d\prime$, and \cite{invis} describes no way to detect which
+values of $d$ and $d\prime$ that may be candidates for a possible
+solution. It is therefore clear that the run-time of the Numerical
+algorithm must be dependent on the order of the input.
 
 \subsubsection{Proofs for the numerical algorithm}
 

@@ -1,14 +1,46 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 #include <stdio.h>
+#include <fstream>
+#include <iostream>
+#include <string>
 #include <sys/time.h>
 #include <vector>
+#include <regex.h>
+#include <json/json.h>
 
 #include "Geometric.h"
 #include "Numerical.h"
 #include "data_structure.h"
+#include "util.h"
 
 static void helloWorld (GtkWidget *wid, GtkWidget *win) {
+
+}
+
+static void import(GtkWidget *wid, GtkWidget *win) {
+  GtkWidget* diag;
+  diag = gtk_file_chooser_dialog_new ("Open File",
+					      NULL, //parent_window,
+				      GTK_FILE_CHOOSER_ACTION_OPEN,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				      NULL);
+  
+  if (gtk_dialog_run (GTK_DIALOG (diag)) == GTK_RESPONSE_ACCEPT)
+    {
+      char* filename;
+      
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (diag));
+      printf("%s\n", filename);
+     
+      len_array l_arr = read_json_array_file(filename);
+      delete filename;
+ 
+      test_runner_configuration(l_arr.array, l_arr.len);
+      delete l_arr.array;
+  }
+  gtk_widget_destroy (diag);
 
 }
 
@@ -28,13 +60,17 @@ static bool checkForSolution(int speedArray[], int length) {
 	break;
       }
     }
-    
+
+    /* 
+     * If we arrive at this point, and the number does not devide, then there exists at least one number the that cannot be devided with another number,
+     * and in that case the given configuration holds for the (1) equation/criterion. 
+     */
     if (!doesDevide) {
       return true;
     }
   }
   
-
+  
   return false;
 }
 
@@ -45,7 +81,7 @@ static void testValues(int startRunners,
 		       int endArgNum, 
 		       int argNumDelta, 
 		       bool primevise) {
- 
+  
   for(int offset = startArgNum; offset < endArgNum; offset += argNumDelta) {
 
     for(int runnerNum = startRunners; runnerNum < endRunners; runnerNum += runnerDelta) {
@@ -58,31 +94,38 @@ static void testValues(int startRunners,
       timeval* start = new timeval;
       timeval* end = new timeval;
       gettimeofday(start, NULL);
-      time_result* result = Geometric_method(array, runnerNum);
+      geo_time_result* geo_result = Geometric_method(array, runnerNum);
       gettimeofday(end, NULL);
       
-      bool valid = isValid(result, array, runnerNum); 
+      bool valid = isValid(geo_result, array); 
       
-      printf("Time: %f, Valid: %i, Time: %d\n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
+      event_point* point = geo_result->point;
+      float f_geo_result = float(point->local_position + point->rounds * (point->number_of_runners + 1)) / float(point->speed * (point->number_of_runners + 1.0));
+      printf("Time: %f, Valid: %i\n", f_geo_result, valid);
             
       gettimeofday(start, NULL);
-      result = Numerical_method(array, runnerNum);
+      num_time_result* num_result = Numerical_method(array, runnerNum, true, false);
       gettimeofday(end, NULL);
       
-      valid = isValid(result, array, runnerNum);
-          
-      printf("Time: %f, Valid: %d, Time: %d\n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
+      valid = isValid(num_result, array, runnerNum);
+      float f_num_result = float(num_result->a) / float(num_result->k1 + num_result->k2);
+    
+      printf("Time: %f, Valid: %d", f_num_result, valid);
       
-      delete result;
+      delete point;
+      delete geo_result;
+      delete num_result;
       delete end;
       delete start;
     }	
   } 
+  
 }
 
 
 
 static void testCustom() {
+  
   int length = 1000;
   int array[length];
 
@@ -94,77 +137,93 @@ static void testCustom() {
   timeval* start = new timeval;
   timeval* end = new timeval;
   gettimeofday(start, NULL);
-  time_result* result = Geometric_method(array, length);
+  geo_time_result* geo_result = Geometric_method(array, length);
   gettimeofday(end, NULL);
   
-  bool valid = true;
+  bool valid = isValid(geo_result, array); 
   bool print = true;
-  float compareTo = 1.0 / (length + 1.0);
-  for(int index = 0; index < length; index++) {
-    valid &= closeToInteger(result->result_time, array[index]) >= compareTo;
-  }
   
   bool solution = checkForSolution(array, length);
 
   printf("Can we be sure there is a solution?: %i\n", solution);
   
   
-  
-  printf("Time: %f, Valid: %i, Time: %f \n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
+  event_point* point = geo_result->point;
+  float f_geo_result = float(point->local_position + point->rounds * (point->number_of_runners + 1)) / float(point->speed * (point->number_of_runners + 1.0));
+  printf("Time: %f, Valid: %i\n", f_geo_result, valid);
   
   gettimeofday(start, NULL);
-  result = Numerical_method(array, length);
+  num_time_result* num_result = Numerical_method(array, length, true, false);
   gettimeofday(end, NULL);
   
-  valid = true;
-  for(int index = 0; index < length; index++) {
-    valid &= closeToInteger(result->result_time, array[index]) >= compareTo;
-  }
-
-  printf("val1: %f, val: %f\n", (float)start->tv_usec, (float)end->tv_usec);
-
-  printf("Time: %f, Valid: %d, Time: %f \n", result->result_time, valid, (float)(end->tv_usec - start->tv_usec));
+  valid = isValid(num_result, array, length);
+  float f_num_result = float(num_result->a) / float(num_result->k1 + num_result->k2);
   
-  delete result;
+  
+  delete geo_result;
+  delete num_result;
   delete end;
   delete start;
+  
 }
 
 int main (int argc, char *argv[])
 {
+  
   GtkWidget *button = NULL;
   GtkWidget *win = NULL;
   GtkWidget *vbox = NULL;
+  GtkWidget* label = NULL;
+  GtkWidget* entry = NULL;
 
   /* Initialize GTK+ */
+  
   g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, (GLogFunc) gtk_false, NULL);
   gtk_init (&argc, &argv);
   g_log_set_handler ("Gtk", G_LOG_LEVEL_WARNING, g_log_default_handler, NULL);
-
+  
   /* Create the main window */
+  
   win = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_container_set_border_width (GTK_CONTAINER (win), 8);
-  gtk_window_set_title (GTK_WINDOW (win), "Hello World");
+  gtk_window_set_title (GTK_WINDOW (win), "Lonely Runner Verifier");
   gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
   gtk_widget_realize (win);
   g_signal_connect (win, "destroy", gtk_main_quit, NULL);
-
+  
   /* Create a vertical box with buttons */
+  
   vbox = gtk_vbox_new (TRUE, 6);
   gtk_container_add (GTK_CONTAINER (win), vbox);
+  
+  label = gtk_label_new("Enter the speeds of your Runners (comma seperated)");
+  gtk_box_pack_start(GTK_BOX(vbox), label, TRUE, TRUE, 0);
 
-  button = gtk_button_new_from_stock (GTK_STOCK_DIALOG_INFO);
+  entry = gtk_entry_new ();
+  gtk_widget_show(entry);
+  gtk_box_pack_start(GTK_BOX(vbox), entry, TRUE, TRUE, 0);
+  
+  button = gtk_button_new_from_stock ("Run Test");
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (helloWorld), (gpointer) win);
+  gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
+
+  button = gtk_button_new_from_stock ("Import speeds to test");
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (import), (gpointer) win);
+  gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
+
+  button = gtk_button_new_from_stock ("Make range test");
   g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (helloWorld), (gpointer) win);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
   g_signal_connect (button, "clicked", gtk_main_quit, NULL);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
-
-  testCustom();
+  
+  // testCustom();
 
   /* Enter the main loop */
-  //gtk_widget_show_all (win);
-  //gtk_main ();
+  gtk_widget_show_all (win);
+  gtk_main ();
   return 0;
+  
 }
