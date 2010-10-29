@@ -16,11 +16,11 @@ struct compare_event_point_pointers {
     ZZ rounds2 = to_ZZ(second->rounds);
     */
     
-    ZZ time1 = to_ZZ((first->local_position + first->rounds * (first->number_of_runners + 1)) * second->speed);
-    ZZ time2 = to_ZZ((second->local_position + second->rounds * (second->number_of_runners + 1)) * first->speed);
+    ZZ time1 = (first->local_position +  to_ZZ(first->rounds) *  (first->number_of_runners + 1)) *  second->speed;
+    ZZ time2 = (second->local_position + to_ZZ(second->rounds) * (second->number_of_runners + 1)) * first->speed;
    
-    if (time1 > pow(2, 32) || time2 > pow(2, 32))
-      cout << "above " << time1 << ", " << time2 << "\n";
+    //    if (time1 > pow(2, 32) || time2 > pow(2, 32))
+    // cout << "above " << time1 << ", " << time2 << "\n";
 
     /*
     unsigned int time1 = first->pre_computed * second->speed;
@@ -91,7 +91,6 @@ static void freeQueue(event_point_priority_queue* queue) {
 }
 
 geo_time_result* Geometric_method (const int speed_array[], const int length) {
-
   event_point_priority_queue* queue = new event_point_priority_queue;
   
   event_point* final_point = new event_point;
@@ -124,7 +123,7 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
     
     if (p->type == START) {
       intersection++;
-      // cout << "+\n";
+      //      cout << "+: " << intersection <<"\n";
       if (intersection == length) {
 
 	/*
@@ -142,8 +141,9 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
 	return has_result;
       }
     } else if (p->type == END) {
-      
       intersection--;
+      // cout << "-: " << intersection << "\n";
+      
       MakeTimePoints(p, queue, length);
       delete p; // free the point
 
