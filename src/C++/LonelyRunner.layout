@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="Geometric.cpp" open="1" top="1" tabpos="2">
-		<Cursor position="54" topLine="0" />
+	<File name="Geometric.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="1006" topLine="21" />
 	</File>
-	<File name="Geometric.h" open="1" top="0" tabpos="4">
+	<File name="Geometric.h" open="1" top="0" tabpos="3">
 		<Cursor position="26" topLine="0" />
 	</File>
 	<File name="data_structure.cpp" open="1" top="0" tabpos="3">
 		<Cursor position="1" topLine="0" />
 	</File>
-	<File name="data_structure.h" open="1" top="0" tabpos="5">
+	<File name="data_structure.h" open="1" top="0" tabpos="3">
 		<Cursor position="376" topLine="0" />
 	</File>
-	<File name="main.c" open="1" top="0" tabpos="1">
-		<Cursor position="90" topLine="0" />
+	<File name="main.c" open="1" top="1" tabpos="1">
+		<Cursor position="4532" topLine="122" />
 	</File>
 </CodeBlocks_layout_file>

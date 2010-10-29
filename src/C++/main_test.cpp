@@ -222,6 +222,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       int prime_real_index = 0;
       for(int copy_index = speeds[speed_index] - num_runners; copy_index < speeds[speed_index]; copy_index++, prime_real_index++) {
 	runner_speeds[prime_real_index] = actual_speeds[copy_index];
+	//cout <<  runner_speeds[prime_real_index]  << "\n";
       }
       
       // The tests themselves
@@ -248,7 +249,11 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 	// We check for errors
 	if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, runner_speeds))) {	  
 	  printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds));
-	  
+	  for(int index = 0; index < num_runners; index++) {
+	    cout << runner_speeds[index] << "\n";
+	    //    if(runner_speeds[index] < 2)
+	    //cout << "Speed less than 2: " << runner_speeds[index] << "\n";
+	  }
 	  num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
 	  printf("error num: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	  
@@ -341,14 +346,14 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 
 
 void sequential_prime_test() {
-  const int runner_num = 8;
+  const int runner_num = 12;
   const int offset = 0;
   const int speed_num = 80;
   int max_number = 500000;
   int times_to_do_tests = 10;
   
   // The number of runners
-  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 8000};
+  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 12000, 30000, 50000, 500000};
   int speeds[speed_num]; 
   
   // The array contains the speeds we are going to test
@@ -357,11 +362,11 @@ void sequential_prime_test() {
   }
 
   // We find the primes which are going as the speeds
-  len_array primes = findPrimes(max_number);
-   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
+  len_array primes = findPrimes(max_number);/*
+  doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, true, "Primes-Random");
   printf("done prime\n");
-  
+					    */ 
   delete primes.array;
   
   int sequential_numbers[max_number];
@@ -369,13 +374,16 @@ void sequential_prime_test() {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
+  //doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
   
-  srand(time(0));
+  srand(time(NULL));
+  //  cout << "max number: " << max_number << "\n";
   for(int random_index = 0; random_index < max_number; random_index++) {
-    sequential_numbers[random_index] = rand() + 2;
+    int number = abs(rand()) + 2;
+    sequential_numbers[random_index] = number;
   }
+
   doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false, "Random");
   //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false,  "Random");
 }

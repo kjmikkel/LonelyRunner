@@ -48,7 +48,7 @@ bool isValidInternal(ZZ P, ZZ Q, const int array[], unsigned int number_runners)
     valid = compare * (number_runners + 1) >=  Q;
     
     if (!valid)
-      cout << compare * (number_runners + 1) << ", " << Q << ", " << array[index]  << "\n";
+      cout << "fail: " << compare * (number_runners + 1) << ", " << Q << ", " << array[index]  << "\n";
       break;
   }
 
@@ -66,8 +66,8 @@ bool isValid(geo_time_result* result, const int array[]) {
   event_point* point = result->point;
   if (point == NULL) return false;
   
-  ZZ P = to_ZZ(point->local_position + point->rounds * (point->number_of_runners + 1));
-  ZZ Q = to_ZZ(point->speed * (point->number_of_runners + 1));
+  ZZ P = point->local_position + to_ZZ(point->rounds) * (point->number_of_runners + 1);
+  ZZ Q = to_ZZ(point->speed) * (point->number_of_runners + 1);
   
   bool b_result = isValidInternal(P, Q, array, point->number_of_runners);
   if (!b_result) {
@@ -148,7 +148,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
       //  printf("Num second index: %d\n", second_index);
       
       int second_speed = speed_array[second_index];
-      ZZ k = to_ZZ(first_speed + second_speed);
+      ZZ k = to_ZZ(first_speed) + second_speed;
       //      cout << "k: " << k << ", num1: " << first_speed << ", num2: " << second_speed << "\n";
       // int start = k / (length+1);
       // Look into this code - it might lead to extreme speedups, but currently there is a problem 
