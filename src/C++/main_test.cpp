@@ -62,6 +62,14 @@ long_pair find_spread(unsigned long* time_array, int number_of_times) {
   return pair;
 } 
 
+
+void appendValueToFile(string data) {
+  ofstream fout;
+  fout.open("output", ios::app);
+  fout << data;
+  fout.close();
+} 
+
 void recursive_array(int* array, int* number_array, 
 		     int count_up, int last_index, 
 		     int array_index, int max_number, const int num_runners) {
@@ -73,9 +81,11 @@ cout << "Index: " << index << ", " << count_up << ", array_index: " << array_ind
     int val2;
     cin >> val2;
     */
+    
     if(array_index < num_runners) {
       if (array_index == 0) {
 	printf("The first Index is at %d\n", array[array_index]);
+       
       }
       
       recursive_array(array, number_array, 
@@ -84,17 +94,10 @@ cout << "Index: " << index << ", " << count_up << ", array_index: " << array_ind
 		      num_runners);
       
     } else {
-           
-      //    geo_time_result* geo_result = NULL;
-
-      
+                 
       geo_time_result* geo_result = Geometric_method(array,		     
 					   	     num_runners);
-      
-      
-      
-      
-      
+            
       // We check for errors
       if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, array))) {
 	  
@@ -104,10 +107,6 @@ cout << "Index: " << index << ", " << count_up << ", array_index: " << array_ind
 	
 	for(int index = 0; index < num_runners; index++) {  
 	  printf(", %d", array[index]);
-	  /*
-	  ss.seekp(0);
-	  ss.str("");
-	  */
 	}
 	printf("]\n\n");
       }
@@ -137,10 +136,8 @@ void ultimateTest() {
   for(int index = 0; index < max_number; index++) {
     real_number_array[index] = 2 + index;
   }
- 
-  FILE *stream ;
-  if((stream = freopen("output", "w", stdout)) == NULL)
-    exit(-1);
+
+  //  stringstream ss;
 
   // Now to populate the array with 10 values
   gettimeofday(&start, &tz);
@@ -349,7 +346,7 @@ void sequential_prime_test() {
   const int offset = 0;
   const int speed_num = 5000;
   int max_number = 500000;
-  int times_to_do_tests = 10;
+  int times_to_do_tests = 2;
   
   // The number of runners
   int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 12000, 30000, 50000, 500000};
@@ -360,21 +357,24 @@ void sequential_prime_test() {
     speeds[speed_index] = (speed_index + 1) * 100 + offset;
   }
 
+  cout << "before prime\n";
   // We find the primes which are going as the speeds
-  len_array primes = findPrimes(max_number);/*
+  // len_array primes = findPrimes(max_number);
+/*
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, true, "Primes-Random");
+					    */
   printf("done prime\n");
-					    */ 
-  delete primes.array;
+					     
+  //  delete primes.array;
   
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number - offset; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
-  //doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
   
   srand(time(NULL));
   //  cout << "max number: " << max_number << "\n";

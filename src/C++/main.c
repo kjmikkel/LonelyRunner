@@ -14,10 +14,6 @@
 #include "data_structure.h"
 #include "util.h"
 
-static void helloWorld (GtkWidget *wid, GtkWidget *win) {
-
-}
-
 static void import(GtkWidget *wid, GtkWidget *win) {
   GtkWidget* diag;
   diag = gtk_file_chooser_dialog_new ("Open File",
@@ -34,15 +30,83 @@ static void import(GtkWidget *wid, GtkWidget *win) {
       filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (diag));
       printf("%s\n", filename);
      
-      len_array l_arr = read_json_array_file(filename);
+      len_array l_arr = read_json_file_array(filename);
       delete filename;
  
-      test_runner_configuration(l_arr.array, l_arr.len);
+      // test_runner_configuration(l_arr.array, l_arr.len);
       delete l_arr.array;
   }
   gtk_widget_destroy (diag);
 
 }
+
+static void options() {
+  
+  GtkWidget* win = NULL;
+  GtkWidget* vbox = NULL;
+  GtkWidget* hbox = NULL;
+  GtkWidget* check_widget = NULL;
+  GtkWidget* check_maximum = NULL;
+  GtkWidget* geo_radio = NULL;
+  GtkWidget* num_radio = NULL;
+  
+  GtkWidget* ok_button = NULL;
+  GtkWidget* cancel_button = NULL;
+
+  win = gtk_window_new (GTK_WINDOW_TOPLEVEL); 
+  gtk_container_set_border_width (GTK_CONTAINER (win), 8);
+  gtk_window_set_title (GTK_WINDOW (win), "Options");
+  gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
+  gtk_widget_realize (win);
+
+  vbox = gtk_vbox_new (TRUE, 2);
+  gtk_container_add (GTK_CONTAINER (win), vbox);
+
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  // The check boxes
+  check_maximum = gtk_check_button_new_with_label("Check whether a solution exists");
+  gtk_box_pack_start(GTK_BOX(hbox), check_maximum, TRUE, TRUE, 0);
+  gtk_widget_set_name(check_maximum, "check_solution");
+
+  check_widget = gtk_check_button_new_with_label("Find Maximum distance (using Numerical algorithm)");
+  gtk_box_pack_start(GTK_BOX(hbox), check_widget, TRUE, TRUE, 0);
+  gtk_widget_set_name(check_widget, "check_maximum_distance");
+
+  // The radio buttons
+  hbox = gtk_hbox_new(TRUE, 2);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  geo_radio = gtk_radio_button_new_with_label(NULL, "Find a solution with the Geometrical algorithm");
+  gtk_box_pack_start(GTK_BOX(hbox), geo_radio, TRUE, TRUE, 0);
+
+  num_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(geo_radio), "Find a solution with the Numerical algorithm");
+  gtk_box_pack_start(GTK_BOX(hbox), num_radio, TRUE, TRUE, 0);
+
+  // The buttons
+  hbox = gtk_hbox_new(TRUE, 2);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  ok_button = gtk_button_new_from_stock ("Run");
+  g_signal_connect (G_OBJECT (ok_button), 
+		    "clicked", 
+		    G_CALLBACK (import), 
+		    (gpointer) win);
+  gtk_box_pack_start (GTK_BOX (hbox), ok_button, TRUE, TRUE, 0);
+  
+  cancel_button = gtk_button_new_from_stock ("Cancel");
+  g_signal_connect_swapped (G_OBJECT (cancel_button), 
+		    "clicked", 
+		    G_CALLBACK (gtk_widget_destroy), 
+		    G_OBJECT (win) );
+  
+  gtk_box_pack_start (GTK_BOX (hbox), cancel_button, TRUE, TRUE, 0);
+
+  gtk_widget_show_all (win);
+}
+
+
 
 static bool checkForSolution(int speedArray[], int length) {
   
@@ -170,11 +234,12 @@ static void testCustom() {
 int main (int argc, char *argv[])
 {
   
-  GtkWidget *button = NULL;
-  GtkWidget *win = NULL;
-  GtkWidget *vbox = NULL;
+  GtkWidget* button = NULL;
+  GtkWidget* win = NULL;
+  GtkWidget* vbox = NULL;
   GtkWidget* label = NULL;
   GtkWidget* entry = NULL;
+  GtkWidget* option = NULL;
 
   /* Initialize GTK+ */
   
@@ -204,7 +269,7 @@ int main (int argc, char *argv[])
   gtk_box_pack_start(GTK_BOX(vbox), entry, TRUE, TRUE, 0);
   
   button = gtk_button_new_from_stock ("Run Test");
-  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (helloWorld), (gpointer) win);
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (import), (gpointer) win);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock ("Import speeds to test");
@@ -212,7 +277,11 @@ int main (int argc, char *argv[])
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock ("Make range test");
-  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (helloWorld), (gpointer) win);
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (import), (gpointer) win);
+  gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
+
+  button = gtk_button_new_from_stock("Options");
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (options), (gpointer) win);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
