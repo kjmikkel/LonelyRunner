@@ -257,7 +257,6 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 	  num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
 	  printf("error num: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	  
-	  return;
 	  // If there is an error the we record it
 	  b_geo_error = true;
 	  // We record the time it happened
@@ -348,7 +347,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 void sequential_prime_test() {
   const int runner_num = 12;
   const int offset = 0;
-  const int speed_num = 80;
+  const int speed_num = 5000;
   int max_number = 500000;
   int times_to_do_tests = 10;
   
@@ -385,7 +384,6 @@ void sequential_prime_test() {
   }
 
   doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false, "Random");
-  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false,  "Random");
 }
 
 int main (int argc, char *argv[]) {
