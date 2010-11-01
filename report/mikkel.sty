@@ -140,6 +140,14 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 #2
 \end{itemize}
 }
+\newcommand{\graph}[2]{
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth, angle=270]{./data/graphs/#1.png}
+  \caption{\label{#1}#2}
+\end{figure}
+}
+
 \newcommand{\src}[1]{
 \subsection{#1.cpp}
 \label{code:#1}

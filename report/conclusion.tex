@@ -13,7 +13,17 @@
 
 \subsection{Summery}
 
+I have in this project:
+\begin{itemize}
+\item Implemented and tested the Numerical method found in \cite{invis}
+\item 
+\end{itemize}
+
 \subsection{Results}
 
 
 \subsection{Future work}
+
+It would be interesting to see whether the Geometrical algorithm could be made faster. One way could be only investigate the intervals where the slowest runner is in the Zone. This is based on the fact that we only have a valid solution if all the runners are in the Zone, which more specifically requires the slowest runner to be in the Zone. This could quite possibly dramatically reduce the required run-time, as since all creations, insertions and removals of Event Points when the runner is outside the Zone would never be made. While the modular nature of the Lonely Runner conjecture might make this seem like a futile task, it is important to remember that it is possible calculate the times where a runner enters the zone, and thus 
+
+Let SlowZone be the interval where the slowest runner is in the zone, then a pair of Event Points should be inserted on the heap iff at least one of \comStart and \comFin is in SlowZone. This would however separate the algorithm into 2 parts: The first part which finds the first Event Points that could be interesting, and the second part which is the same as before, only with a check that does not insert pairs of Event Points that are entirely outside the SlowZone.

@@ -4,11 +4,11 @@ import os, glob
 import Gnuplot, Gnuplot.funcutils, re
 
 class bar_instance:
-	def __init__(self, speed, geo, num):
-		self.speed, self.geo, self.num = speed, geo, num
+	def __init__(self, speed, geo, geo_spread, num, num_spread):
+		self.speed, self.geo, self.geo_spread, self.num, self.num_spread = speed, geo, geo_spread, num, num_spread
 
 	def __str__(self):
-		return "Speed: " + str(self.speed) + ", Geometrical time: " + str(self.geo) + ", Numerical time: " + str(self.num)
+		return "Speed: " + str(self.speed) + ", Geometrical time: (" + str(self.geo) + ", " + str(self.geo_spread) + ", Numerical time:(" + str(self.num) + ", " + str(self.num_spread) + ")"
 
 inData = "data/"
 outData = "../report/data/"
@@ -24,15 +24,18 @@ def saveFile(filename, data):
 	file.write(data)
 	file.close()	
 
-def doGnuPlot(filename, maxYValue):
+def doGnuPlot(filename, extra_name, maxYValue):
 	
 	Gnu = Gnuplot.Gnuplot()
 	Gnu('set data style linespoints') # Set style of the graph
 	
 	title = os.path.basename(filename)	
+	
+	m = re.search('[a-zA-Z_]+([0-9]+)[a-zA-Z_]+', title)
+	title = title.replace("_", " ")
+	
 	Gnu.title(title)
 
-	m = re.search('[a-zA-Z_]+([0-9]+)[a-zA-Z_]+', title)
 	minNum = m.group(1)
 
 	Gnu.xlabel("Maximum speed")
@@ -41,11 +44,11 @@ def doGnuPlot(filename, maxYValue):
 	Gnu.set_range("xrange", (minNum, 4900))
 
 	first = Gnuplot.File(filename + ".dat", using=(1,2), title='Geometrical algorithm')
-	second = Gnuplot.File(filename + ".dat", using=(1,3), title='Numerical algorithm')	
+	second = Gnuplot.File(filename + ".dat", using=(1,4), title='Numerical algorithm')	
 	
 	Gnu.plot(first, second)	
 	Gnu.replot()
-	Gnu.hardcopy(filename + '.ps', enhanced=1, color=1)
+	Gnu.hardcopy(filename + "_" + extra_name + '.ps', enhanced=1, color=1)
 	print filename
 		
 
@@ -74,25 +77,35 @@ def print_tables(info_list, filename):
 def print_plot(info_list, filename):
 	filename = graphs + os.path.basename(filename).split('.')[0]
 	
-	strAccum = "#Speed\tGeo\tNum\n"
-	maxValue = -1	
+	strAccum = "#Speed\tGeo\tGeo_spread\tNum\tNum_spread\n"
+	maxGeoValue = -1	
+	maxNumValue = -1
 	for bar in info_list:
-		strAccum += str(bar.speed) + "\t" + str(bar.geo) + "\t" + str(bar.num) + "\n"
-		maxValue = max(maxValue, bar.geo)
-	
+		strAccum += str(bar.speed) + "\t" + str(bar.geo) + "\t" + str(bar.geo_spread) + "\t" + str(bar.num) + "\t" + str(bar.num_spread) +"\n"
+		maxGeoValue = max(maxGeoValue, bar.geo)
+		maxNumValue = max(maxNumValue, bar.num)
+		
 	saveFile(filename + ".dat", strAccum)
-	doGnuPlot(filename, maxValue)
+	doGnuPlot(filename, "Geo", maxGeoValue)
+	doGnuPlot(filename, "Num", maxNumValue)
+	
 
 def processData():
 	for infile in glob.glob(os.path.join(inData, '*.json')):
 		json = loadJsonFile(infile)
 		numerical = json.get('Numerical results')	
+		numerical_spread = json.get('Numerical spread')
+		
 		geometrical = json.get('Geometrical results')
+		geometrical_spread = json.get('Geometrical spread')
+
+
+
 		speeds = json.get('Speeds used')
 
 		bar_list = []
 		for index in range(0, len(numerical)):
-			bar_list.append(bar_instance(speeds[index], geometrical[index], numerical[index]))
+			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_spread[index], numerical[index], numerical_spread[index]))
 		
 		print_plot(bar_list, infile)
 		print_tables(bar_list, infile)		

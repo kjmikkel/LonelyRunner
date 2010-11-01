@@ -1,4 +1,38 @@
 \section{Results}
 \label{results}
 \todo{make results}
+In this section I will show and discuss the results I have had running the program against various data-sets. As specified in the last section, I have made 3 different sets of data: Prime Numbers, Sequential Numbers and Randomly generated numbers. Since each data-set follows a similar pattern, I have chosen to talk about the most important of these, instead of going through each of the data-sets and repeating the commentary. 
 
+
+For brevity's sake I have only included the most important sets of data for reasons of brevity. Complete listings of the data-sets in table form can in \ref{} and will be made available in machine-readable form upon request.
+
+
+\subsection{Small number of runners}
+\graph{test_Sequential-Random_50_runners_Geo}{}
+
+\graph{test_Sequential-Random_100_runners_Geo}{}
+
+\graph{test_Sequential-Random_500_runners_Geo}{}
+
+[prime], [seq], [ran-sorted]:
+
+It is clear from these graphs, that as long as there are less than 500 runners, then the Numerical algorithm is faster than the Geometrical. However, around 500 runners something happens and for the first few speeds the Numerical algorithm takes an unreasonable time to complete (more than 1 second). In depth study of the execution of the Numerical algorithm has shown that in these cases, finding a solution is not done for the first few combinations of $k$-values. I believe this to be an effect of the fact that the Numerical solution does not systematically try to find a solution, but rather tests possible times. Thus the Numerical algorithm is more of a gamble, but the numbers clearly show that most of the time, it's better than the Geometrical.
+
+Since the Numerical algorithm is clearly input dependent, I have tried to randomize the input, in hopes that this would yield better results. However, as can seen below, this does not make the time spikes go away, but merely moves them around.
+
+[randomized values]
+
+
+
+
+ 
+
+ that the Numerical algorithm is generally faster than the Geometrical algorithm for configurations that contains speeds under 20000. However it 
+
+It is also clear, that while the Geometrical algorithm is clearly slower, it still only need microseconds to find a solution. 
+
+\subsection{Larger numbers}
+ 
+For these cases it is clear that the values are 
+
+\subsection{Conclusion}

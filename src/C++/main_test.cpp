@@ -85,7 +85,7 @@ cout << "Index: " << index << ", " << count_up << ", array_index: " << array_ind
     if(array_index < num_runners) {
       if (array_index == 0) {
 	printf("The first Index is at %d\n", array[array_index]);
-	appendValueToFile(string data) {
+       
       }
       
       recursive_array(array, number_array, 
@@ -347,7 +347,7 @@ void sequential_prime_test() {
   const int offset = 0;
   const int speed_num = 80;
   int max_number = 500000;
-  int times_to_do_tests = 10;
+  int times_to_do_tests = 2;
   
   // The number of runners
   int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 12000, 30000, 50000, 500000};
@@ -358,21 +358,24 @@ void sequential_prime_test() {
     speeds[speed_index] = (speed_index + 1) * 100 + offset;
   }
 
+  cout << "before prime\n";
   // We find the primes which are going as the speeds
-  len_array primes = findPrimes(max_number);/*
+  // len_array primes = findPrimes(max_number);
+/*
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, true, "Primes-Random");
+					    */
   printf("done prime\n");
-					    */ 
-  delete primes.array;
+					     
+  //  delete primes.array;
   
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number - offset; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
-  //doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
   
   srand(time(NULL));
   //  cout << "max number: " << max_number << "\n";
