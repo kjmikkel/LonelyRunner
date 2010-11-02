@@ -70,17 +70,17 @@ static void MakeTimePoints(event_point* old_end_point, event_point_priority_queu
 
   event_point* start = make_point(old_end_point, 1, START);
   event_point* end = make_point(old_end_point, length, END);
-
+  
   queue->push(start);
   queue->push(end);
-  }
+}
 
 static void freeQueue(event_point_priority_queue* queue) {
   
   // First we remove and free all the points
-  
-  while(queue->size() > 0) {
-    event_point* p = queue->top();
+  event_point* p;
+  while(!queue->empty()) {
+    p = queue->top();
     queue->pop();
     
     delete p;
@@ -91,6 +91,14 @@ static void freeQueue(event_point_priority_queue* queue) {
 }
 
 geo_time_result* Geometric_method (const int speed_array[], const int length) {
+  if (length < 1) {
+    std::cout << "The list of speeds is empty\n";
+   
+    geo_time_result* no_result = new geo_time_result;
+    no_result->result = 0;
+    no_result->point = NULL;
+    return no_result;
+  }
   event_point_priority_queue* queue = new event_point_priority_queue;
   
   event_point* final_point = new event_point;
@@ -116,14 +124,14 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
   }
 
   int intersection = 0;
-  while(queue->size() > 1) {
+  event_point* p;
+  while(!queue->empty()) {
     // Find point and remove it from the queue
-    event_point* p = queue->top();
+    p = queue->top();
     queue->pop();
     
     if (p->type == START) {
       intersection++;
-      //      cout << "+: " << intersection <<"\n";
       if (intersection == length) {
 
 	/*
@@ -136,20 +144,21 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
 	has_result->result = true;
 	has_result->point = p;
 	
-	freeQueue(queue); // Free the queue
-	//delete p; // Free the Point
+      	freeQueue(queue); // Free the queue
 	return has_result;
       }
+      
+      delete p; // Delete the point
     } else if (p->type == END) {
       intersection--;
       // cout << "-: " << intersection << "\n";
       
       MakeTimePoints(p, queue, length);
-      delete p; // free the point
+      // delete p; // free the point
 
     } else if (p->type == FINAL) {
       // There can be no solution, so free the entire queue
-      // cout << "***Final!***\n";
+      //cout << "***Final!***\n";
       freeQueue(queue);
       delete p; //... and the point
       
@@ -160,3 +169,16 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
     }
   }
 }
+
+/*
+int main (int argc, char *argv[])
+{
+  if (true) {
+    int testArray[6] = {12, 3, 7, 9, 55, 200};
+    geo_time_result* result = Geometric_method(testArray, 6);
+    
+    delete result->point;
+    delete result;
+  }
+}
+*/
