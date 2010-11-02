@@ -101,7 +101,9 @@ static bool checkForSolution(int speedArray[], int length) {
   return false;
 }
 
-num_time_result* Numerical_method (int speed_array[], const int length, bool randomPermutate, bool reverse) {
+num_time_result* Numerical_method (int speed_array[], const int length, bool randomPermutate, bool reverse, bool check_for_max_solution) {
+
+  cout << "max solution: " << check_for_max_solution << "\n";
   
   // Randomize the order of the numbers
   if (randomPermutate) {
@@ -133,7 +135,11 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
     }
   }
   
-  //  double compare_to = (1.0 / (length + 1.0));
+  unsigned int candidate_k1 = -1;
+  unsigned int candidate_k2 = -1;
+  unsigned int candidate_a = 0;
+  ZZ candidate_k = to_ZZ(-1);
+  bool no_candidate = true;
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
     // cout << "first index: " << first_speed << ", " << first_index << "\n";
@@ -149,7 +155,8 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
       
       int second_speed = speed_array[second_index];
       ZZ k = to_ZZ(first_speed) + second_speed;
-      //      cout << "k: " << k << ", num1: " << first_speed << ", num2: " << second_speed << "\n";
+     
+ //      cout << "k: " << k << ", num1: " << first_speed << ", num2: " << second_speed << "\n";
       // int start = k / (length+1);
       // Look into this code - it might lead to extreme speedups, but currently there is a problem 
       
@@ -198,20 +205,55 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
 	  
 	  testValid &= compare * (length + 1) >= k;	  
 	  if(!testValid) 
+	    // std::cout << compare * (length + 1) << " " << k << "\n";
 	    break;
 	}
 	
 	if (testValid) {
-	  //	  cout << "Final second_index: " << second_index << "\n";
-	  num_time_result* result = new num_time_result;
-	  result->result = true;
-	  result->k1 = first_speed;
-	  result->k2 = second_speed;
-	  result->a = a;
-	  return result;
+	  bool candidate_comparison = k * candidate_a < candidate_k * a;  
+
+	  //	  std::cout << "Compare: " << candidate_comparison << "\n";
+
+	  if(no_candidate || candidate_comparison) {
+	    no_candidate = false;
+	    //	    std::cout << "New candidate!\n";
+	    candidate_k1 = first_speed;
+	    candidate_k2 = second_speed;
+	    candidate_a = a;
+	  }
 	}
+	
+	if(!check_for_max_solution && !no_candidate) {
+	  //	  cout << "Got it - non-maximum\n";	  
+
+	  num_time_result* result = new num_time_result;	  
+	  result->result = true;
+	  result->k1 = candidate_k1;
+	  result->k2 = candidate_k2;
+	  result->a = candidate_a;
+	  return result;
+   	}
       }
     }
+    
+    num_time_result* result = new num_time_result;
+    if (candidate_k1 > 0) {	
+      cout << "Got it\n";	  
+      result->result = true;
+      result->k1 = candidate_k1;
+      result->k2 = candidate_k2;
+      result->a = candidate_a;
+      return result;
+      
+    } else {
+      cout << "**Fail**\n";
+      result->result = false;
+      result->k1 = -1;
+      result->k2 = -1;
+      result->a = -1;
+      return result;
+    }
+     
   }
 
   cout << "Return no solution";

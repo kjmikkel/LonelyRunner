@@ -3,7 +3,7 @@
 
 #include "data_structure.h"
 
-num_time_result* Numerical_method (int speed_array[], const int length, bool randomize_order, bool reverse);
+num_time_result* Numerical_method (int speed_array[], const int length, bool randomize_order, bool reverse, bool check_for_max_solution);
 
 bool isValid(num_time_result* result, const int array[], unsigned int number_runners);
 
