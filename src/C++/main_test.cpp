@@ -251,7 +251,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 	    //    if(runner_speeds[index] < 2)
 	    //cout << "Speed less than 2: " << runner_speeds[index] << "\n";
 	  }
-	  num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false);
+	  num_time_result* num_result = Numerical_method(runner_speeds, num_runners, true, false, false);
 	  printf("error num: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	  
 	  // If there is an error the we record it
@@ -282,7 +282,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
 	cout << "Index of num: " << (time_test_index + 1) << "\n";
 	gettimeofday(&start, &tz);
-	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, randomize, false);
+	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, randomize, false, false);
 	gettimeofday(&end, &tz);
 	time_test_array[time_test_index] = (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
 	seconds_time_test_array[time_test_index] = (end.tv_sec - start.tv_sec);
