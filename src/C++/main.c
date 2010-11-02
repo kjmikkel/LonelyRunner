@@ -4,109 +4,25 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <sys/time.h>
 #include <vector>
 #include <regex.h>
 #include <json/json.h>
+#include <sstream>
 
 #include "Geometric.h"
 #include "Numerical.h"
 #include "data_structure.h"
 #include "util.h"
 
-static void import(GtkWidget *wid, GtkWidget *win) {
-  GtkWidget* diag;
-  diag = gtk_file_chooser_dialog_new ("Open File",
-					      NULL, //parent_window,
-				      GTK_FILE_CHOOSER_ACTION_OPEN,
-				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-				      NULL);
-  
-  if (gtk_dialog_run (GTK_DIALOG (diag)) == GTK_RESPONSE_ACCEPT)
-    {
-      char* filename;
-      
-      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (diag));
-      printf("%s\n", filename);
-     
-      len_array l_arr = read_json_file_array(filename);
-      delete filename;
- 
-      // test_runner_configuration(l_arr.array, l_arr.len);
-      delete l_arr.array;
-  }
-  gtk_widget_destroy (diag);
-
-}
-
-static void options() {
-  
-  GtkWidget* win = NULL;
-  GtkWidget* vbox = NULL;
-  GtkWidget* hbox = NULL;
-  GtkWidget* check_widget = NULL;
-  GtkWidget* check_maximum = NULL;
-  GtkWidget* geo_radio = NULL;
-  GtkWidget* num_radio = NULL;
-  
-  GtkWidget* ok_button = NULL;
-  GtkWidget* cancel_button = NULL;
-
-  win = gtk_window_new (GTK_WINDOW_TOPLEVEL); 
-  gtk_container_set_border_width (GTK_CONTAINER (win), 8);
-  gtk_window_set_title (GTK_WINDOW (win), "Options");
-  gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
-  gtk_widget_realize (win);
-
-  vbox = gtk_vbox_new (TRUE, 2);
-  gtk_container_add (GTK_CONTAINER (win), vbox);
-
-  hbox = gtk_hbox_new(TRUE, 0);
-  gtk_container_add(GTK_CONTAINER (vbox), hbox);
-
-  // The check boxes
-  check_maximum = gtk_check_button_new_with_label("Check whether a solution exists");
-  gtk_box_pack_start(GTK_BOX(hbox), check_maximum, TRUE, TRUE, 0);
-  gtk_widget_set_name(check_maximum, "check_solution");
-
-  check_widget = gtk_check_button_new_with_label("Find Maximum distance (using Numerical algorithm)");
-  gtk_box_pack_start(GTK_BOX(hbox), check_widget, TRUE, TRUE, 0);
-  gtk_widget_set_name(check_widget, "check_maximum_distance");
-
-  // The radio buttons
-  hbox = gtk_hbox_new(TRUE, 2);
-  gtk_container_add(GTK_CONTAINER (vbox), hbox);
-
-  geo_radio = gtk_radio_button_new_with_label(NULL, "Find a solution with the Geometrical algorithm");
-  gtk_box_pack_start(GTK_BOX(hbox), geo_radio, TRUE, TRUE, 0);
-
-  num_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(geo_radio), "Find a solution with the Numerical algorithm");
-  gtk_box_pack_start(GTK_BOX(hbox), num_radio, TRUE, TRUE, 0);
-
-  // The buttons
-  hbox = gtk_hbox_new(TRUE, 2);
-  gtk_container_add(GTK_CONTAINER (vbox), hbox);
-
-  ok_button = gtk_button_new_from_stock ("Run");
-  g_signal_connect (G_OBJECT (ok_button), 
-		    "clicked", 
-		    G_CALLBACK (import), 
-		    (gpointer) win);
-  gtk_box_pack_start (GTK_BOX (hbox), ok_button, TRUE, TRUE, 0);
-  
-  cancel_button = gtk_button_new_from_stock ("Cancel");
-  g_signal_connect_swapped (G_OBJECT (cancel_button), 
-		    "clicked", 
-		    G_CALLBACK (gtk_widget_destroy), 
-		    G_OBJECT (win) );
-  
-  gtk_box_pack_start (GTK_BOX (hbox), cancel_button, TRUE, TRUE, 0);
-
-  gtk_widget_show_all (win);
-}
-
-
+struct options_data {
+  int* speed_array;
+  int length;
+  GtkWidget* check_solution;
+  GtkWidget* maximum_solution;
+  GtkWidget* geo;
+};
 
 static bool checkForSolution(int speedArray[], int length) {
   
@@ -136,6 +52,265 @@ static bool checkForSolution(int speedArray[], int length) {
   
   
   return false;
+}
+
+std::string intToString(int i)
+{
+    std::stringstream ss;
+    std::string s;
+    ss << i;
+    s = ss.str();
+    return s;
+}
+
+GtkWidget* make_dialog(std::string title, std::string label_text) {
+  GtkWidget* dialog = gtk_dialog_new_with_buttons (title.c_str(),
+						   NULL,
+						   GTK_DIALOG_MODAL,
+						   GTK_STOCK_OK, 
+						   GTK_RESPONSE_ACCEPT,
+						   NULL);
+        
+      GtkWidget* label = gtk_label_new((const char*)label_text.c_str());
+      gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, TRUE, TRUE, 0);
+      gtk_widget_show (label);
+      return dialog;
+}
+
+static void do_test(GtkWidget *wid, options_data* options) { 
+  int* speed_array = options->speed_array;
+  int length = options->length;
+  
+  std::cout << "Do test\n";
+  for(int index = 0; index < length; index++) {
+    if(speed_array[index] < 1) {
+	std::string str_title = "***Error - illegal value:"; 
+	std::string str_msg = "The value " + intToString(speed_array[index]) + " is not a legal value";   
+	GtkWidget* positive_dialog = make_dialog(str_title, str_msg);
+	gint result = gtk_dialog_run(GTK_DIALOG(positive_dialog));
+	gtk_widget_destroy(positive_dialog);
+    }
+  }
+
+  bool check_for_solution = GTK_TOGGLE_BUTTON(options->check_solution)->active;
+  bool check_for_maximum_solution = GTK_TOGGLE_BUTTON(options->maximum_solution)->active;
+
+  if (check_for_maximum_solution)
+    std::cout << "Max\n";
+  
+  bool geo_check = GTK_TOGGLE_BUTTON(options->geo)->active;
+  
+  /* 
+   * This is not dependent on check_for_maximum_solution, as this depends on the individual values of the  
+   * numbers, not on the relation between them
+   */
+  if(check_for_solution) {
+    std::cout << "check Solution\n";
+    bool solution = checkForSolution(speed_array, length);
+    if (solution)  {
+      
+      std::string str = "There exists a solution for the values";
+      /*
+      std::stringstream out;
+      
+      if (length <= 25) {
+      str += " ";
+	for(int index = 0; index < length; index++) {
+	  std::cout << speed_array[index];
+	  out << intToString(speed_array[index]);
+	  if ((index % 10) == 0)
+	    out << "\n";
+	    }
+	std::cout << out.str();
+      }
+      
+      str += out.str();
+      */      
+      GtkWidget* dialog = make_dialog("There exists a solution", str);
+      gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+      return;
+    } else {
+      std::string str = "Could not detect a solution up-front - will now run main algorithm"; 
+      GtkWidget* dialog = make_dialog("Could not detect whether a solution exists up-front", str);
+      gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+      gtk_widget_destroy (dialog);
+    }
+    
+  }
+  
+  geo_time_result* geo_result;
+  num_time_result* num_result;
+
+  if (geo_check) {
+    std::cout << "Run Geo\n"; 
+        
+    geo_time_result* geo_result = Geometric_method(speed_array, length);
+    std::cout << "After Geo: " << geo_result << "\n";
+    
+    if (geo_result->result) {
+      // We found a result 
+      if(isValid(geo_result, speed_array)) {
+	std::cout << "Geo result\n";
+	std::string str_geo_pos = "GEO: There exists a valid solution to the runner speeds"; 
+	GtkWidget* positive_dialog = make_dialog(str_geo_pos, str_geo_pos);
+	gint result = gtk_dialog_run(GTK_DIALOG(positive_dialog));
+	gtk_widget_destroy(positive_dialog);
+      } else {
+	std::string str_geo_fail = "GEO: Invalid result found";
+	std::string str_geo_fail2 = "Please make note of the runner speeds, send an error report, and try the Numerical algorithm";
+	GtkWidget* fail_dialog = make_dialog(str_geo_fail, str_geo_fail2);
+	gint result = gtk_dialog_run(GTK_DIALOG(fail_dialog));
+	gtk_widget_destroy(fail_dialog);
+      } 
+    } else {
+      // We did not find a result!
+      std::string str_geo_fail = "GEO: No result found for the given runner speeds";
+      std::string str_geo_fail2 = "No results found, please run this again with the numerical algorithm";
+      GtkWidget* fail_dialog = make_dialog(str_geo_fail, str_geo_fail2);
+      gint result = gtk_dialog_run(GTK_DIALOG(fail_dialog));
+      gtk_widget_destroy(fail_dialog);
+    }
+    std::cout << "Delete geo\n";
+    delete geo_result;
+
+  } else {
+
+    num_time_result* num_result = Numerical_method(speed_array, length, false, false, check_for_maximum_solution);
+    if (num_result->result) {
+      
+      if(isValid(num_result, speed_array, length)) {
+	std::string str_num_pos = "NUM: There exists a valid solution to the runner speeds"; 
+	GtkWidget* positive_dialog = make_dialog(str_num_pos, str_num_pos);
+	gint result = gtk_dialog_run(GTK_DIALOG(positive_dialog));
+	gtk_widget_destroy(positive_dialog);
+      } else {
+	std::string str_geo_fail = "NUM: Invalid result found";
+	std::string str_geo_fail2 = "Please make note of the runner speeds, send an error report - this should never happen";
+	GtkWidget* fail_dialog = make_dialog(str_geo_fail, str_geo_fail2);
+	gint result = gtk_dialog_run(GTK_DIALOG(fail_dialog));
+	gtk_widget_destroy(fail_dialog);
+      }
+	
+    } else {
+      // We did not find a result!
+      std::string str_num_fail = "NUM: No result found for the given runner speeds!";
+      std::string str_num_fail2 = "No results found - make note of your inputs. Make sure none of them are below 1.\nIf no of the values are below 1, you may have a counter-example to the Lonely Runner conjecture.";
+      GtkWidget* fail_dialog = make_dialog(str_num_fail, str_num_fail2);
+      gint result = gtk_dialog_run(GTK_DIALOG(fail_dialog));
+      gtk_widget_destroy(fail_dialog);
+    }
+    delete num_result;
+  }
+  
+}
+
+static void options_widget(int speed_array[], int length) {
+  
+  GtkWidget* win = NULL;
+  GtkWidget* vbox = NULL;
+  GtkWidget* hbox = NULL;
+  GtkWidget* check_widget = NULL;
+  GtkWidget* check_maximum = NULL;
+  GtkWidget* geo_radio = NULL;
+  GtkWidget* num_radio = NULL;
+  
+  GtkWidget* ok_button = NULL;
+  GtkWidget* cancel_button = NULL;
+
+  for(int index = 0; index < length; index++) {
+    std::cout << speed_array[index] << "\n";
+  }
+
+  options_data* option = new options_data;
+  option->speed_array = speed_array;
+  option->length = length;
+  
+  std::cout << "Option_data speed:\n";
+  for(int index = 0; index < length; index++) {
+    std::cout << option->speed_array[index] << "\n";
+  }
+  std::cout << "Option data speed end\n";
+
+  win = gtk_window_new (GTK_WINDOW_TOPLEVEL); 
+  gtk_container_set_border_width (GTK_CONTAINER (win), 8);
+  gtk_window_set_title (GTK_WINDOW (win), "Options");
+  gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
+  gtk_widget_realize (win);
+
+  vbox = gtk_vbox_new (TRUE, 2);
+  gtk_container_add (GTK_CONTAINER (win), vbox);
+
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  // The check boxes
+  check_maximum = gtk_check_button_new_with_label("Check whether a solution exists");
+  gtk_box_pack_start(GTK_BOX(hbox), check_maximum, TRUE, TRUE, 0);
+  gtk_widget_set_name(check_maximum, "check_solution");
+  option->check_solution = check_maximum;
+
+  check_widget = gtk_check_button_new_with_label("Find Maximum distance (using Numerical algorithm)");
+  gtk_box_pack_start(GTK_BOX(hbox), check_widget, TRUE, TRUE, 0);
+  gtk_widget_set_name(check_widget, "check_maximum_distance (This will take a while)");
+  option->maximum_solution = check_widget;
+
+  // The radio buttons
+  hbox = gtk_hbox_new(TRUE, 2);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  geo_radio = gtk_radio_button_new_with_label(NULL, "Find a solution with the Geometrical algorithm");
+  gtk_box_pack_start(GTK_BOX(hbox), geo_radio, TRUE, TRUE, 0);
+  option->geo = geo_radio;
+
+  num_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(geo_radio), "Find a solution with the Numerical algorithm");
+  gtk_box_pack_start(GTK_BOX(hbox), num_radio, TRUE, TRUE, 0);
+  
+  // The buttons
+  hbox = gtk_hbox_new(TRUE, 2);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  ok_button = gtk_button_new_from_stock ("Run");
+  g_signal_connect (G_OBJECT (ok_button), 
+		    "clicked", 
+		    G_CALLBACK (do_test), 
+		    (gpointer) (void*)option);
+  gtk_box_pack_start (GTK_BOX (hbox), ok_button, TRUE, TRUE, 0);
+  
+  cancel_button = gtk_button_new_from_stock ("Cancel");
+  g_signal_connect_swapped (G_OBJECT (cancel_button), 
+		    "clicked", 
+		    G_CALLBACK (gtk_widget_destroy), 
+		    G_OBJECT (win) );
+  
+  gtk_box_pack_start (GTK_BOX (hbox), cancel_button, TRUE, TRUE, 0);
+  
+  gtk_widget_show_all (win);
+}
+
+static void import(GtkWidget *wid, GtkWidget *win) {
+  GtkWidget* diag;
+  diag = gtk_file_chooser_dialog_new ("Open File",
+				      NULL, //parent_window,
+				      GTK_FILE_CHOOSER_ACTION_OPEN,
+				      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+				      GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+				      NULL);
+  
+  if (gtk_dialog_run (GTK_DIALOG (diag)) == GTK_RESPONSE_ACCEPT)
+    {
+      char* filename;
+      
+      filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (diag));
+     
+      len_array l_arr = read_json_file_array(filename);
+      delete filename;
+            
+      options_widget(l_arr.array, l_arr.len);
+      //      delete l_arr.array;
+  }
+  gtk_widget_destroy (diag);
+
 }
 
 static void testValues(int startRunners, 
@@ -168,7 +343,7 @@ static void testValues(int startRunners,
       printf("Time: %f, Valid: %i\n", f_geo_result, valid);
             
       gettimeofday(start, NULL);
-      num_time_result* num_result = Numerical_method(array, runnerNum, true, false);
+      num_time_result* num_result = Numerical_method(array, runnerNum, true, false, false);
       gettimeofday(end, NULL);
       
       valid = isValid(num_result, array, runnerNum);
@@ -185,8 +360,6 @@ static void testValues(int startRunners,
   } 
   
 }
-
-
 
 static void testCustom() {
   
@@ -217,7 +390,7 @@ static void testCustom() {
   printf("Time: %f, Valid: %i\n", f_geo_result, valid);
   
   gettimeofday(start, NULL);
-  num_time_result* num_result = Numerical_method(array, length, true, false);
+  num_time_result* num_result = Numerical_method(array, length, true, false, false);
   gettimeofday(end, NULL);
   
   valid = isValid(num_result, array, length);
@@ -229,6 +402,69 @@ static void testCustom() {
   delete end;
   delete start;
   
+}
+
+void parse_text_field(GtkWidget *wid, GtkWidget *widget) {
+  
+  GtkEntry* entry = (GtkEntry*)widget;
+  
+  char* temp_val = (char*)gtk_entry_get_text(entry);
+  char val[strlen(temp_val)];
+  strcpy(val, temp_val);
+  char* test;
+  
+  std::vector<std::string> vec;
+  std::string delimiter = " ,";
+
+  test = strtok(val, delimiter.c_str());
+  while(test != NULL) {
+    std::cout << "Token: " << test  << "\n";
+    vec.push_back(test);
+    test = strtok(NULL, delimiter.c_str());
+  }
+
+  int length = vec.size();
+  int* runner_array = new int[length];
+  bool fail = false;
+
+  for(int index = 0; 0 < vec.size(); index++) {
+    
+    int candidate =  atoi(vec.back().c_str());
+    std::cout << "Num: " << candidate << "\n";
+    vec.pop_back();
+    if (candidate > 0) {
+      
+      runner_array[index] = candidate;
+    } else {
+      // An illegal value has been detected, stoping procedure - inform the user of the error
+      fail = true;
+      break;
+    }
+  }
+
+  if (!fail) {
+    options_widget(runner_array, length);
+  } else {
+    std::string str = "Cannot parse text field - illegal input detected";
+      
+    GtkWidget* dialog = gtk_dialog_new_with_buttons (str.c_str(),
+						     NULL,
+						     GTK_DIALOG_MODAL,
+						     GTK_STOCK_OK, 
+						     GTK_RESPONSE_ACCEPT,
+						     NULL);
+    
+    
+    GtkWidget* label = gtk_label_new((const char*)str.c_str());
+    gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, TRUE, TRUE, 0);
+    gtk_widget_show (label);
+    
+    gint result = gtk_dialog_run (GTK_DIALOG (dialog));
+    gtk_widget_destroy (dialog);
+    return;
+  }
+
+
 }
 
 int main (int argc, char *argv[])
@@ -269,7 +505,7 @@ int main (int argc, char *argv[])
   gtk_box_pack_start(GTK_BOX(vbox), entry, TRUE, TRUE, 0);
   
   button = gtk_button_new_from_stock ("Run Test");
-  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (import), (gpointer) win);
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (parse_text_field), (gpointer) entry);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock ("Import speeds to test");
@@ -278,10 +514,6 @@ int main (int argc, char *argv[])
 
   button = gtk_button_new_from_stock ("Make range test");
   g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (import), (gpointer) win);
-  gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
-
-  button = gtk_button_new_from_stock("Options");
-  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (options), (gpointer) win);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);
@@ -294,5 +526,5 @@ int main (int argc, char *argv[])
   gtk_widget_show_all (win);
   gtk_main ();
   return 0;
-  
 }
+
