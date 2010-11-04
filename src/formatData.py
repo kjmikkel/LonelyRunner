@@ -2,6 +2,8 @@ import json
 import os, glob
 
 import Gnuplot, Gnuplot.funcutils, re
+#from scipy import *
+
 
 class bar_instance:
 	def __init__(self, speed, geo, geo_spread, num, num_spread):
@@ -10,7 +12,7 @@ class bar_instance:
 	def __str__(self):
 		return "Speed: " + str(self.speed) + ", Geometrical time: (" + str(self.geo) + ", " + str(self.geo_spread) + ", Numerical time:(" + str(self.num) + ", " + str(self.num_spread) + ")"
 
-inData = "data/"
+inData = "data Backup/"
 outData = "../report/data/"
 graphs = outData + "graphs/"
 tables = outData + "tables/"
@@ -26,6 +28,9 @@ def saveFile(filename, data):
 
 def doGnuPlot(filename, extra_name, maxYValue):
 	
+	DATAFILE='xrddata.dat'
+	PLOTFILE='xrddata.ps'
+
 	Gnu = Gnuplot.Gnuplot()
 	Gnu('set data style linespoints') # Set style of the graph
 	
@@ -34,23 +39,24 @@ def doGnuPlot(filename, extra_name, maxYValue):
 	m = re.search('[a-zA-Z_]+([0-9]+)[a-zA-Z_]+', title)
 	title = title.replace("_", " ")
 	
-	Gnu.title(title)
-
 	minNum = m.group(1)
 
-	Gnu.xlabel("Maximum speed")
-	Gnu.ylabel("Number of microseconds")
-	Gnu.set_range("yrange", (0, maxYValue))
-	Gnu.set_range("xrange", (minNum, 4900))
+	input_filename = filename + ".dat"
 
-	first = Gnuplot.File(filename + ".dat", using=(1,2), title='Geometrical algorithm')
-	second = Gnuplot.File(filename + ".dat", using=(1,4), title='Numerical algorithm')	
+	f=os.popen('gnuplot' ,'w')
+	print >>f, "set xrange [%f:%f]" % (int(minNum), 5000)
+	print >>f, "set yrange [%f:%f]" % (0, maxYValue)
+	print >>f, "set title %s" % title
+	print >>f, "set term postscript"
+	print >>f, "set out '%s'" % (filename + "_" + extra_name + ".ps")
+	print >>f, "set noborder"
+	print >>f, "set multiplot"
 	
-	Gnu.plot(first, second)	
-	Gnu.replot()
-	Gnu.hardcopy(filename + "_" + extra_name + '.ps', enhanced=1, color=1)
-	print filename
-		
+	print >>f, "set xlabel 'Maximum speed'; set ylabel 'Number of microseconds'"	
+	print >>f, "plot '%s' using 1:2:3 with errorbars title 'Geometrical algorithm' lc rgb 'red', '%s' using 1:4:5 with errorbars title 'Numerical algorithm' lc rgb 'green'" % (input_filename, input_filename)
+	print >>f, "unset multiplot"
+	print >>f, "reset"
+	f.flush()
 
 def print_tables(info_list, filename):
 	filename = tables + os.path.basename(filename).split('.')[0] + ".tex"
