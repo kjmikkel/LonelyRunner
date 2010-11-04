@@ -64,14 +64,14 @@ bool isValid(num_time_result* result, const int array[], unsigned int number_run
 
 bool isValid(geo_time_result* result, const int array[]) {
   event_point point = result->point;
-  //  if (point == NULL) return false;
+  if (point == NULL) return false;
   
-  ZZ P = point.local_position + to_ZZ(point.rounds) * (point.number_of_runners + 1);
-  ZZ Q = to_ZZ(point.speed) * (point.number_of_runners + 1);
+  ZZ P = point->local_position + to_ZZ(point->rounds) * (point->number_of_runners + 1);
+  ZZ Q = to_ZZ(point->speed) * (point->number_of_runners + 1);
   
-  bool b_result = isValidInternal(P, Q, array, point.number_of_runners);
+  bool b_result = isValidInternal(P, Q, array, point->number_of_runners);
   if (!b_result) {
-    cout << "Local position: " << point.local_position << ", rounds: " << point.rounds << " number of runners: " << point. number_of_runners << ", speed: " << point.speed << "\n";
+    cout << "Local position: " << point->local_position << ", rounds: " << point->rounds << " number of runners: " << point-> number_of_runners << ", speed: " << point->speed << "\n";
   }
   return b_result;
 }

@@ -24,6 +24,30 @@ struct options_data {
   GtkWidget* geo;
 };
 
+struct range_data {
+  const gchar* range_from;
+  const gchar* range_to;
+  const gchar* num_runners;
+
+  GtkToggleButton* pre_test;
+  GtkToggleButton* geo;
+  GtkLabel* label;
+};
+
+GtkWidget* make_dialog(std::string title, std::string label_text) {
+  GtkWidget* dialog = gtk_dialog_new_with_buttons (title.c_str(),
+						   NULL,
+						   GTK_DIALOG_MODAL,
+						   GTK_STOCK_OK, 
+						   GTK_RESPONSE_ACCEPT,
+						   NULL);
+        
+      GtkWidget* label = gtk_label_new((const char*)label_text.c_str());
+      gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, TRUE, TRUE, 0);
+      gtk_widget_show (label);
+      return dialog;
+}
+
 static bool checkForSolution(int speedArray[], int length) {
   
   for(int numberIndex = 2; numberIndex < length + 2; numberIndex++) {
@@ -50,7 +74,6 @@ static bool checkForSolution(int speedArray[], int length) {
     }
   }
   
-  
   return false;
 }
 
@@ -62,20 +85,253 @@ std::string intToString(int i)
     s = ss.str();
     return s;
 }
-
-GtkWidget* make_dialog(std::string title, std::string label_text) {
-  GtkWidget* dialog = gtk_dialog_new_with_buttons (title.c_str(),
-						   NULL,
-						   GTK_DIALOG_MODAL,
-						   GTK_STOCK_OK, 
-						   GTK_RESPONSE_ACCEPT,
-						   NULL);
-        
-      GtkWidget* label = gtk_label_new((const char*)label_text.c_str());
-      gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, TRUE, TRUE, 0);
-      gtk_widget_show (label);
-      return dialog;
+/*
+int stringToInt(std::string str) {
+  istringstream buffer(str);
+  int value;
+  buffer >> value;
+  return value;
 }
+*/
+
+void recursive_array(int* array, int* number_array,
+		     int level, int array_index,
+		     int max_number,
+		     bool pre_test, bool geo,
+		     GtkLabel* label) {
+
+  for(int current_index = array_index - level; current_index < max_number; current_index++) { 
+    array[array_index - level] = number_array[current_index];
+    
+    if (level < array_index) {
+      if (level == 1) {
+	std::string testing = "Now testing index " + intToString(array[array_index - level]);
+	gtk_label_set_text(label, testing.c_str());
+	printf("Now testing index %d\n", array[array_index - level]);
+      }
+      
+    recursive_array(array, number_array, 
+		    level + 1, array_index,
+		    current_index,
+		    pre_test, geo,
+		    label);
+    
+    } else {
+      /*
+      for(int index = 0; index < array_index; index++) {
+	std::cout << " " << array[index];
+      }
+      std::cout << "\n";
+      */
+      
+      if (pre_test) {
+	// If it is true, then we might as well return
+	if(checkForSolution(array, array_index)) {
+	  return;
+	      }
+      }
+
+      if (geo) {
+      geo_time_result* geo_result = Geometric_method(array,		     
+					   	     array_index);
+      
+      // We check for errors
+      if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, array))) {
+	  
+	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, array));
+	printf("For the values: [");
+	
+	for(int index = 0; index < array_index; index++) {  
+	  printf(", %d", array[index]);
+	}
+	printf("]\n\n");
+      }
+      delete geo_result;
+      } else {
+	// Test that what it reports
+	num_time_result* num_result = Numerical_method(array, array_index, false, false, false);
+	delete num_result;
+      }
+    }
+  }
+}
+
+// This will test every single possible combination of speeds under or equal to 100 with 10 runners 
+void range_test(GtkWidget *wid, range_data* range) {
+
+  int start_value = atoi(range->range_from);
+  int end_value = atoi(range->range_to);
+  int num_runners = atoi(range->num_runners);
+
+  bool pre_test = (range->pre_test)->active;
+  bool geo = (range->geo)->active;
+  
+  std::cout << start_value << " " << end_value << " " << num_runners << "\n";
+  // Add error msg
+  if (start_value < 1) {
+    return;
+  }
+
+  // Add error msg
+  if (end_value <= start_value) {
+    return;
+  }
+
+  // Add error msg
+  if (num_runners > (end_value - start_value)) {
+    return;
+  }
+  struct timeval start;
+  struct timeval end;
+  
+  struct timezone tz;
+  struct tm *tm;
+
+  // The array which are going to contain all the different permutations of speeds below 100
+  int test_array[num_runners];
+
+  // The array that is going to contain the values we are going to check
+  int max_number = end_value - start_value;
+  int real_number_array[max_number];
+  
+  for(int index = 0; index < max_number; index++) {
+    real_number_array[index] = index + start_value;
+  }
+
+  // Now to populate the array with the values and test them
+  gettimeofday(&start, &tz);
+  
+  recursive_array(test_array, real_number_array, 
+		  1, num_runners,
+		  max_number,
+		  pre_test, geo,
+		  range->label);
+  
+  gettimeofday(&end, &tz);
+  std::cout << "\nDone. Making this took ";
+  
+  std::stringstream ss;
+  ss << (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
+  std::cout << ss.str() << " microseconds.\n";
+  
+  // Add pop-up
+
+  delete tm;
+}
+
+static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
+  GtkWidget* win = NULL;
+  GtkWidget* vbox = NULL;
+  GtkWidget* hbox = NULL;
+
+  GtkWidget* from_label = NULL;
+  GtkWidget* to_label = NULL;
+  GtkWidget* num_runners_label= NULL;
+  GtkWidget* status_label = NULL;
+
+  GtkWidget* from_entry = NULL;
+  GtkWidget* to_entry = NULL;
+  GtkWidget* num_runners_entry = NULL;
+
+  GtkWidget* check_widget = NULL;
+  GtkWidget* check_maximum = NULL;
+  GtkWidget* geo_radio = NULL;
+  GtkWidget* num_radio = NULL;
+  
+  GtkWidget* ok_button = NULL;
+  GtkWidget* cancel_button = NULL;
+
+  range_data* range = new range_data;
+  
+  win = gtk_window_new (GTK_WINDOW_TOPLEVEL); 
+  gtk_container_set_border_width (GTK_CONTAINER (win), 8);
+  gtk_window_set_title (GTK_WINDOW (win), "Define Range options");
+  gtk_window_set_position (GTK_WINDOW (win), GTK_WIN_POS_CENTER);
+  gtk_widget_realize (win);
+
+  vbox = gtk_vbox_new (TRUE, 3);
+  gtk_container_add (GTK_CONTAINER (win), vbox);
+
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  // The labels
+  from_label = gtk_label_new("Start of range (>0):"); 
+  gtk_box_pack_start(GTK_BOX(hbox), from_label, TRUE, TRUE, 0);
+
+  to_label = gtk_label_new("End of range:");
+  gtk_box_pack_start(GTK_BOX(hbox), to_label, TRUE, TRUE, 0);
+  
+  // The entry boxes
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+  
+  from_entry = gtk_entry_new();
+  gtk_entry_set_text(GTK_ENTRY(from_entry), "1");
+  gtk_box_pack_start(GTK_BOX(hbox), from_entry, TRUE, TRUE, 0);
+  range->range_from = gtk_entry_get_text(GTK_ENTRY(from_entry));
+
+  to_entry = gtk_entry_new();
+  gtk_entry_set_text(GTK_ENTRY(to_entry), "100");
+  gtk_box_pack_start(GTK_BOX(hbox), to_entry , TRUE, TRUE, 0);
+  range->range_to = gtk_entry_get_text(GTK_ENTRY(to_entry));
+
+   // The check boxes
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+  num_runners_label = gtk_label_new("The number of Runners");
+  gtk_box_pack_start(GTK_BOX(hbox), num_runners_label, TRUE, TRUE, 0);
+
+  status_label = gtk_label_new("Status: Not run yet");
+  gtk_box_pack_start(GTK_BOX(hbox), status_label, TRUE, TRUE, 0);
+  range->label = GTK_LABEL(status_label);
+
+  // The last entry box
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  num_runners_entry = gtk_entry_new();
+  gtk_entry_set_text(GTK_ENTRY(num_runners_entry), "1");
+  gtk_box_pack_start(GTK_BOX(hbox), num_runners_entry, TRUE, TRUE, 0);
+  range->num_runners = gtk_entry_get_text(GTK_ENTRY(num_runners_entry));
+
+  check_maximum = gtk_check_button_new_with_label("Do pretest");
+  gtk_box_pack_start(GTK_BOX(hbox), check_maximum, TRUE, TRUE, 0);
+  gtk_widget_set_name(check_maximum, "check_solution");
+  range->pre_test = GTK_TOGGLE_BUTTON(check_maximum);
+
+  // The radio buttons
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  geo_radio = gtk_radio_button_new_with_label(NULL, "Find a solution with the Geometrical algorithm");
+  gtk_box_pack_start(GTK_BOX(hbox), geo_radio, TRUE, TRUE, 0);
+  range->geo = GTK_TOGGLE_BUTTON(geo_radio);
+
+  num_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(geo_radio), "Find a solution with the Numerical algorithm");
+  gtk_box_pack_start(GTK_BOX(hbox), num_radio, TRUE, TRUE, 0);
+  
+  // The buttons
+  hbox = gtk_hbox_new(TRUE, 2);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
+
+  ok_button = gtk_button_new_from_stock ("Run range test");
+  g_signal_connect (G_OBJECT (ok_button), 
+		    "clicked", 
+		    G_CALLBACK (range_test), 
+		    (gpointer) (void*)range);
+  gtk_box_pack_start (GTK_BOX (hbox), ok_button, TRUE, TRUE, 0);
+  
+  cancel_button = gtk_button_new_from_stock ("Cancel");
+  g_signal_connect_swapped (G_OBJECT (cancel_button), 
+		    "clicked", 
+		    G_CALLBACK (gtk_widget_destroy), 
+		    G_OBJECT (win) );
+  
+  gtk_box_pack_start (GTK_BOX (hbox), cancel_button, TRUE, TRUE, 0);
+  
+  gtk_widget_show_all (win);
+  }
 
 static void do_test(GtkWidget *wid, options_data* options) { 
   int* speed_array = options->speed_array;
@@ -338,8 +594,8 @@ static void testValues(int startRunners,
       
       bool valid = isValid(geo_result, array); 
       
-      event_point* point = geo_result->point;
-      float f_geo_result = float(point->local_position + point->rounds * (point->number_of_runners + 1)) / float(point->speed * (point->number_of_runners + 1.0));
+      event_point point = geo_result->point;
+      float f_geo_result = float(point.local_position + point.rounds * (point.number_of_runners + 1)) / float(point.speed * (point.number_of_runners + 1.0));
       printf("Time: %f, Valid: %i\n", f_geo_result, valid);
             
       gettimeofday(start, NULL);
@@ -351,7 +607,6 @@ static void testValues(int startRunners,
     
       printf("Time: %f, Valid: %d", f_num_result, valid);
       
-      delete point;
       delete geo_result;
       delete num_result;
       delete end;
@@ -385,8 +640,8 @@ static void testCustom() {
   printf("Can we be sure there is a solution?: %i\n", solution);
   
   
-  event_point* point = geo_result->point;
-  float f_geo_result = float(point->local_position + point->rounds * (point->number_of_runners + 1)) / float(point->speed * (point->number_of_runners + 1.0));
+  event_point point = geo_result->point;
+  float f_geo_result = float(point.local_position + point.rounds * (point.number_of_runners + 1)) / float(point.speed * (point.number_of_runners + 1.0));
   printf("Time: %f, Valid: %i\n", f_geo_result, valid);
   
   gettimeofday(start, NULL);
@@ -395,7 +650,6 @@ static void testCustom() {
   
   valid = isValid(num_result, array, length);
   float f_num_result = float(num_result->a) / float(num_result->k1 + num_result->k2);
-  
   
   delete geo_result;
   delete num_result;
@@ -513,7 +767,7 @@ int main (int argc, char *argv[])
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock ("Make range test");
-  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (import), (gpointer) win);
+  g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (range_test_widget), (gpointer) win);
   gtk_box_pack_start (GTK_BOX (vbox), button, TRUE, TRUE, 0);
 
   button = gtk_button_new_from_stock (GTK_STOCK_CLOSE);

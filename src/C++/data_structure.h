@@ -14,7 +14,7 @@ struct event_point  {
 		    
 struct geo_time_result {
   // the time we are returning
-  event_point* point;
+  event_point point;
 
   // whether we could find a solution to equation (1)
   bool result;

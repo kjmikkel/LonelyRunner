@@ -70,97 +70,6 @@ void appendValueToFile(string data) {
   fout.close();
 } 
 
-void recursive_array(int* array, int* number_array, 
-		     int count_up, int last_index, 
-		     int array_index, int max_number, const int num_runners) {
-
-  for(int index = last_index + 1; index < count_up + 1; index++) { 
-    array[array_index] = number_array[index];
-    /*  
-cout << "Index: " << index << ", " << count_up << ", array_index: " << array_index  << ", array_val" << array[array_index]  << "\n";
-    int val2;
-    cin >> val2;
-    */
-    
-    if(array_index < num_runners) {
-      if (array_index == 0) {
-	printf("The first Index is at %d\n", array[array_index]);
-       
-      }
-      
-      recursive_array(array, number_array, 
-		      count_up + 1, last_index + 1, 
-		      array_index + 1, max_number,
-		      num_runners);
-      
-    } else {
-                 
-      geo_time_result* geo_result = Geometric_method(array,		     
-					   	     num_runners);
-            
-      // We check for errors
-      if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, array))) {
-	  
-	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, array));
-	printf("For the values: [");
-	//stringstream ss;
-	
-	for(int index = 0; index < num_runners; index++) {  
-	  printf(", %d", array[index]);
-	}
-	printf("]\n\n");
-      }
-      delete geo_result->point;
-      delete geo_result;
-      
-    }
-  }
-}
-
-// This will test every single possible combination of speeds under or equal to 100 with 10 runners 
-void ultimateTest() {
-  struct timeval start;
-  struct timeval end;
-  
-  struct timezone tz;
-  struct tm *tm;
-
-  // The array which are going to contain all the different permutations of speeds below 100
-  int array_number = 10;
-  int test_array[array_number];
-
-  // The array that is going to contain the values we are going to check
-  int max_number = 100;
-  int real_number_array[max_number];
-  
-  for(int index = 0; index < max_number; index++) {
-    real_number_array[index] = 2 + index;
-  }
-
-  //  stringstream ss;
-
-  // Now to populate the array with 10 values
-  gettimeofday(&start, &tz);
-  
-  recursive_array(test_array, real_number_array, 
-		  max_number - array_number - 1, 
-		  -1,
-		  0,
-		  max_number, array_number);
-  
-  gettimeofday(&end, &tz);
-  cout << "\nDone. Making this took ";
-  
-  stringstream ss;
-  ss << (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
-  cout << ss.str() << " microseconds.\n";
-  //delete start;
-  //delete tz;
-  
-  // delete end;
-  // delete tm;
-}
-
 void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, int times_to_do_test, bool randomize, string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
     
@@ -263,7 +172,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 	  geo_error[real_index] = 0;
 	}
 	if (geo_result != NULL)
-	  delete geo_result->point;
+	  //	  delete geo_result->point;
 	delete geo_result;
       }
       cout << "after geo\n";
@@ -342,14 +251,14 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 
 
 void sequential_prime_test() {
-  const int runner_num = 12;
+  const int runner_num = 8;
   const int offset = 0;
   const int speed_num = 5000;
   int max_number = 500000;
   int times_to_do_tests = 2;
   
   // The number of runners
-  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 8000, 12000, 30000, 50000, 500000};
+  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 5000}; // 8000, 12000, 30000, 50000, 500000};
   int speeds[speed_num]; 
   
   // The array contains the speeds we are going to test
@@ -373,20 +282,25 @@ void sequential_prime_test() {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
+  //doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
   
   srand(time(NULL));
   //  cout << "max number: " << max_number << "\n";
   for(int random_index = 0; random_index < max_number; random_index++) {
     int number = abs(rand()) + 2;
     sequential_numbers[random_index] = number;
+    if (number < 1) {
+      cout << "Error: " << number << "\n";
+      return;
+    }
+    
   }
 
   doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false, "Random");
 }
 
 int main (int argc, char *argv[]) {
-  sequential_prime_test();
-  //ultimateTest();
+  //  sequential_prime_test();
+  range_test(1, 13, 10);
 }
