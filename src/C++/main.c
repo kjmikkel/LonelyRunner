@@ -94,28 +94,84 @@ int stringToInt(std::string str) {
 }
 */
 
-void recursive_array(int* array, int* number_array,
+void report_possible_invalid(int* array_speed, int length) {
+  // Show to user
+  std::string array_values = "";
+  // json output
+  std::string array_out = "[";
+  // small optimzation
+  std::string str_int = "";
+
+  for(int index = 0; index < length; index++) {  
+    str_int = intToString(array_speed[index]);
+    array_values += str_int + " ";
+    if((index % 50 == 0) && (index > 1) ) {
+      array_values += "\n"; 
+    }
+
+
+    array_out += "\"" + str_int + "\"";
+    if (index + 1 < length) {
+      array_out += ", ";
+    }
+  }
+  array_out += "]";
+
+  std::string str_title = "Possible invalid configurations of speeds found"; 
+  std::string str_msg = "The following values are possibly invalid: " + array_values + "\nPlease test with both algorithms in order to verify the result.\nYou will now get the chance to save the current array to a file (in the json data-format) for later retrival.";
+  GtkWidget* error_dialog = make_dialog(str_title, str_msg);
+  gint result = gtk_dialog_run(GTK_DIALOG(error_dialog));
+  gtk_widget_destroy(error_dialog);
+
+    GtkWidget* diag;
+    diag = gtk_file_chooser_dialog_new ("Save File",
+					NULL, 
+					GTK_FILE_CHOOSER_ACTION_SAVE,
+					GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+					NULL);
+    
+    if (gtk_dialog_run (GTK_DIALOG (diag)) == GTK_RESPONSE_ACCEPT)
+      {
+	char* filename;
+	
+	filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (diag));
+	write_to_file(filename, array_out);
+	
+	delete filename;
+      }
+    gtk_widget_destroy (diag);
+}
+
+int recursive_array(int* array, int* number_array,
 		     int level, int array_index,
 		     int max_number,
 		     bool pre_test, bool geo,
 		     GtkLabel* label) {
-
   for(int current_index = array_index - level; current_index < max_number; current_index++) { 
     array[array_index - level] = number_array[current_index];
     
     if (level < array_index) {
       if (level == 1) {
 	std::string testing = "Now testing index " + intToString(array[array_index - level]);
-	gtk_label_set_text(label, testing.c_str());
+	if (label != NULL) {
+	  gtk_label_set_text(label, testing.c_str());
+	  //  sleep(1);
+	}
 	printf("Now testing index %d\n", array[array_index - level]);
       }
+
       
-    recursive_array(array, number_array, 
+      int run = recursive_array(array, number_array, 
 		    level + 1, array_index,
 		    current_index,
 		    pre_test, geo,
 		    label);
-    
+
+      // If we return the error msg 1, then we stop the entire system,
+      if (run == 1) {
+	return 1;
+      }
     } else {
       /*
       for(int index = 0; index < array_index; index++) {
@@ -123,64 +179,70 @@ void recursive_array(int* array, int* number_array,
       }
       std::cout << "\n";
       */
-      
+
       if (pre_test) {
 	// If it is true, then we might as well return
 	if(checkForSolution(array, array_index)) {
-	  return;
-	      }
-      }
-
+	  //	  std::cout << "Pre test\n";
+	  continue;
+	}
+      } 
+      
       if (geo) {
       geo_time_result* geo_result = Geometric_method(array,		     
 					   	     array_index);
       
       // We check for errors
-      if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, array))) {
-	  
-	printf("error: %d, %d\n", geo_result->result, isValid(geo_result, array));
-	printf("For the values: [");
-	
-	for(int index = 0; index < array_index; index++) {  
-	  printf(", %d", array[index]);
-	}
-	printf("]\n\n");
+      if(geo_result == NULL) {
+	std::string str_title = "Geo solution could not be found"; 
+	std::string str_msg = "There could not be found a geo solution - there is something very wrong with your settings";
+	GtkWidget* error_dialog = make_dialog(str_title, str_msg);
+	gint result = gtk_dialog_run(GTK_DIALOG(error_dialog));
+	gtk_widget_destroy(error_dialog);
+	return 1;
       }
+
+      bool geo_bool_result = !geo_result->result;
+      bool geo_bool_check_result = !isValid(geo_result, array);
+      
+      if(geo_bool_result || geo_bool_check_result) {
+	  
+	std::cout << "Geo error: " << geo_bool_result << ", " << geo_bool_check_result << "\n";
+		
+	report_possible_invalid(array, array_index);
+	delete geo_result;
+	return 1;
+      }      
       delete geo_result;
+      
       } else {
-	// Test that what it reports
+	/*
+	for(int index = 0; index < array_index; index++) {
+	  std::cout << " " << array[index];
+	}
+	*/
 	num_time_result* num_result = Numerical_method(array, array_index, false, false, false);
+	
+	bool num_bool_result = !num_result->result;
+	bool num_bool_check_result = !isValid(num_result, array, array_index);
+	
+	if(num_bool_result || num_bool_check_result) {
+	  std::cout << "Num error: " << num_bool_result << ", " << num_bool_check_result << "\n";
+	
+	  report_possible_invalid(array, array_index);
+	  delete num_result;
+	  return 1;
+	}
+	
 	delete num_result;
       }
+      
     }
   }
+  return 0;
 }
 
-// This will test every single possible combination of speeds under or equal to 100 with 10 runners 
-void range_test(GtkWidget *wid, range_data* range) {
-
-  int start_value = atoi(range->range_from);
-  int end_value = atoi(range->range_to);
-  int num_runners = atoi(range->num_runners);
-
-  bool pre_test = (range->pre_test)->active;
-  bool geo = (range->geo)->active;
-  
-  std::cout << start_value << " " << end_value << " " << num_runners << "\n";
-  // Add error msg
-  if (start_value < 1) {
-    return;
-  }
-
-  // Add error msg
-  if (end_value <= start_value) {
-    return;
-  }
-
-  // Add error msg
-  if (num_runners > (end_value - start_value)) {
-    return;
-  }
+void range_test(int start_value, int end_value, int num_runners, bool pre_test, bool geo, GtkLabel* label) {
   struct timeval start;
   struct timeval end;
   
@@ -188,6 +250,7 @@ void range_test(GtkWidget *wid, range_data* range) {
   struct tm *tm;
 
   // The array which are going to contain all the different permutations of speeds below 100
+  std::cout << "num runners: " << num_runners << "\n";
   int test_array[num_runners];
 
   // The array that is going to contain the values we are going to check
@@ -200,12 +263,11 @@ void range_test(GtkWidget *wid, range_data* range) {
 
   // Now to populate the array with the values and test them
   gettimeofday(&start, &tz);
-  
-  recursive_array(test_array, real_number_array, 
+  int run = recursive_array(test_array, real_number_array, 
 		  1, num_runners,
 		  max_number,
 		  pre_test, geo,
-		  range->label);
+		  label);
   
   gettimeofday(&end, &tz);
   std::cout << "\nDone. Making this took ";
@@ -213,10 +275,59 @@ void range_test(GtkWidget *wid, range_data* range) {
   std::stringstream ss;
   ss << (end.tv_usec - start.tv_usec + (end.tv_sec - start.tv_sec) * 1000000);
   std::cout << ss.str() << " microseconds.\n";
-  
+  if (run == 1) {
+    std::cout << "Stopped due to possible invalid configuration\n";
+  }
   // Add pop-up
 
   delete tm;
+}
+
+// This will test every single possible combination of speeds under or equal to 100 with 10 runners 
+void range_test_entrence(GtkWidget *wid, range_data* range) {
+
+  int start_value = atoi(range->range_from);
+  int end_value = atoi(range->range_to);
+  int num_runners = atoi(range->num_runners);
+  std::cout << num_runners << "\n";
+  bool pre_test = (range->pre_test)->active;
+  bool geo = (range->geo)->active;
+
+  GtkLabel* label = range->label;  
+  // Relese the data
+  //  delete range;
+
+  if (start_value < 1) {
+    std::string str_title = "Invalid start value"; 
+    std::string str_msg = "The start value must be greater than 0";
+    GtkWidget* error_dialog = make_dialog(str_title, str_msg);
+    gint result = gtk_dialog_run(GTK_DIALOG(error_dialog));
+    gtk_widget_destroy(error_dialog);
+
+    return;
+  }
+
+  if (end_value <= start_value) {
+    std::string str_title = "Invalid end range value"; 
+    std::string str_msg = "The end tange value must be greater than the start value";
+    GtkWidget* error_dialog = make_dialog(str_title, str_msg);
+    gint result = gtk_dialog_run(GTK_DIALOG(error_dialog));
+    gtk_widget_destroy(error_dialog);
+    return;
+  }
+
+  if (num_runners > (end_value - start_value)) {
+    std::string str_title = "Invalid number of Runners"; 
+    std::string str_msg = "The number of runners cannot exceed the range\nbetween the start and end value";
+    GtkWidget* error_dialog = make_dialog(str_title, str_msg);
+    gint result = gtk_dialog_run(GTK_DIALOG(error_dialog));
+    gtk_widget_destroy(error_dialog);
+
+    return;
+  }
+
+
+  range_test(start_value, end_value, num_runners, pre_test, geo, label);
 }
 
 static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
@@ -318,7 +429,7 @@ static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
   ok_button = gtk_button_new_from_stock ("Run range test");
   g_signal_connect (G_OBJECT (ok_button), 
 		    "clicked", 
-		    G_CALLBACK (range_test), 
+		    G_CALLBACK (range_test_entrence), 
 		    (gpointer) (void*)range);
   gtk_box_pack_start (GTK_BOX (hbox), ok_button, TRUE, TRUE, 0);
   
@@ -356,6 +467,8 @@ static void do_test(GtkWidget *wid, options_data* options) {
   
   bool geo_check = GTK_TOGGLE_BUTTON(options->geo)->active;
   
+  //  delete options;
+
   /* 
    * This is not dependent on check_for_maximum_solution, as this depends on the individual values of the  
    * numbers, not on the relation between them
@@ -395,8 +508,8 @@ static void do_test(GtkWidget *wid, options_data* options) {
     
   }
   
-  geo_time_result* geo_result;
-  num_time_result* num_result;
+  geo_time_result* geo_result = NULL;
+  num_time_result* num_result = NULL;
 
   if (geo_check) {
     std::cout << "Run Geo\n"; 

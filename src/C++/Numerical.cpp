@@ -33,7 +33,7 @@ bool isValidInternal(ZZ P, ZZ Q, const int array[], unsigned int number_runners)
   ZZ distance_from_start;
   ZZ distance_to_end;
   bool valid = true;
-
+  
   for(int index = 0; index < number_runners; index++) {
     // Look into getting the mod code working
     distance_from_start = ZZ_mod(array[index] * P, Q);
@@ -48,7 +48,7 @@ bool isValidInternal(ZZ P, ZZ Q, const int array[], unsigned int number_runners)
     valid = compare * (number_runners + 1) >=  Q;
     
     if (!valid)
-      cout << "fail: " << compare * (number_runners + 1) << ", " << Q << ", " << array[index]  << "\n";
+      cout << "fail: compare: " << compare << ", " << compare * (number_runners + 1) << ", " << Q << ", " << array[index]  << "\n";
       break;
   }
 
@@ -59,7 +59,11 @@ bool isValid(num_time_result* result, const int array[], unsigned int number_run
   
   ZZ P = to_ZZ(result->a);    
   ZZ Q = to_ZZ(result->k1 + result->k2);
-  return isValidInternal(P, Q, array, number_runners);
+  bool b_result = isValidInternal(P, Q, array, number_runners);
+  if(!b_result) {
+    std::cout << "P: " << P << ", Q: " << Q << "\n";
+  }
+  return b_result;
 }
 
 bool isValid(geo_time_result* result, const int array[]) {
@@ -103,6 +107,23 @@ static bool checkForSolution(int speedArray[], int length) {
 
 num_time_result* Numerical_method (int speed_array[], const int length, bool randomPermutate, bool reverse, bool check_for_max_solution) {
   
+  
+  //std::cout << "\n";
+
+  if (length == 1) {
+    std::cout << "Only one runner\n";
+    // If there is only one runner then I might as well use the Geometrical trick
+    num_time_result* num_result = new num_time_result;
+    
+    num_result->a = 1;
+    num_result->k1 = speed_array[0] * (length + 1);
+
+    num_result->k2 = 0;
+       
+    num_result->result = true;
+    return num_result;
+  }
+
   // Randomize the order of the numbers
   if (randomPermutate) {
     srand ( time(NULL) );
@@ -140,8 +161,8 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
   bool no_candidate = true;
   for(int first_index = 0; first_index < length - 1; first_index++) {
     int first_speed = speed_array[first_index];
-    if (first_index % 100 == 0)
-      cout << "First index: " << first_index << " out of " << length << "\n"; 
+      if (first_index % 100 == 0 && first_index > 0)
+	cout << "First index: " << first_index << " out of " << length << "\n"; 
     // cout << "first index: " << first_speed << ", " << first_index << "\n";
     //    printf("Num first index: %d\n", first_index);
     
@@ -156,8 +177,6 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
       int second_speed = speed_array[second_index];
       ZZ k = to_ZZ(first_speed) + second_speed;
      
-      // Look into this code - it might lead to extreme speedups, but currently there is a problem 
-      
       int start = 0;
       
       if (!cal_first_div) {
@@ -165,26 +184,31 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
 	first_div = (first_speed * (length + 1)) ;
       }
             
-      ZZ start_candidate_1 = k / first_div - 1;
-      ZZ start_candidate_2 = k / (second_speed * (length + 1)) - 1;
+      ZZ start_candidate_1 = to_ZZ(1); //k / first_div - 1;
+      ZZ start_candidate_2 = to_ZZ(1); //k / (second_speed * (length + 1)) - 1;
       ZZ smallest;
 
-      if (start_candidate_1 > start_candidate_2)
+      if (start_candidate_1 > start_candidate_2) {
 	smallest = start_candidate_2;
-      else
+      }
+      else {
 	smallest = start_candidate_1;
-      
-      while(start < smallest)
+      }
+
+      while(start < smallest) {
 	start++;     
+      }
       
       ZZ distance_from_start;
       ZZ distance_to_end;
       ZZ compare;      
+      ZZ zz_a;
       for(int a = start; a < k; a++) {
 	bool testValid = true;
+	zz_a = to_ZZ(a);
 	
 	for(int speed_index = 0; speed_index < length; speed_index++) {
-	  distance_from_start = ZZ_mod(to_ZZ(a) * speed_array[speed_index], k);
+	  distance_from_start = ZZ_mod(zz_a * speed_array[speed_index], k);
 	  distance_to_end = k - distance_from_start;
 	  
 	  if (distance_from_start > distance_to_end) {
@@ -210,7 +234,6 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
 	}
 	
 	if(!check_for_max_solution && !no_candidate) {
-
 	  num_time_result* result = new num_time_result;	  
 	  result->result = true;
 	  result->k1 = candidate_k1;
@@ -222,7 +245,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
     }
     
     num_time_result* result = new num_time_result;
-    if (candidate_k1 > 0) {	
+    if (candidate_k1 > 0 && candidate_k2 > 0 && candidate_a > 0) {	
       cout << "Got it\n";	  
       result->result = true;
       result->k1 = candidate_k1;
@@ -230,14 +253,7 @@ num_time_result* Numerical_method (int speed_array[], const int length, bool ran
       result->a = candidate_a;
       return result;
       
-    } else {
-      cout << "**Fail**\n";
-      result->result = false;
-      result->k1 = -1;
-      result->k2 = -1;
-      result->a = -1;
-      return result;
-    }
+    } 
      
   }
 

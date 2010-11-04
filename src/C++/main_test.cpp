@@ -301,6 +301,6 @@ void sequential_prime_test() {
 }
 
 int main (int argc, char *argv[]) {
-  //  sequential_prime_test();
-  range_test(1, 13, 10);
+  sequential_prime_test();
+  //  range_test(1, 13, 10);
 }

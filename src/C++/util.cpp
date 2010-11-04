@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <fstream>
+
 #include <iostream>
+#include <fstream>
 #include <string>
+
 #include <json/json.h>
 
 #include "data_structure.h"
@@ -16,6 +18,14 @@ std::string read_entire_file(char* filename) {
     buf += line;
   
   return buf;
+}
+
+void write_to_file(char* filename, std::string data) {
+  std::ofstream File(filename);
+
+  File << data;
+
+  File.close();
 }
 
 len_array read_json_file_array(char* filename) {
