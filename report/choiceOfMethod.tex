@@ -138,7 +138,7 @@ Creating event points on the fly
 Creating the event points on the fly is far simpler than making all the points before the algorithm starts, although it is potentially slower in situations where the speed of the runners is large, or where the solution to equation \eqaref{eqa:lonelyRunner} is close to $1$/no solution to the equation exist for the given configuration of runners. 
 }
 
-Based on the above I would argue that creating the Event Points on the fly is the preferred solution, as any possible gains by creating all the Event Points in parrallel before entering the main loop would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program. 
+Based on the above I would argue that creating the Event Points on the fly is the preferred solution, as any possible gains by creating all the Event Points in parallel before entering the main loop would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program. 
 
 One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Based on the computer specifications I defined in \pref{specs}, it is clear that I do not want to have the algorithm rely on any special floating point number hardware, it would be nice if we could represent the time as an integer. Based on my Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
   
@@ -149,7 +149,7 @@ One important decision we have to make, is to decide how we are going to represe
 (a_i + k_i * (n+1)) * s_j &<& (a_j + k_j * (n+1)) * s_i \Leftrightarrow\\
 }
 
-So each Event Point must at least record its local postion $a$, the number of rounds $k$ the runner has made, and the speed $s$ of the runner. Besides that, each Event Point should remember the number of its runner, so that all forms of ambigueity can be removed.
+So each Event Point must at least record its local position $a$, the number of rounds $k$ the runner has made, and the speed $s$ of the runner. Besides that, each Event Point should remember the number of its runner, so that all forms of ambiguity can be removed.
 
 In order to distinguish entering and leaving the Zone, as well as the ``fake'' runner I introduce 3 different points:
 \begin{description}
@@ -248,7 +248,27 @@ Add $start$ and $end$ to \li
 
 \subsubsection{Proofs of the Geometric algorithm}
 \algProof{
-?
+The main of idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it will report it. The only way the algorithm can fail is therefore if either
+
+
+\begin{description}
+\item[Case A:] If a runner can enter the at time $t_{enter}$ Zone without the distance to the start line being $\frac{1}{n+1}$ units. 
+\item[Case B:] If a runner can leave the at time $t_{leave}$ Zone without the shortest distance to the start line being $\frac{1}{n+1}$ units.  
+\end{description}
+Let $distance_r$(t): $\R \rightarrow [0, 1)$ \hide{ = $r_{speed} * t \mod 1$)} be the distance function from the start line in the runners direction to the runner r at time t along the circular track. It is clearly seen that this function must be continues at the interval $[0, \frac{n + 1 - \epsilon}{n+1}]$ where $\epsilon > 0$ is a very small number. 
+
+Where entering the Zone at time $t_{enter}$ means that $distance_r(t_{enter})$ is in the Zone, while $distance_r(t_{prev})$ is not in the Zone, where $t_{prev} = max\E{x \in \R: x < t_{enter}}$. Leaving the Zone the Zone at time $t_{leave}$ means that $distance_r(t_{leave})$ is in the Zone, while $distance_r(t_{next})$ is not in the Zone, where $t_{next} = min\E{x \in \R: t_{leave} < x}$.
+ 
+I will now prove that the runners always enters the Zone at $\frac{1}{n+1}$, and leaves it at $\frac{n}{n+1}$ , and my algorithm therefore will always give the correct result.
+
+Let $distance_r$(t)\hide{ = min($r_{speed} * t \mod 1, 1 - (r_{speed} * t \mod 1)$)} be the distance function from the start line along the track to the runner r at time t. It is clearly seen that this function must be continues. 
+
+I will now prove that case A cannot happen, by proof-by-contradiction:
+Let us assume that the runner r enters the Zone at time $t_{enter]$, and that $distance_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $distance_r(t_{prev})$ is not in the Zone. However, since the distance function is continues on the interval $[0, \frac{n+1-\epsilon}{n+1}]$, it follows from the Intermediate value theorem that there must exist a time $t_{real enter}$ where $distance_r(t_{real enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $distance_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. Therefore it must follow that the runner always enters the Zone at distance $\frac{1}{n+1}$, which means that case A cannot happen, which was what I wanted to show.
+
+Case B can be proved similarity.
+
+
 }{
 It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin (which cannot be removed prematurely).
 }{
