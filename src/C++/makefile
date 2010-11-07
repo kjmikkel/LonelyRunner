@@ -11,7 +11,7 @@ LonelyRunner.out: main.o Geometric.o Numerical.o Prime_Number.o util.o
 # above LonelyRunner.out depends on main.o, data_structure.o and Geometric.o
 
 main.o: main.c Geometric.h Numerical.h data_structure.h util.o
-	g++ $(op) -c main.c -l util.o `pkg-config gtk+-2.0 --cflags --libs` 
+	g++ $(op) -c main.c -l util.o `pkg-config gtk+-2.0 --cflags --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm 
 
 main_test.o: main_test.cpp Geometric.h Numerical.h util.h Prime_Number.h
 	g++ $(op) -c main_test.cpp -ljson

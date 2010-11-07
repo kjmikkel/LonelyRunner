@@ -10,11 +10,15 @@
 #include <regex.h>
 #include <json/json.h>
 #include <sstream>
+#include <NTL/ZZ.h>
+#include <NTL/RR.h>
 
 #include "Geometric.h"
 #include "Numerical.h"
 #include "data_structure.h"
 #include "util.h"
+
+NTL_CLIENT
 
 struct options_data {
   int* speed_array;
@@ -28,6 +32,7 @@ struct range_data {
   const gchar* range_from;
   const gchar* range_to;
   const gchar* num_runners;
+  const gchar* start_val;
 
   GtkToggleButton* pre_test;
   GtkToggleButton* geo;
@@ -151,17 +156,9 @@ int recursive_array(int* array, int* number_array,
   for(int current_index = array_index - level; current_index < max_number; current_index++) { 
     array[array_index - level] = number_array[current_index];
     
+    // Are we still recursing out way down?
     if (level < array_index) {
-      if (level == 1) {
-	std::string testing = "Now testing index " + intToString(array[array_index - level]);
-	if (label != NULL) {
-	  gtk_label_set_text(label, testing.c_str());
-	  //  sleep(1);
-	}
-	printf("Now testing index %d\n", array[array_index - level]);
-      }
-
-      
+      // yes, then lets go on
       int run = recursive_array(array, number_array, 
 		    level + 1, array_index,
 		    current_index,
@@ -173,17 +170,17 @@ int recursive_array(int* array, int* number_array,
 	return 1;
       }
     } else {
+      // Otherwise, lets do the test
       /*
       for(int index = 0; index < array_index; index++) {
 	std::cout << " " << array[index];
       }
       std::cout << "\n";
+      return 1;
       */
-
       if (pre_test) {
 	// If it is true, then we might as well return
 	if(checkForSolution(array, array_index)) {
-	  //	  std::cout << "Pre test\n";
 	  continue;
 	}
       } 
@@ -242,33 +239,55 @@ int recursive_array(int* array, int* number_array,
   return 0;
 }
 
-void range_test(int start_value, int end_value, int num_runners, bool pre_test, bool geo, GtkLabel* label) {
+void range_test(int start_value, int end_value, int num_runners, int start_max_val, bool pre_test, bool geo, GtkLabel* label) {
   struct timeval start;
   struct timeval end;
   
   struct timezone tz;
   struct tm *tm;
 
+  if (start_max_val < start_value + num_runners - 1) {
+    start_max_val = start_value + num_runners - 1;
+  } else if (start_max_val > end_value) {
+    start_max_val = end_value;
+  }
+
   // The array which are going to contain all the different permutations of speeds below 100
   std::cout << "num runners: " << num_runners << "\n";
   int test_array[num_runners];
 
   // The array that is going to contain the values we are going to check
+  int first_level_index = 0;
   int max_number = end_value - start_value;
   int real_number_array[max_number];
   
   for(int index = 0; index < max_number; index++) {
     real_number_array[index] = index + start_value;
+    if (index + start_value == start_max_val) {
+      first_level_index = index;
+    }
   }
 
   // Now to populate the array with the values and test them
   gettimeofday(&start, &tz);
-  int run = recursive_array(test_array, real_number_array, 
-		  1, num_runners,
-		  max_number,
-		  pre_test, geo,
-		  label);
-  
+  int run = 0;
+  for(int index = first_level_index; index < max_number; index++) {
+    test_array[num_runners - 1] = real_number_array[index]; 
+    std::string testing = "Now testing index " + intToString(test_array[num_runners - 1]);
+    if (label != NULL) {
+      gtk_label_set_text(label, testing.c_str());
+    }
+    printf("Now testing index %d\n", test_array[num_runners - 1]);
+    
+    run = recursive_array(test_array, real_number_array, 
+			  2, num_runners,
+			  index,
+			  pre_test, geo,
+			  label);
+    if (run == 1) {
+      break;
+    }
+  }
   gettimeofday(&end, &tz);
   std::cout << "\nDone. Making this took ";
   
@@ -289,6 +308,7 @@ void range_test_entrence(GtkWidget *wid, range_data* range) {
   int start_value = atoi(range->range_from);
   int end_value = atoi(range->range_to);
   int num_runners = atoi(range->num_runners);
+  int start_max_value = atoi(range->start_val);
   std::cout << num_runners << "\n";
   bool pre_test = (range->pre_test)->active;
   bool geo = (range->geo)->active;
@@ -327,7 +347,7 @@ void range_test_entrence(GtkWidget *wid, range_data* range) {
   }
 
 
-  range_test(start_value, end_value, num_runners, pre_test, geo, label);
+  range_test(start_value, end_value, num_runners, start_max_value, pre_test, geo, label);
 }
 
 static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
@@ -339,10 +359,12 @@ static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
   GtkWidget* to_label = NULL;
   GtkWidget* num_runners_label= NULL;
   GtkWidget* status_label = NULL;
+  GtkWidget* start_label = NULL;
 
   GtkWidget* from_entry = NULL;
   GtkWidget* to_entry = NULL;
   GtkWidget* num_runners_entry = NULL;
+  GtkWidget* start_entry = NULL;
 
   GtkWidget* check_widget = NULL;
   GtkWidget* check_maximum = NULL;
@@ -366,14 +388,14 @@ static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
   hbox = gtk_hbox_new(TRUE, 0);
   gtk_container_add(GTK_CONTAINER (vbox), hbox);
 
-  // The labels
+  // The labels #1
   from_label = gtk_label_new("Start of range (>0):"); 
   gtk_box_pack_start(GTK_BOX(hbox), from_label, TRUE, TRUE, 0);
 
   to_label = gtk_label_new("End of range:");
   gtk_box_pack_start(GTK_BOX(hbox), to_label, TRUE, TRUE, 0);
-  
-  // The entry boxes
+
+  // The entry boxes #1
   hbox = gtk_hbox_new(TRUE, 0);
   gtk_container_add(GTK_CONTAINER (vbox), hbox);
   
@@ -387,17 +409,17 @@ static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
   gtk_box_pack_start(GTK_BOX(hbox), to_entry , TRUE, TRUE, 0);
   range->range_to = gtk_entry_get_text(GTK_ENTRY(to_entry));
 
-   // The check boxes
+  // The labels #2
   hbox = gtk_hbox_new(TRUE, 0);
   gtk_container_add(GTK_CONTAINER (vbox), hbox);
+  
   num_runners_label = gtk_label_new("The number of Runners");
   gtk_box_pack_start(GTK_BOX(hbox), num_runners_label, TRUE, TRUE, 0);
+ 
+  start_label = gtk_label_new("The start value of the largest value (minimum is start + num runners)");
+  gtk_box_pack_start(GTK_BOX(hbox), start_label, TRUE, TRUE, 0);
 
-  status_label = gtk_label_new("Status: Not run yet");
-  gtk_box_pack_start(GTK_BOX(hbox), status_label, TRUE, TRUE, 0);
-  range->label = GTK_LABEL(status_label);
-
-  // The last entry box
+  // The entry boxes #2
   hbox = gtk_hbox_new(TRUE, 0);
   gtk_container_add(GTK_CONTAINER (vbox), hbox);
 
@@ -406,21 +428,36 @@ static void range_test_widget(GtkWidget *wid, GtkWidget *widget) {
   gtk_box_pack_start(GTK_BOX(hbox), num_runners_entry, TRUE, TRUE, 0);
   range->num_runners = gtk_entry_get_text(GTK_ENTRY(num_runners_entry));
 
+  start_entry = gtk_entry_new();
+  gtk_entry_set_text(GTK_ENTRY(start_entry), "0");
+  gtk_box_pack_start(GTK_BOX(hbox), start_entry, TRUE, TRUE, 0);
+  range->start_val = gtk_entry_get_text(GTK_ENTRY(start_entry));
+
+   // The check boxes
+  hbox = gtk_hbox_new(TRUE, 0);
+  gtk_container_add(GTK_CONTAINER (vbox), hbox);
   check_maximum = gtk_check_button_new_with_label("Do pretest");
   gtk_box_pack_start(GTK_BOX(hbox), check_maximum, TRUE, TRUE, 0);
   gtk_widget_set_name(check_maximum, "check_solution");
   range->pre_test = GTK_TOGGLE_BUTTON(check_maximum);
 
+  status_label = gtk_label_new("Status: Not run yet");
+  gtk_box_pack_start(GTK_BOX(hbox), status_label, TRUE, TRUE, 0);
+  range->label = GTK_LABEL(status_label);
+
   // The radio buttons
   hbox = gtk_hbox_new(TRUE, 0);
   gtk_container_add(GTK_CONTAINER (vbox), hbox);
-
+  
   geo_radio = gtk_radio_button_new_with_label(NULL, "Find a solution with the Geometrical algorithm");
   gtk_box_pack_start(GTK_BOX(hbox), geo_radio, TRUE, TRUE, 0);
   range->geo = GTK_TOGGLE_BUTTON(geo_radio);
-
+  
   num_radio = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(geo_radio), "Find a solution with the Numerical algorithm");
   gtk_box_pack_start(GTK_BOX(hbox), num_radio, TRUE, TRUE, 0);
+  
+
+  
   
   // The buttons
   hbox = gtk_hbox_new(TRUE, 2);
@@ -511,7 +548,7 @@ static void do_test(GtkWidget *wid, options_data* options) {
   geo_time_result* geo_result = NULL;
   num_time_result* num_result = NULL;
 
-  if (geo_check) {
+  if (geo_check && !(check_for_maximum_solution)) {
     std::cout << "Run Geo\n"; 
         
     geo_time_result* geo_result = Geometric_method(speed_array, length);
@@ -549,10 +586,29 @@ static void do_test(GtkWidget *wid, options_data* options) {
     if (num_result->result) {
       
       if(isValid(num_result, speed_array, length)) {
-	std::string str_num_pos = "NUM: There exists a valid solution to the runner speeds"; 
-	GtkWidget* positive_dialog = make_dialog(str_num_pos, str_num_pos);
+	std::string str_num_pos = "NUM: There exists a valid solution to the runner speeds";
+	std::string str_num_body = str_num_pos;
+	// If we have to check, then report the solution here
+	if (check_for_maximum_solution) {
+	  str_num_body += ", and its maximum distance is\n";
+	  RR::SetPrecision(200);
+	  RR::SetOutputPrecision(70);
+
+	  RR a = to_RR(num_result->a);
+	  RR k = to_RR(num_result->k1) + to_RR(num_result->k2);
+	  RR result = a / k;
+	  ZZ denominator = to_ZZ(num_result->k1) + to_ZZ(num_result->k2);
+	  
+	  std::stringstream ss;
+	  ss << result << "\n\n";
+	  ss << "With Nominator " << num_result-> a << " and denominator " << denominator;
+	  str_num_body += ss.str();	  
+	}
+ 
+	GtkWidget* positive_dialog = make_dialog(str_num_pos, str_num_body);
 	gint result = gtk_dialog_run(GTK_DIALOG(positive_dialog));
 	gtk_widget_destroy(positive_dialog);
+
       } else {
 	std::string str_geo_fail = "NUM: Invalid result found";
 	std::string str_geo_fail2 = "Please make note of the runner speeds, send an error report - this should never happen";
