@@ -190,6 +190,9 @@ void doTest(
 	
 	// We check for errors
 	if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, runner_speeds))) {	  
+	  cout << "Geo Error\n";
+	  cout << "Name: " << name << "\n";
+	  cout << "The number of speeds to test: " << speeds[start_speed_index] << ", the actual number of speeds: " << actual_speeds_num << "\n";
 	  printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds));
 	  for(int index = 0; index < num_runners; index++) {
 	    cout << runner_speeds[index] << "\n";
@@ -233,6 +236,9 @@ void doTest(
 	seconds_time_test_array[time_test_index] = (end.tv_sec - start.tv_sec);
 
 	if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
+	  cout << "Num error\n";
+	  cout << "Name: " << name << "\n";
+	  cout << "The number of speeds to test: " << speeds[start_speed_index] << ", the actual number of speeds: " << actual_speeds_num << "\n";
 	  printf("*error*: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	 
 	  b_num_error = true;
