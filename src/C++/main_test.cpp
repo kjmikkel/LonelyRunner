@@ -125,7 +125,7 @@ void doTest(
     }
 
     // If we cannot find enough numbers, then we stop the test
-    if (speeds[start_speed_index] <= actual_speeds_num) {
+    if (speeds[start_speed_index] > actual_speeds_num) {
       cout << "Not so many speeds\n";
       return;
     }
