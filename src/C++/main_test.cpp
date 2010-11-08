@@ -72,12 +72,35 @@ void appendValueToFile(string data) {
   fout.close();
 } 
 
-void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, int times_to_do_test, bool randomize, string name) {  
+void doTest(
+	    // The list containing the number of runners we are going to test for
+	    int* runners, 
+	    // The number of different kinds of speeds contained in runners
+	    int runner_num,
+
+	    // The different max speeds
+	    int* speeds, 
+	    // The number of different speeds
+	    int speed_num, 
+
+	    // The stored speeds we are going to test
+	    int* actual_speeds, 
+	    // The total number of speeds in actual_speeds
+	    int actual_speeds_num,
+
+	    // The offset that we are going to use to for the speeds
+	    int offset, 
+	    // The number of times we are going to do the test
+	    int times_to_do_test, 
+	    // Whether or not we are going to randomize the numerical solution
+	    bool randomize, 
+	    // The name of the test
+	    string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
   
+    // We find the name to save under
     stringstream ss;
     ss << runners[runner_index];
-    
     
     string filename = "../data/test_" + name + "_" + ss.str() + "_runners";
     if (offset == 0) {
@@ -91,12 +114,16 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
     int num_speeds = 0;
     
     // We find out how many cells of the array have speeds that are greater or equal to the number
-    for(int speed_index = 0; speed_index < speed_num; speed_index++) {
+    for(int speed_index = 0; speed_index < speed_num && speed_index < actual_speeds_num; speed_index++) {
       if (speeds[speed_index] >= runners[runner_index]) {
 	start_speed_index = speed_index;
 	break;
       }
     }
+
+    // If we cannot find enough numbers, then we stop the test
+    if (start_speed_index == 0) 
+      return;
 
     // I allocate the needed memory for the results
     int needed_mem = speed_num - start_speed_index;
@@ -281,8 +308,14 @@ void sequential_prime_test() {
   cout << "before prime\n";
   // We find the primes which are going as the speeds
   len_array primes = findPrimes(max_number);
-  doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
-  doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, true, "Primes-Random");
+  doTest(runners, runner_num, 
+	 speeds, speed_num,
+	 primes.array, primes.len, 
+	 offset, times_to_do_tests, false, "Primes");
+  doTest(runners, runner_num,
+	 speeds, speed_num,
+	 primes.array, primes.len, 
+	 offset, times_to_do_tests, true, "Primes-Random");
   
   printf("done prime\n");
   
@@ -293,8 +326,14 @@ void sequential_prime_test() {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  doTest(runners, runner_num,
+	 speeds, speed_num,
+	 sequential_numbers, max_number - offset,
+	 offset, times_to_do_tests, true, "Sequential-Random");
+  doTest(runners, runner_num, 
+	 speeds, speed_num,
+	 sequential_numbers, max_number - offset,
+	 offset, times_to_do_tests, false, "Sequential");
   
   std::string random = "../data_input/random_numbers.json";
   std::string random_sorted = "../data_input/random_numbers_sorted.json";
@@ -303,11 +342,17 @@ void sequential_prime_test() {
   len_array random_sorted_arr = file_data(random_sorted);
   
   cout << "Random\n";
-  doTest(runners, speeds, random_arr.array,        random_arr.len,        speed_num, offset, times_to_do_tests, false, "Random");
+  doTest(runners, runner_num,
+	 speeds, speed_num,
+	 random_arr.array, random_arr.len,
+	 offset, times_to_do_tests, false, "Random");
   cout << "Done first random\n";
   delete random_arr.array;
   
-  doTest(runners, speeds, random_sorted_arr.array, random_sorted_arr.len, speed_num, offset, times_to_do_tests, false, "Random-Sorted");
+  doTest(runners, runner_num,
+	 speeds, speed_num,
+	 random_sorted_arr.array, random_sorted_arr.len, 
+	 offset, times_to_do_tests, false, "Random-Sorted");
   cout << "Done second random\n";
   delete random_sorted_arr.array;
 }
