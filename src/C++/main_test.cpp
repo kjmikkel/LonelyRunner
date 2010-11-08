@@ -20,6 +20,8 @@
 #include <json/json.h>
 //#include <NTL/ZZ.h>
 
+#include "util.h"
+
 using namespace std;
 
 struct long_pair {
@@ -72,7 +74,7 @@ void appendValueToFile(string data) {
 
 void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int speed_num, int offset, int times_to_do_test, bool randomize, string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
-    
+  
     stringstream ss;
     ss << runners[runner_index];
     
@@ -84,7 +86,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       ss << offset;
       filename += "_with_offset_" + ss.str() + ".json";
     }
-    
+
     int start_speed_index = 0;
     int num_speeds = 0;
     
@@ -95,11 +97,14 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
 	break;
       }
     }
+
     // I allocate the needed memory for the results
     int needed_mem = speed_num - start_speed_index;
     
     // The geo results and the array to contain any error
     unsigned long geo_results[needed_mem];
+    
+
     unsigned long geo_seconds[needed_mem];
     unsigned long geo_spread[needed_mem];
     unsigned long geo_error[needed_mem];
@@ -124,7 +129,7 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
       
       int real_index = speed_index - start_speed_index;
       speed_results[real_index] = speeds[speed_index];
-      
+            
       int prime_real_index = 0;
       for(int copy_index = speeds[speed_index] - num_runners; copy_index < speeds[speed_index]; copy_index++, prime_real_index++) {
 	runner_speeds[prime_real_index] = actual_speeds[copy_index];
@@ -249,55 +254,62 @@ void doTest(int* runners, int* speeds, int* actual_speeds, int runner_num, int s
   cout << "done\n";
 }
 
+len_array file_data(std::string filename)
+{
+  char* file = const_cast<char *>(filename.c_str());
+  len_array arr = read_json_file_array(file);
+  return arr;
+}
+
 
 void sequential_prime_test() {
-  const int runner_num = 8;
+  const int runner_num = 12;
   const int offset = 0;
-  const int speed_num = 5000;
+  const int speed_num = 50000;
   int max_number = 500000;
-  int times_to_do_tests = 2;
+  int times_to_do_tests = 10;
   
   // The number of runners
-  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 5000}; // 8000, 12000, 30000, 50000, 500000};
+  int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 5000, 8000, 12000, 30000, 50000};
   int speeds[speed_num]; 
-  
+ 
   // The array contains the speeds we are going to test
   for(int speed_index = 0; speed_index < speed_num; speed_index++) {
     speeds[speed_index] = (speed_index + 1) * 100 + offset;
   }
-
+  
   cout << "before prime\n";
   // We find the primes which are going as the speeds
-  // len_array primes = findPrimes(max_number);
-/*
+  len_array primes = findPrimes(max_number);
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, false, "Primes");
   doTest(runners, speeds, primes.array, primes.len, speed_num, offset, times_to_do_tests, true, "Primes-Random");
-					    */
+  
   printf("done prime\n");
-					     
-  //  delete primes.array;
+  
+  delete primes.array;
   
   int sequential_numbers[max_number];
   for(int seq_index = 1; seq_index <= max_number - offset; seq_index++) {
     sequential_numbers[seq_index - 1] = seq_index;
   }
 
-  //  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
-  //doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, true, "Sequential-Random");
+  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, offset, times_to_do_tests, false, "Sequential");
   
-  srand(time(NULL));
-  //  cout << "max number: " << max_number << "\n";
-  for(int random_index = 0; random_index < max_number; random_index++) {
-    int number = abs(rand()) + 2;
-    sequential_numbers[random_index] = number;
-    if (number < 1) {
-      cout << "Error: " << number << "\n";
-      return;
-    }
-    
-  }
-
-  doTest(runners, speeds, sequential_numbers, runner_num, speed_num, 0, times_to_do_tests, false, "Random");
+  std::string random = "../data_input/random_numbers.json";
+  std::string random_sorted = "../data_input/random_numbers_sorted.json";
+  
+  len_array random_arr = file_data(random);
+  len_array random_sorted_arr = file_data(random_sorted);
+  
+  cout << "Random\n";
+  doTest(runners, speeds, random_arr.array,        random_arr.len,        speed_num, offset, times_to_do_tests, false, "Random");
+  cout << "Done first random\n";
+  delete random_arr.array;
+  
+  doTest(runners, speeds, random_sorted_arr.array, random_sorted_arr.len, speed_num, offset, times_to_do_tests, false, "Random-Sorted");
+  cout << "Done second random\n";
+  delete random_sorted_arr.array;
 }
 
 int main (int argc, char *argv[]) {

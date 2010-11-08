@@ -13,8 +13,8 @@ LonelyRunner.out: main.o Geometric.o Numerical.o Prime_Number.o util.o
 main.o: main.c Geometric.h Numerical.h data_structure.h util.o
 	g++ $(op) -c main.c -l util.o `pkg-config gtk+-2.0 --cflags --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm 
 
-main_test.o: main_test.cpp Geometric.h Numerical.h util.h Prime_Number.h
-	g++ $(op) -c main_test.cpp -ljson
+main_test.o: main_test.cpp Geometric.h Numerical.h util.h Prime_Number.h util.o
+	g++ $(op) -c main_test.cpp -ljson -l util.o
 
 # above we are saying main.o depends on main.cpp data_structure.h and Geometric.cpp, and to compile main.cpp if and only if main.cpp or data_structure.h or geometric.cpp
 # have changed since the last creation of main.o
