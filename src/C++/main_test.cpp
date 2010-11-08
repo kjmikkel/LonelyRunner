@@ -93,7 +93,9 @@ void doTest(
 	    // The number of times we are going to do the test
 	    int times_to_do_test, 
 	    // Whether or not we are going to randomize the numerical solution
-	    bool randomize, 
+	    bool randomize,
+	    // Whether or not we are going to use indexes instead of numbers
+	    //  bool index,
 	    // The name of the test
 	    string name) {  
   for(int runner_index = 0; runner_index < runner_num; runner_index++) {
@@ -111,20 +113,24 @@ void doTest(
     }
 
     int start_speed_index = 0;
+    bool found_speed = false;
     int num_speeds = 0;
     
-    // We find out how many cells of the array have speeds that are greater or equal to the number
-    for(int speed_index = 0; speed_index < speed_num && speed_index < actual_speeds_num; speed_index++) {
+    // We find the first speed that is above the number of runners
+    for(int speed_index = 0; (speed_index < speed_num) && (speeds[speed_index] < actual_speeds_num); speed_index++) {
+      cout << speed_index << "\n";
       if (speeds[speed_index] >= runners[runner_index]) {
 	start_speed_index = speed_index;
+	found_speed = true;
 	break;
       }
     }
 
     // If we cannot find enough numbers, then we stop the test
-    if (start_speed_index == 0) 
+    if (!found_speed) {
+      cout << "Not so many speeds\n";
       return;
-
+    }
     // I allocate the needed memory for the results
     int needed_mem = speed_num - start_speed_index;
     
