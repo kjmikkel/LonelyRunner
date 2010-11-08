@@ -140,13 +140,21 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 #2
 \end{itemize}
 }
-\newcommand{\graph}[2]{
+\newcommand{\graph}[4]{
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.75\textwidth, angle=270]{./data/graphs/#1.png}
-  \caption{\label{#1}#2}
+  \includegraphics[width=0.75\textwidth]{./data/graphs/test_#1_#2_runners_#3.ps}
+  \caption{\label{#1_#2_#3}#4}
 \end{figure}
 }
+
+\newcommand{\includeTable}[1]{
+\subsection{#1}
+\label{table:#1}
+\include{./data/tables/#1}
+}
+
+\newcommand{\figureref}[1]{see figure \ref{#1}}
 
 \newcommand{\src}[1]{
 \subsection{#1.cpp}

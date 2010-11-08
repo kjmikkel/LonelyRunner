@@ -94,7 +94,7 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\textwidth]{./images/algoIlluPng}
+  \includegraphics[width=\textwidth]{./images/algoIlluEPS}
   \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm. The large dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point, ignoring all time points in-between. In this instance the line is at the first solution for the runner configuration for \eqaref{eqa:lonelyRunner}}
 \end{figure}
 
@@ -248,27 +248,25 @@ Add $start$ and $end$ to \li
 
 \subsubsection{Proofs of the Geometric algorithm}
 \algProof{
-The main of idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it will report it. The only way the algorithm can fail is therefore if either
 
+The main idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it will report it. The only way the algorithm can fail is therefore if either
 
 \begin{description}
 \item[Case A:] If a runner can enter the at time $t_{enter}$ Zone without the distance to the start line being $\frac{1}{n+1}$ units. 
 \item[Case B:] If a runner can leave the at time $t_{leave}$ Zone without the shortest distance to the start line being $\frac{1}{n+1}$ units.  
 \end{description}
-Let $distance_r$(t): $\R \rightarrow [0, 1)$ \hide{ = $r_{speed} * t \mod 1$)} be the distance function from the start line in the runners direction to the runner r at time t along the circular track. It is clearly seen that this function must be continues at the interval $[0, \frac{n + 1 - \epsilon}{n+1}]$ where $\epsilon > 0$ is a very small number. 
+Let $dist_r$(t): $\R \rightarrow [0, 1)$ be the dist function from the start line in the runners direction to the runner r at time t along the circular track.
 
-Where entering the Zone at time $t_{enter}$ means that $distance_r(t_{enter})$ is in the Zone, while $distance_r(t_{prev})$ is not in the Zone, where $t_{prev} = max\E{x \in \R: x < t_{enter}}$. Leaving the Zone the Zone at time $t_{leave}$ means that $distance_r(t_{leave})$ is in the Zone, while $distance_r(t_{next})$ is not in the Zone, where $t_{next} = min\E{x \in \R: t_{leave} < x}$.
+Let entering the Zone at time $t_{enter}$ mean that $dist_r(t_{enter})$ is in the Zone, while $dist_r(t_{prev})$ is not in the Zone, where $t_{prev} = max\E{x \in \R: x < t_{enter}}$. Similarly let leaving the Zone at time $t_{leave}$ mean that $dist_r(t_{leave})$ is in the Zone, while $dist_r(t_{next})$ is not in the Zone, where $t_{next} = min\E{x \in \R: t_{leave} < x}$.
  
-I will now prove that the runners always enters the Zone at $\frac{1}{n+1}$, and leaves it at $\frac{n}{n+1}$ , and my algorithm therefore will always give the correct result.
-
-Let $distance_r$(t)\hide{ = min($r_{speed} * t \mod 1, 1 - (r_{speed} * t \mod 1)$)} be the distance function from the start line along the track to the runner r at time t. It is clearly seen that this function must be continues. 
+I will now prove that the runners always enters the Zone at $\frac{1}{n+1}$, and leaves it at $\frac{n}{n+1}$, so that case A and case B cannot happen, and thus my algorithm will always give the correct result.
 
 I will now prove that case A cannot happen, by proof-by-contradiction:
-Let us assume that the runner r enters the Zone at time $t_{enter]$, and that $distance_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $distance_r(t_{prev})$ is not in the Zone. However, since the distance function is continues on the interval $[0, \frac{n+1-\epsilon}{n+1}]$, it follows from the Intermediate value theorem that there must exist a time $t_{real enter}$ where $distance_r(t_{real enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $distance_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. Therefore it must follow that the runner always enters the Zone at distance $\frac{1}{n+1}$, which means that case A cannot happen, which was what I wanted to show.
+Let us assume that the runner r enters the Zone at time $t_{enter}$, and that $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $dist_r(t_{prev})$ is almost in the Zone \todo{Formulate this better}. 
 
-Case B can be proved similarity.
+We now have a closed interval $[dist_r(t_{prev}), dist_r(t_{enter})]$, for which the function clearly is continues, it then follows from the Intermediate value theorem that there must exist a time $t_{real enter}$ where $dist_r(t_{real enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. Therefore it must follow that the runner always enters the Zone at distance $\frac{1}{n+1}$, which means that case A cannot happen, which was what I wanted to show.
 
-
+Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not in the Zone.
 }{
 It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin (which cannot be removed prematurely).
 }{
@@ -340,7 +338,7 @@ solution. It is therefore clear that the run-time of the Numerical
 algorithm must be dependent on the order of the input.
 
 \subsubsection{Proofs for the numerical algorithm}
-
+\label{proof_num}
 \algProof{
 In \cite{invis} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution to it. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
 }{
@@ -360,4 +358,4 @@ From the above we results we can see that neither of the algorithm are better in
 
 However, since they both are very short, and do not have much in the way of dependencies, I will try to implement them both and compare their run-times for a variety of configurations, in order to truly test their strengths and weaknesses. 
 
-In this section I have presented two different \todo{decide whether to use numbers or words to define the size of sets} methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the correct solution to equation \eqaref{eqa:lonelyRunner}, is one such exists, and otherwise inform the caller that no such value exists.
+In this section I have presented 2 different methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the correct solution to equation \eqaref{eqa:lonelyRunner}, is one such exists, and otherwise inform the caller that no such value exists.

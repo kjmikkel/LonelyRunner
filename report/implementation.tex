@@ -9,7 +9,7 @@ I will in this section discuss the factors that decided my choice of programming
 
 I have used the following parameters to decide my choice of programming language:
 \begin{description}
-\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to run through a large number of configurations in short time. I have based these on \url{http://shootout.alioth.debian.org/u32q/which-programming-languages-are-fastest.php}
+\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to run through a large number of configurations in short time. I have based these on the results found at ``The Computer Language Benchmarks Game''\footnote{The site can be found at http://shootout.alioth.debian.org/u32q/which-programming-languages-are-fastest.php and was last accessed the 7/11 2010}.
 \item[Memory footprint:] Memory is slightly less essential than speed, but if the memory footprint is smaller, then we can have more runners in a given configuration. A smaller memory footprint would also seem to indicate that the program will be faster, since less has to be allocated and cleaned up. 
 \item[Already implemented data-structures:] I would rather avoid having to implement the Priority Queue, and all the bugs that could bring with it, and instead relying on a built-in implementation that has proved itself to be free of bugs.
 \item[My familiarity with the language:] Familiarity with the language would enable me to get create a bug free implementation of the algorithms faster.
@@ -19,7 +19,7 @@ Based on these criteria I will give each programming language a value from 1 to 
 
 For this project I have considered 3 programming languages: Java, Haskell and C++.
 
-\begin{tabular}{l|c|c|c}
+\begin{tabular}{l|c|c|c|c}
         & Speed & Memory & Data-structures & Familiarity \\
 Java    & 2     &  1     &  3              &   3  \\
 Haskell & 1     &  2     &  1              &   1  \\
@@ -33,7 +33,7 @@ Based on this I would argue that the best choice would be C++ on the grounds tha
 In this section I will describe some of the major problems I encountered during my implementation of the algorithms, and what I have done to resolve them.
 
 \subsubsection{Rounding errors}
-Since the Lonely Runner conjecture in its nature deals with rational numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, it would not be valid according to \eqaref{eqa:lonelyRunner}. My solution to this was to make the check entirely discrete. As stated in \eqafref{eqa:lonelyRunner}, we have a Lonely Runner iff
+Since the Lonely Runner conjecture in its nature deals with rational numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, it would not be valid according to \eqaref{eqa:lonelyRunner}. My solution to this was to make the check entirely discrete. As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
 \eqa{
 \Vert w_i x\Vert \geq \frac{1}{n+1}
 } 
@@ -42,11 +42,11 @@ The main problem here being $\Vert w_i x\Vert$ - however, since we can be sure t
 
 \eqn{
 \Vert w_i * \frac{p}{q}\Vert &\geq& \frac{1}{n+1}\\
-min(\frac{w_i * p mod q}{q}, 1 - \frac{w_i * p mod q}{q}) &\geq& \frac{1}{n+1}\\
-min(\frac{w_i * p mod q}{q}, 1 - \frac{w_i * p mod q}{q}) * (n+1) &\geq& 1\\
+min(\frac{w_i * p \mod q}{q}, 1 - \frac{w_i * p \mod q}{q}) &\geq& \frac{1}{n+1}\\
+min(\frac{w_i * p \mod q}{q}, 1 - \frac{w_i * p \mod q}{q}) * (n+1) &\geq& 1\\
 }
 
-Depending on whether \frac{w_i * p mod q}{q} or 1 - \frac{w_i * p mod q}{q} is the smallest value, the equation then becomes
+Depending on whether $\frac{w_i * p \mod q}{q}$ or 1 - $\frac{w_i * p \mod q}{q}$ is the smallest value, the equation then becomes
 
 \eqa{
 \frac{w_i * p mod q}{q} * (n+1) &\geq& 1\\
@@ -58,9 +58,10 @@ or
 \eqa{
 1 - \frac{w_i * p mod q}{q} * (n+1) &\geq& 1\\
 (q - (w_i * p mod q)) * (n+1) &\geq& q
+}
 
 \subsection{Use of real numbers in the algorithm}
-As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precalculated, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation.
+As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on comparison that avoiding floating point number greatly speeds up the computation.
 
 \subsection{Scalability of implementation}
 \label{scale}
@@ -121,7 +122,6 @@ Since I in section \ref{specs} detailed that I wanted the program to run on a no
 
 \subsubsection{Numerical algorithm}
 A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2^{32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
-have a footnote where it was named}
 
 \subsection{Third party libraries used}
 \begin{description}
