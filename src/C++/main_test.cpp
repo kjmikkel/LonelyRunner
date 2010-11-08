@@ -113,7 +113,6 @@ void doTest(
     }
 
     int start_speed_index = 0;
-    bool found_speed = false;
     int num_speeds = 0;
     
     // We find the first speed that is above the number of runners
@@ -121,13 +120,12 @@ void doTest(
       cout << speed_index << "\n";
       if (speeds[speed_index] >= runners[runner_index]) {
 	start_speed_index = speed_index;
-	found_speed = true;
 	break;
       }
     }
 
     // If we cannot find enough numbers, then we stop the test
-    if (!found_speed) {
+    if (speeds[start_speed_index] <= actual_speeds_num) {
       cout << "Not so many speeds\n";
       return;
     }
@@ -324,7 +322,7 @@ void sequential_prime_test() {
 	 offset, times_to_do_tests, true, "Primes-Random");
   
   printf("done prime\n");
-  
+  return;
   delete primes.array;
   
   int sequential_numbers[max_number];
