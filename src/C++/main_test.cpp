@@ -79,9 +79,9 @@ void doTest(
 	    int runner_num,
 
 	    // The different max speeds
-	    int* speeds, 
+	    //    int* speeds, 
 	    // The number of different speeds
-	    int speed_num, 
+	    //   int speed_num, 
 
 	    // The stored speeds we are going to test
 	    int* actual_speeds, 
@@ -116,26 +116,22 @@ void doTest(
     int num_speeds = 0;
     
     // We find the first speed that is above the number of runners
+    /*
     for(int speed_index = 0; (speed_index < speed_num) && (speeds[speed_index] < actual_speeds_num); speed_index++) {
-      cout << speed_index << "\n";
       if (speeds[speed_index] >= runners[runner_index]) {
 	start_speed_index = speed_index;
 	break;
       }
     }
+    */
 
-    // If we cannot find enough numbers, then we stop the test
-    if (speeds[start_speed_index] > actual_speeds_num) {
-      cout << "Not so many speeds\n";
-      return;
-    }
+    // How much memory are we going to use to store all the results
+    int needed_mem = actual_speeds_num / runners[runner_index];
+
     // I allocate the needed memory for the results
-    int needed_mem = speed_num - start_speed_index;
-    
     // The geo results and the array to contain any error
     unsigned long geo_results[needed_mem];
     
-
     unsigned long geo_seconds[needed_mem];
     unsigned long geo_spread[needed_mem];
     unsigned long geo_error[needed_mem];
@@ -156,17 +152,15 @@ void doTest(
     bool b_geo_error = false;
     bool b_num_error = false;
 
-    for(int speed_index = start_speed_index; speed_index < speed_num; speed_index++) {
+    for(int progress_index = 0; progress_index < needed_mem; progress_index++) {
       
-      int real_index = speed_index - start_speed_index;
-      speed_results[real_index] = speeds[speed_index];
+      speed_results[progress_index] = (progress_index + 1) * num_runners;
             
       int prime_real_index = 0;
-      for(int copy_index = speeds[speed_index] - num_runners; copy_index < speeds[speed_index]; copy_index++, prime_real_index++) {
+      for(int copy_index = progress_index * num_runners; copy_index < (progress_index + 1) * num_runners; copy_index++, prime_real_index++) {
 	runner_speeds[prime_real_index] = actual_speeds[copy_index];
-	//cout <<  runner_speeds[prime_real_index]  << "\n";
       }
-      
+
       // The tests themselves
       struct timeval start;
       struct timeval end;
@@ -192,7 +186,6 @@ void doTest(
 	if(geo_result != NULL && (!geo_result->result || !isValid(geo_result, runner_speeds))) {	  
 	  cout << "Geo Error\n";
 	  cout << "Name: " << name << "\n";
-	  cout << "The number of speeds to test: " << speeds[start_speed_index] << ", the actual number of speeds: " << actual_speeds_num << "\n";
 	  printf("error: %d, %d\n", geo_result->result, isValid(geo_result, runner_speeds));
 	  for(int index = 0; index < num_runners; index++) {
 	    cout << runner_speeds[index] << "\n";
@@ -205,10 +198,10 @@ void doTest(
 	  // If there is an error the we record it
 	  b_geo_error = true;
 	  // We record the time it happened
-	  geo_error[real_index] = runner_speeds[real_index];
+	  geo_error[progress_index] = runner_speeds[progress_index];
 	} else {
 	  // to be able to differentiate it from all the other values we set it to 0
-	  geo_error[real_index] = 0;
+	  geo_error[progress_index] = 0;
 	}
 	if (geo_result != NULL)
 	  //	  delete geo_result->point;
@@ -218,17 +211,17 @@ void doTest(
 
       // I record the values
       long_pair pair = find_spread(time_test_array, times_to_do_test);
-      geo_results[real_index] = pair.average;
-      geo_spread[real_index] = pair.spread;
+      geo_results[progress_index] = pair.average;
+      geo_spread[progress_index] = pair.spread;
       seconds = 0;
       for(int index = 0; index < times_to_do_test; index++) {
 	seconds += seconds_time_test_array[index];
       }
-      geo_seconds[real_index] = seconds / times_to_do_test;
+      geo_seconds[progress_index] = seconds / times_to_do_test;
 
       cout << "before num\n";
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
-	cout << "Index of num: " << (time_test_index + 1) << "\n";
+	cout << "Index of num: " << (time_test_index + 1) << ", ";
 	gettimeofday(&start, &tz);
 	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, randomize, false, false);
 	gettimeofday(&end, &tz);
@@ -238,29 +231,28 @@ void doTest(
 	if(!num_result->result || !isValid(num_result, runner_speeds, num_runners)) {
 	  cout << "Num error\n";
 	  cout << "Name: " << name << "\n";
-	  cout << "The number of speeds to test: " << speeds[start_speed_index] << ", the actual number of speeds: " << actual_speeds_num << "\n";
 	  printf("*error*: %d, %d\n", num_result->result, isValid(num_result, runner_speeds, num_runners));
 	 
 	  b_num_error = true;
-	  num_error[real_index] = runner_speeds[real_index];
+	  num_error[progress_index] = runner_speeds[progress_index];
 	} else {
-	  num_error[real_index] = 0;
+	  num_error[progress_index] = 0;
 	}	
 	delete num_result;
       }
       cout << "after num\n";
       
       pair = find_spread(time_test_array, times_to_do_test);
-      num_results[real_index] = pair.average;
-      num_spread[real_index] = pair.spread;
+      num_results[progress_index] = pair.average;
+      num_spread[progress_index] = pair.spread;
 
       seconds = 0;
       for(int index = 0; index < times_to_do_test; index++) {
 	seconds += seconds_time_test_array[index];
       }
-      num_seconds[real_index] = seconds / times_to_do_test;
+      num_seconds[progress_index] = seconds / times_to_do_test;
       
-      cout << "geo: " <<  geo_results[real_index] << ", num: " << num_results[real_index] << "\n";
+      cout << "geo: " <<  geo_results[progress_index] << ", num: " << num_results[progress_index] << "\n";
     }
       
     // Create the json object we are going to store the tests in
@@ -302,28 +294,29 @@ len_array file_data(std::string filename)
 void sequential_prime_test() {
   const int runner_num = 12;
   const int offset = 0;
-  const int speed_num = 50000;
+  const int speed_num = 5000;
   int max_number = 500000;
   int times_to_do_tests = 10;
   
   // The number of runners
   int runners[runner_num] = {10, 50, 100, 500, 1000, 2000, 4000, 5000, 8000, 12000, 30000, 50000};
   int speeds[speed_num]; 
- 
+  
+  /* 
   // The array contains the speeds we are going to test
   for(int speed_index = 0; speed_index < speed_num; speed_index++) {
     speeds[speed_index] = (speed_index + 1) * 100 + offset;
-  }
+    }*/
   
   cout << "before prime\n";
   // We find the primes which are going as the speeds
   len_array primes = findPrimes(max_number);
   doTest(runners, runner_num, 
-	 speeds, speed_num,
+	 //	 speeds, speed_num,
 	 primes.array, primes.len, 
 	 offset, times_to_do_tests, false, "Primes");
   doTest(runners, runner_num,
-	 speeds, speed_num,
+	 //	 speeds, speed_num,
 	 primes.array, primes.len, 
 	 offset, times_to_do_tests, true, "Primes-Random");
   
@@ -337,11 +330,11 @@ void sequential_prime_test() {
   }
 
   doTest(runners, runner_num,
-	 speeds, speed_num,
+	 //	 speeds, speed_num,
 	 sequential_numbers, max_number - offset,
 	 offset, times_to_do_tests, true, "Sequential-Random");
   doTest(runners, runner_num, 
-	 speeds, speed_num,
+	 //	 speeds, speed_num,
 	 sequential_numbers, max_number - offset,
 	 offset, times_to_do_tests, false, "Sequential");
   
@@ -353,14 +346,14 @@ void sequential_prime_test() {
   
   cout << "Random\n";
   doTest(runners, runner_num,
-	 speeds, speed_num,
+	 //	 speeds, speed_num,
 	 random_arr.array, random_arr.len,
 	 offset, times_to_do_tests, false, "Random");
   cout << "Done first random\n";
   delete random_arr.array;
   
   doTest(runners, runner_num,
-	 speeds, speed_num,
+	 //	 speeds, speed_num,
 	 random_sorted_arr.array, random_sorted_arr.len, 
 	 offset, times_to_do_tests, false, "Random-Sorted");
   cout << "Done second random\n";
