@@ -129,9 +129,17 @@ void doTest(
       cout << "Not so many speeds\n";
       return;
     }
-    // I allocate the needed memory for the results
-    int needed_mem = speed_num - start_speed_index;
+
+    int end_speed_index = speed_num - 1;
+    for(int index = start_speed_index; start_speed_index < speed_num; index++) {
+      if (speeds[index] >= actual_speeds_num) {
+	end_speed_index = index;
+	break;
+      }
+    }
     
+    // I allocate the needed memory for the results
+    int needed_mem = speed_num - start_speed_index - (speed_num - end_speed_index);
     // The geo results and the array to contain any error
     unsigned long geo_results[needed_mem];
     
@@ -156,7 +164,7 @@ void doTest(
     bool b_geo_error = false;
     bool b_num_error = false;
 
-    for(int speed_index = start_speed_index; speed_index < speed_num; speed_index++) {
+    for(int speed_index = start_speed_index; speed_index < end_speed_index; speed_index++) {
       
       int real_index = speed_index - start_speed_index;
       speed_results[real_index] = speeds[speed_index];
@@ -167,6 +175,7 @@ void doTest(
 	//cout <<  runner_speeds[prime_real_index]  << "\n";
       }
       
+ 
       // The tests themselves
       struct timeval start;
       struct timeval end;
@@ -174,13 +183,15 @@ void doTest(
       struct timezone tz;
       struct tm *tm;
       
-      cout << "before geo\n";
+      cout << "Runners: " << runners[runner_index] << ", Max number: " << actual_speeds[speeds[speed_index]] << "\n";
+      cout << "Before Geo: [";
       //    unsigned long micro_seconds = 0;
       unsigned long seconds = 0; 
       
       unsigned long time_test_array[times_to_do_test];
       unsigned long seconds_time_test_array[times_to_do_test];
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
+	cout << ".";
 	gettimeofday(&start, &tz);
 	geo_time_result* geo_result = Geometric_method(runner_speeds, num_runners);
 	gettimeofday(&end, &tz); 
@@ -214,8 +225,7 @@ void doTest(
 	  //	  delete geo_result->point;
 	delete geo_result;
       }
-      cout << "after geo\n";
-
+      cout << "]\n";
       // I record the values
       long_pair pair = find_spread(time_test_array, times_to_do_test);
       geo_results[real_index] = pair.average;
@@ -226,7 +236,7 @@ void doTest(
       }
       geo_seconds[real_index] = seconds / times_to_do_test;
 
-      cout << "before num\n[";
+      cout << "Before Num: [";
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
 	cout << ".";
 	gettimeofday(&start, &tz);
@@ -248,7 +258,7 @@ void doTest(
 	}	
 	delete num_result;
       }
-      cout << "] after num\n";
+      cout << "]\n";
       
       pair = find_spread(time_test_array, times_to_do_test);
       num_results[real_index] = pair.average;
@@ -260,7 +270,7 @@ void doTest(
       }
       num_seconds[real_index] = seconds / times_to_do_test;
       
-      cout << "geo: " <<  geo_results[real_index] << ", num: " << num_results[real_index] << "\n";
+      cout << "Time spent on Geo: " <<  geo_results[real_index] << ", Time spent on Num: " << num_results[real_index] << "\n";
     }
       
     // Create the json object we are going to store the tests in
@@ -322,6 +332,7 @@ void sequential_prime_test() {
 	 speeds, speed_num,
 	 primes.array, primes.len, 
 	 offset, times_to_do_tests, false, "Primes");
+  return;
   doTest(runners, runner_num,
 	 speeds, speed_num,
 	 primes.array, primes.len, 
