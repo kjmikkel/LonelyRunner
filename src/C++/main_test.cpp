@@ -219,9 +219,9 @@ void doTest(
       }
       geo_seconds[progress_index] = seconds / times_to_do_test;
 
-      cout << "before num\n";
+      cout << "before num\n[";
       for(int time_test_index = 0; time_test_index < times_to_do_test; time_test_index++) {
-	cout << "Index of num: " << (time_test_index + 1) << ", ";
+	cout << ".";
 	gettimeofday(&start, &tz);
 	num_time_result* num_result = Numerical_method(runner_speeds, num_runners, randomize, false, false);
 	gettimeofday(&end, &tz);
@@ -240,7 +240,7 @@ void doTest(
 	}	
 	delete num_result;
       }
-      cout << "after num\n";
+      cout << "]after num\n";
       
       pair = find_spread(time_test_array, times_to_do_test);
       num_results[progress_index] = pair.average;
