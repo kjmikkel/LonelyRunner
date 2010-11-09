@@ -332,14 +332,12 @@ void sequential_prime_test() {
 	 speeds, speed_num,
 	 primes.array, primes.len, 
 	 offset, times_to_do_tests, false, "Primes");
-  return;
   doTest(runners, runner_num,
 	 speeds, speed_num,
 	 primes.array, primes.len, 
 	 offset, times_to_do_tests, true, "Primes-Random");
   
   printf("done prime\n");
-  return;
   delete primes.array;
   
   int sequential_numbers[max_number];
