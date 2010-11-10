@@ -1,10 +1,10 @@
 \section{Introduction}
 \label{introduction}
-\todo{Introduction}
+The Lonely runner conjecture was first stated by J. M. Wills in \cite{JMWills}, where it was presented as a purely formal problem in the field of diophantine approximation. It remained so until 1998, where it got its current name, and intuitive interpretation, from \cite{Bienia97flows.view-obstructions}. As of 2010 the Lonely Runner conjecture has only been proven for up to n = 6.
 
-There exist 2 equivalent interpretations of the Lonely Runner conjecture\footnote{The Lonely Runner conjecture got its name from \cite{Bienia97flows.view-obstructions}} that are widely used\footnote{See \cite{ANote}}:
+There exist 2 equivalent interpretations of the Lonely Runner conjecture that are widely used\footnote{See \cite{ANote}}:
 \begin{enumerate}
-\item Imagine $n$ runners at a circular, unit length track\footnote{I.E. the track has a circumference of 1}, where every runner runs with a constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions} - also see \ref{integerSpeeds}}, there will then be a time when all runners will be at least $\frac{1}{n + 1}$ units away from their common start-point.\\
+\item Imagine $n$ runners at a circular, unit length track\footnote{i.e. the track has a circumference of 1}, where every runner runs with constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ \cite{Bienia97flows.view-obstructions} - also see \ref{integerSpeeds}}, there will then exist a time t where all runners will be at least $\frac{1}{n + 1}$ units away from their common start-point.\\
 
 \item Alternatively, imagine that we instead have n + 1 runners, then the conjecture states that there exists a point in time where all the runners are at least $\frac{1}{n + 1}$ units away from their nearest runner. Everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
 \end{enumerate}
@@ -18,53 +18,51 @@ Given any n positive integers $w_1, w_2, \ldots, w_n$, there is a real number $x
 for each $i = 1, 2, \ldots, n$, where for a real number $y$, $\Vert y \Vert$ is the distance from $x$ from the nearest integer. I owe this formulation of the problem to \cite{ANote}.
 
 \subsection{Expectations to the reader}
-\label{expectations}
 \todo{Expectations}
-I expect the reader to have the knowledge required to understand the
-both the formal and informal description of the Lonely Runner
-Conjecture, as well as having a basic understanding of the principles
-behind computational geometry\footnote{See ``Computational
-  Geometry'' \cite{citeulike:3347056} or similar}.
+I expect the reader to have the mathamatical knowledge required to understand both the formal and informal description of the Lonely Runner Conjecture, as well as having a basic understanding of the principles behind computational geometry\footnote{See ``Computational Geometry'' \cite{citeulike:3347056} or similar University level textbook}.
 
 \subsection{Scope and Limitations}
-\label{scope}
 \todo{Scope and limitations}
 \begin{itemize}
 \item In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-\item I will work to make the program return a result within a reasonable time, for up to 1000 runners, and with speeds up to 1000. The final program should work with more than 1000 runners, and with speeds in excess to 1000, but I will not optimize it further. 
-\item The program will include an interactive counterexample search system.
+\item I will create a program that can verify whether a given configuration of runners is true for \eqaref{eqa:lonelyRunner}, and make it return a result, within a reasonable time, for up to 1000 runners. The final program will work with more than 1000 runners, but I will prioratise readability, maintainability and portability for the program instead of extreeme optimizations. 
+\item The program will include a system to test a range of runner configurations against \eqaref{eqa:lonelyRunner}.
 \item I will only focus on runners with integer speeds - see \ref{integerSpeeds} for an justification of this.
 \end{itemize}
 
 \subsection{Computer specifications}
-\label{specs}\todo{Look at this once more}
-Before I go any further I would like to define which kind of computer I would require for running the solutions I come up with. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and Coloring of regular chromatic graphs. None of people working with the previous has any special reason to work with any a exceedingly powerful computer, or computers with non-standard hardware.
+\label{specs}
+Before I go any further I would like to define which kind of computer I would require for running the solutions I come up with. As mentioned above, the Lonely Runner Problem has direct applications for View-Obstruction problems and coloring of regular chromatic graphs. None of people working with these fields have any special reason to work with any a exceedingly powerful computer, or computers with special hardware.
  
-Based on the above I would argue that any algorithm I devise and implement should be able to run on a standard computer with no special hardware (say hardware dedicated to fast floating point calculations). The minimum specs for the computer therefore becomes a 2 Ghz computer with more than 2 GB over the recommended amount of Ram for the OS the computer is running. 
+Based on the above I would argue that any algorithm I devise and implement should be able to run on a standard computer with no special hardware (say hardware dedicated to fast floating point calculations). The minimum specs for the computer therefore becomes a 2 Ghz computer with more than 2 GB over the recommended amount of RAM for the OS the computer is running. 
 
 I do however reserve the right to make it depend on the third-party software libraries - as long as these can be freely distributed and installed.
 
 \subsection{Integer speeds}
+\label{integerSpeeds}
 In this section I will argue that I need only focus on integer speeds.
-Let us assume there is a non-empty set S of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that it only makes sense either all elements in S belong to $\mathbb{Q}$ or where at least one of the elements in S is a irrational number:
+Let us assume for a given configuration of runner speeds T, there is a non-empty set $S \subset T$, of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that it only makes sense either all elements in S belong to $\mathbb{Q}$ or where at least one of the elements in S is a irrational number:
 \begin{description}
-\item[Only rational numbers in S:] In this instance we can convert all the runner speeds into integers, by multiplying all speeds (also those not in S) with the product of the denominators, of all the rational numbers in S.
-\item[Irrational numbers exist in S:]   
+\item[Only rational numbers in S:] In this instance we can convert all the runner speeds into integers, by multiplying all speeds in T with the product of the denominators of the rational numbers in S.
+\item[Only irrational numbers in S, and S = T:]
+
+\item[T is a mixture of natural/rational numbers and irrational numbers:]
+
 \end{description}
 
 \subsection{Terminology}
 \label{Termonolgy}
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.3\textwidth]{./images/circleZoneEPS}
+  \includegraphics[width=0.3\textwidth, angle=90]{./images/circleZoneEPS}
   \caption{\label{circleZoneImg}An illustration of the Runner track. The grayed out part is the Zone}
 \end{figure}
 
-When forced to use a pronoun by the English language, I will use the male pronoun to the refer to the runners. This is done purely for convenience, and to make the text flow better. Not because I believe that male runners are more numerous or in any way inherently better than female runners.
+When forced to use a pronoun by the English language, I will use the male pronoun to the refer to the runners. This is done purely for convenience, and to make the text flow better.
 
 \begin{defi}
 \label{def:theZone}
-In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as ``being in the Zone''.
+In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as ``being in the Zone''. see figure \ref{circleZoneImg} for an illustration of the Zone.
 \end{defi}
 
 \begin{defi}
@@ -74,7 +72,7 @@ Configurations of runners, will in this report refer to a set S of $n \in \N$ ru
 
 \begin{defi}
 \label{def:fakeRunner}
-When talking about the fake runner, I will be referring to a runner that is not actually in race, but rather a runner with speed 1, who I have introduced in order to have a convenient termination criterion for my algorithm. See section \ref{termination} page \pageref{termination} for an elaboration for the reasons behind it.
+When talking about the fake runner, I will be referring to a runner that is not actually in race, but rather a runner with speed 1, who I have introduced in order to have a convenient termination criterion for the Geometrical algorithm\footnote{See section \ref{compGeo} on page \pageref{compGeo}}. See section \ref{termination} page \pageref{termination} for an elaboration for the reasons behind it.
 \end{defi}  
 
 \subsection{Canonical example}

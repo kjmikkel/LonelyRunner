@@ -2,20 +2,22 @@
 \label{choiceOfMethod}
 
 \subsection{Introduction}
-I will in this subsection describe the different methods I have thought of using in this project, and discuss their merits and flaws.
+In this section I will describe the different methods and algorithms I have used in this project, and discuss their merits and flaws.
+
 Possible methods:
 
 \begin{description}
-\item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (\nref{introduction}) lends itself well to a geometrical interpretation, and makes me wonder  leads me to wonder whether an algorithm based on this would be efficient.
+\item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (\nref{introduction}) lends itself well to a geometrical interpretation, and leads me to wonder whether such an algorithm could efficiently find a solution.
 
-\item[Number theoretic:] The Lonely Runner conjecture is, in its original formulation, a problem from number theory. It is therefore not reasonable to assume that a number theoretic approach could lead to an efficient verification program.
+\item[Number theoretic:] The Lonely Runner conjecture is, in its original formulation, a number theoretic problem. It is therefore reasonable to assume that a number theoretic approach would lead to an efficient verification program.
 \end{description}
 
 \subsection{Computational Geometry}
 \label{compGeo}
-The following solution is based on the first intuitive description of the conjecture, found in \eqaref{eqa:lonelyRunner}. It is clear that we are interested in the time interval when the runners are in the Zone, but not particularly where they are - more specifically we are interested when a runner enters and leaves the Zone. 
+The following solution is based on the first intuitive description of the conjecture, found in the introduction. It is clear that we are interested in the time interval when the runners are in the Zone, but not particularly where the individual runners are. We are only interested when a runner enters and leaves the Zone. 
 
-Let $s$ be the speed of a given runner then the runner enters the Zone for the first time when he is $\frac{1}{n+1}$ units away form the start line, so: 
+Let $s$ be the speed of a given runner then the runner enters the Zone for the first time when he is $\frac{1}{n+1}$ units away from the start line, and leaves it when he has passed $\frac{n}{n+1}$ units.
+Therefore the runner first enters the Zone at: 
 
 \begin{equation}
 \label{eqa:speedOne}
@@ -25,7 +27,7 @@ t &= \frac{1}{s * (n+1)}
 \end{split}
 \end{equation}
 
-and leaving the Zone, the runner has passed $\frac{n}{n+1}$ units in the Zone:
+and leaves the Zone at time:
 
 \begin{equation}
 \label{eqa:speedTwo}
@@ -47,7 +49,7 @@ More generally, a runner with speed $s$ will be in the Zone for the $k$'th time,
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{equation}
 
-Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
+Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or any other university level or higher book dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
 
 \subsubsection{High level description of the algorithm}
 
@@ -62,12 +64,12 @@ Now it becomes a matter find out whether there is a time where the time interval
 
   \ForEach{speed $\in$ \s}{
     
-    Make the first \startT and \eT based on speed, and insert it in \li
+    Make the first \startT and \eT based on speed - see \eqaref{eqa:speedOne} and \eqaref{eqa:speedTwo}, and insert it in \li
   }
   
-  \While{\li is not empty}{
+  \While{\true}{
 
-    Get the first \p in \li
+    Pop Event Point \p from \li
     
     \If{\p is \startT}{      
       
@@ -95,31 +97,33 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{./images/algoIlluEPS}
-  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm. The large dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point, ignoring all time points in-between. In this instance the line is at the first solution for the runner configuration for \eqaref{eqa:lonelyRunner}}
+  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring all time points in-between. The vertical line is here placed at the first time point that makes \eqaref{eqa:lonelyRunner} true for the speeds 3, 5, 6 and 9.}
 \end{figure}
 
 \subsubsection{Termination criteria}
 \label{termination}
-However, since the Lonely Runner conjecture has not been proved, there must be a means to terminate the algorithm if for a given configuration of runners there exists a time that make equation \eqaref{eqa:lonelyRunner} true.
+Since the Lonely Runner conjecture has not been proved for all $n \in \N$, there must be a means to terminate the algorithm, if for a given configuration of runners, there does not exists a time that make equation \eqaref{eqa:lonelyRunner} true.
 
-My solution to this is to introduce the fake runner. This fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in [0,1)$, and therefore if we reach the time $1$, no solution to equation \eqaref{eqa:lonelyRunner} exists. \todo{needs proof}
+My solution to this is to introduce the fake runner. The fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in [0,1)$, and therefore if we reach the time $1$, no solution to equation \eqaref{eqa:lonelyRunner} exists.
 
 \subsubsection{Event Points}
 \label{eventPoints}
-In this section I will discuss the role of Event Points in the Plane Sweep algorithm, as well as define them. As stated in section \ref{compGeo} we are only interested in whether or not a runner is in the Zone, not his exact position on the track. Therefore i introduce the Event Points, which are used to indicate whether a runner is entering a Zone or leaving it, ignoring everything else that might happen for the runner --- say, passing the finishing line. 
+In this subsection I will discuss the role of Event Points in the Plane Sweep algorithm, as well as define them. 
 
-One question that must be answered before we go any further, is whether or not we will create all Event Points before the main part of the algorithm begins (if indeed this is possible) or create some of them and generate the remaining once inside the main part of the algorithm. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. Since I have already established that we do not need to produce any Event Points that happen after time 1, it is clear that we can create all the Event Points before entering the main loop.\\ 
+As stated in section \ref{compGeo} we are only interested in whether or not a runner is in the Zone, not his exact position on the track. To take advantage of this I introduce the Event Points, which are used to indicate whether a runner is entering, or leaving, the Zone, ignoring all other time points. 
+
+One question that must be answered before we go any further, is whether or not we will create all Event Points before the main part of the algorithm begins\footnote{I have already established that we do not need to produce any Event Points that happen after time 1, it is clear that we can create all the Event Points before entering the main loop.} or create the first pair for each runner generate the remaining as it becomes necessary. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. 
 
 \adDis{
 Creating all the Event Points in parallel before entering the main loop
 }{
-\item The advantage of creating the points in advance would be that the generation of all the Event Points themselves is a task that can be done in parallel. After this the main loop could simply be run without having to dedicate any resources to creating new events.
+\item The advantage of creating the points in advance is that this can be done in parallel for each runner. After the point had been created, the main loop could be run without having to dedicate any resources to creating new events.
 
 \item It would also make the Priority Queue simpler, since instead of a heap, we could simply use a Linked List structure. 
 }{
-\item Since all the points are generated at the beginning, this would sharply increase the memory footprint on the system.
+\item Since all the points are generated at the beginning, this would sharply increase the memory footprint of the algorithm.
 
-\item While the Event Points themselves could be generated in parallel, they would still have to be inserted into the Priority Queue, which would serve as a bottleneck. Even if this was done while the other Event Points were still being generated, it would slow down the procedure enormously, loosing a lot of time. The Priority Queue would still have to be sorted, which would take $O(k\log(k))$ time, where $k$ is the sum of all the runners speeds, though of course a  parallel sorting algorithm could be used.
+\item While the Event Points themselves could be generated in parallel, they would still have to be inserted into the Priority Queue, which would serve as a bottleneck. Even if this was done while the other Event Points were still being generated, it would slow down the procedure enormously, loosing a lot of time. The Priority Queue would still have to be sorted, which would take $O(k\log(k))$ time, where $k$ is the sum of all the runners speeds.
 
 \item If done correctly it would add quite a bit of complexity to the program
 }{
@@ -129,38 +133,42 @@ Given that generating an Event Point is a trivial operation (it being a very sim
 \adDis{
 Creating event points on the fly
 }{
-\item It would reduce the memory footprint drastically, since new event points would only be made when needed.
+\item It would reduce the memory footprint drastically, as new event points would only be made when needed.
 
 \item Adding the new event points sequentially would also be much simpler than in the parallel version, since there would be no need for locks to protect the Priority Queue needed.  
 }{
 \item Creating every Event Point sequentially could potentially take a lot more time than the parallel solution.
 }{
-Creating the event points on the fly is far simpler than making all the points before the algorithm starts, although it is potentially slower in situations where the speed of the runners is large, or where the solution to equation \eqaref{eqa:lonelyRunner} is close to $1$/no solution to the equation exist for the given configuration of runners. 
+Creating the event points on the fly is far simpler than making all the points before the algorithm starts, although it is potentially slower in situations where we have runners with large speeds, or where the solution to equation \eqaref{eqa:lonelyRunner} is close to $1$ or no solution to the equation exist for the given configuration of runners. 
 }
 
 Based on the above I would argue that creating the Event Points on the fly is the preferred solution, as any possible gains by creating all the Event Points in parallel before entering the main loop would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program. 
 
-One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Based on the computer specifications I defined in \pref{specs}, it is clear that I do not want to have the algorithm rely on any special floating point number hardware, it would be nice if we could represent the time as an integer. Based on my Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
+One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Based on the computer specifications I defined in section \ref{specs} on page \pageref{specs}, it is clear that I do not want to have the algorithm rely on any special floating point number hardware, it would be nice if we could represent the time as an integer. 
+
+Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
   
-\eqa{
+\begin{equation}
 \label{eqa:integerTime}
-\frac{a_i + k_i * (n+1)}{s_i (n+1)} &<& \frac{a_j + k_j * (n+1)}{s_j (n+1)} \Leftrightarrow\\
-\frac{a_i + k_i * (n+1)}{s_i} &<& \frac{a_j + k_j * (n+1)}{s_j} \Leftrightarrow\\
-(a_i + k_i * (n+1)) * s_j &<& (a_j + k_j * (n+1)) * s_i \Leftrightarrow\\
-}
+\begin{split}
+\frac{a_i + k_i * (n+1)}{s_i (n+1)} &< \frac{a_j + k_j * (n+1)}{s_j (n+1)} \Leftrightarrow\\
+\frac{a_i + k_i * (n+1)}{s_i} &< \frac{a_j + k_j * (n+1)}{s_j} \Leftrightarrow\\
+(a_i + k_i * (n+1)) * s_j &< (a_j + k_j * (n+1)) * s_i \Leftrightarrow
+\end{split}
+\end{equation}
 
-So each Event Point must at least record its local position $a$, the number of rounds $k$ the runner has made, and the speed $s$ of the runner. Besides that, each Event Point should remember the number of its runner, so that all forms of ambiguity can be removed.
+So each Event Point must at least record its local position $a$, the number of rounds $k$ the runner has made, and the speed $s$ of the runner. Besides that, each Event Point should remember the number of its runner, so that all forms of ambiguity can be removed (see \ref{order}).
 
-In order to distinguish entering and leaving the Zone, as well as the ``fake'' runner I introduce 3 different points:
+In order to distinguish entering and leaving the Zone, as well as the fake runner I introduce 3 different points:
 \begin{description}
 \item[\comStart] The first point represents the time where the runner is $\frac{1}{n + 1}$ units away from the start line.
-\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last event point for any given runner in the Priority Queue, \comEnd\, will be used to signal that the algorithm must add a \comStart\, and a \comEnd\ to the Priority Queue.
-\item[\comFin] The final point in that will be processed --- which has set values of $a = n+1$, $k = 1$ and $s = 1$ and with its runner set to $n+1$. If this point is ever reached, then there exists no solution to \eqaref{eqa:lonelyRunner} for the given configuration of runners and speeds - and the configuration serves as a counter example to the Lonely Runner conjecture.
+\item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last event point for any given runner in the Priority Queue, \comEnd\, will be used to signal that the algorithm must add new a \comStart\, and a \comEnd\ to the Priority Queue.
+\item[\comFin] The final point in that will be processed --- which has set values of $a = n+1$, $k = 1$ and $s = 1$ and with its runner set to $n+1$. If this point is ever reached, then there exists no solution to \eqaref{eqa:lonelyRunner} for the given configuration of runners - and the configuration would serve as a counter example to the Lonely Runner conjecture.
 \end{description}
 
 \subsubsection{Order of points}
 \label{order}
-In order to avoid any ambiguity concerning the order of the points, I will now define an order $\prec$. One of the degenerate cases we need to avoid is when we have $(n-1)$ runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd.
+In order to avoid any ambiguity concerning the order of the points, I will now define an order $\prec$. \hide{One of the degenerate cases we need to avoid is when we have $(n-1)$ runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd.}
 
 \begin{defi}[Order of points]
 For the Event Points $p$ and $q$, $p \prec q$ iff
@@ -182,12 +190,12 @@ $p_{time} = q_{time}$ and type($p$) = type($q$) and $p_{runner} < q_{runner}$
 \caption{MakeTimePoints}
 \highlights
 \SetKwData{start}{startTime}
-\Input{A start-time \ti and the \unit used to run $\frac{1}{(\n + 1)}$ part of the track, the number \run of the runner, and the time queue \li}
-\Output{The time queue \li, with a new \startT and \eT inserted for \run as its runner}
+\Input{The old enpoint \p and the Event Point queue \li}
+\Output{The time queue \li, with a new \startT and \eT inserted the runner \run}
  
-Make new \startT $start$ from \start as its start-time, and \run as its runner
+Make new \startT $start$ from \p with all the same properties as \p, except that $start_{local position} = 1$ and $start_{rounds} = \p_{rounds} + 1$
   
-Make new \eT $end$ from \start + \unit * \n as its start-time, \unit as its speed, and \run as its runner
+Make new \eT $end$ from \p with all the same properties as \p, except that $end_{local position} = p_{number of runners}$ and $end_{rounds} = \p_{rounds} + 1$
     
 Add $start$ and $end$ to \li
 
@@ -199,7 +207,7 @@ Add $start$ and $end$ to \li
   \highlights
   \SetKwData{and}{and}
   \Input{A list \s which contains n pairwise different speeds for n runners}
-  \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  \Output{A point \p where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
 
   Create and initialise \li
   
@@ -209,13 +217,13 @@ Add $start$ and $end$ to \li
   
   $runnerNum \gets 1$
   
-  Make \finish with time $1$ and add it to \li
+  Make the point \finish with the following properties: $\finish_{number of runners} = \n$, $\finish_{rounds} = 1$, $\finish_{speed} = 1$, $\finish_{\run} = \n + 1$, $\finish_{local position} = n + 1$, and add it to \li
 
   \ForEach{speed $\in$ \s}{
-    
-    \unit $\gets \frac{1}{speed * (\n + 1)}$  
-    
-    \li $\gets$ MakeTimePoints(\unit, \unit, $runnerNum$, \li)
+   
+    Make the point \p with the following properties: $\finish_{number of runners} = \n$, $\finish_{rounds} = -1$, $\finish_{speed} = s$, $\finish_{\run} = runnerNum$, $\finish_{local position} = 0$
+
+    \li $\gets$ MakeTimePoints(\p, \li)
     
     $runnerNum += 1$
   }
@@ -228,17 +236,15 @@ Add $start$ and $end$ to \li
       \inter $+= 1$
     
       \If{\inter == \n}{
-        \return $\p_{\ti}$
+        \return $\p$
       }
     }
     
     \uElseIf{\p is \eT}{
     
       \inter $-= 1$
-      
-      \ti $\gets 2 * \p_{\unit} + \p_{\ti}$
-      
-      \li $\gets$ MakeTimePoints(\ti, $\p_{\unit}$, $\p_{\run}$, \li)
+            
+      \li $\gets$ MakeTimePoints(\p, \li)
     }
     \ElseIf{\p is \finish}{
       \return \no
@@ -247,34 +253,35 @@ Add $start$ and $end$ to \li
 \end{algorithm}
 
 \subsubsection{Proofs of the Geometric algorithm}
+\label{proof_geo}
 \algProof{
 
-The main idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it will report it. The only way the algorithm can fail is therefore if either
+The main idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it reports the solution. The only way the algorithm can fail is therefore if either
 
 \begin{description}
 \item[Case A:] If a runner can enter the at time $t_{enter}$ Zone without the distance to the start line being $\frac{1}{n+1}$ units. 
 \item[Case B:] If a runner can leave the at time $t_{leave}$ Zone without the shortest distance to the start line being $\frac{1}{n+1}$ units.  
 \end{description}
-Let $dist_r$(t): $\R \rightarrow [0, 1)$ be the dist function from the start line in the runners direction to the runner r at time t along the circular track.
+Let $dist_r$(t): $\R \rightarrow [0, 1)$ be the distance function from the start line in the runners direction to the runner r at time t along the circular track.
 
 Let entering the Zone at time $t_{enter}$ mean that $dist_r(t_{enter})$ is in the Zone, while $dist_r(t_{prev})$ is not in the Zone, where $t_{prev} = max\E{x \in \R: x < t_{enter}}$. Similarly let leaving the Zone at time $t_{leave}$ mean that $dist_r(t_{leave})$ is in the Zone, while $dist_r(t_{next})$ is not in the Zone, where $t_{next} = min\E{x \in \R: t_{leave} < x}$.
  
 I will now prove that the runners always enters the Zone at $\frac{1}{n+1}$, and leaves it at $\frac{n}{n+1}$, so that case A and case B cannot happen, and thus my algorithm will always give the correct result.
 
 I will now prove that case A cannot happen, by proof-by-contradiction:
-Let us assume that the runner r enters the Zone at time $t_{enter}$, and that $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $dist_r(t_{prev})$ is almost in the Zone \todo{Formulate this better}. 
+Let us assume that the runner r enters the Zone at time $t_{enter}$, and that $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $dist_r(t_{prev})$ is after the start line, but before the Zone. 
 
 We now have a closed interval $[dist_r(t_{prev}), dist_r(t_{enter})]$, for which the function clearly is continues, it then follows from the Intermediate value theorem that there must exist a time $t_{real enter}$ where $dist_r(t_{real enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. Therefore it must follow that the runner always enters the Zone at distance $\frac{1}{n+1}$, which means that case A cannot happen, which was what I wanted to show.
 
-Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not in the Zone.
+Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not being in the Zone.
 }{
-It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin (which cannot be removed prematurely).
+It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin\,(which cannot be removed prematurely).
 }{
 The first loop of the algorithm takes $O(n\log(n))$ time, since it has to add $2n$ event points to the Priority Queue, where each insertion taking $O(\log(n))$.\\
 
 After the first loop, there will at most be $2n + 1$ or $O(n)$ Event Points in the Priority Queue, since each time we encounter a \comEnd, two new Event Points are added to the Priority Queue.\\ 
 
-It is clear that the second loop is dependent on how many Event Points are processed before \comFin, at time $1$ is encountered. For any given runner with speed $s$, it is clear that it will make a $s$ rounds before the ``fake'' runner arrives at the finishing line, and each time  a runner makes a complete tour of the track, the algorithm has to deal with 2 Event Points --- a \comStart\; and an \comEnd. The \comStart\; event takes $O(1)$ to process, while the \comEnd will take $O(\log(n))$ time, because of Lemma 1\todo{introduce Lemma 1 - it should say that there will always be O(n) points in the heap}. Therefore it is clear that if we let  $k$ be the sum of all the runners speeds. Since all the speeds are positive and pairwise different, it is easily seen that either $n \leq k$, which means $O(k\log(n))$.
+It is clear that the second loop is dependent on how many Event Points are processed before \comFin, at time $1$ is encountered. For any given runner with speed $s$, it is clear that it will make a $s$ rounds before the fake runner arrives at the finishing line, and each time  a runner makes a complete tour of the track, the algorithm has to deal with 2 Event Points --- a \comStart\; and an \comEnd. The \comStart\; event takes $O(1)$ to process, while the \comEnd will take $O(\log(n))$ time, because of Lemma 1\todo{introduce Lemma 1 - it should say that there will always be O(n) points in the heap}. Therefore it is clear that if we let  $k$ be the sum of all the runners speeds, then the algorithm has a time complexity of $O(k\log(n))$.
 }
 
 \subsection{Number Theory}
@@ -283,9 +290,7 @@ A Number Theory alternative to the Geometric Algorithm can be made by applying t
 $$
 k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
 $$
-where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 in \cite{invis}). It is clear that $a < k$, since if $a = k$ then $a/k$ would evaluate to $1$ and then $\Vert \frac{a}{k} d\Vert, d \in D$ would evaluate to 0.
-
-\todo{Make sure you have the correct algorithm} .
+where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 on page 66 in \cite{invis}). It is clear that $a < k$, since if $a = k$ then $a/k$ would evaluate to $1$ and then $\Vert \frac{a}{k} d\Vert, d \in D$ would evaluate to 0, and if $a > k$ then for $n \in \N: \Vert\frac{a}{k}\Vert = \Vert\frac{k+n}{k}\Vert = \Vert\frac{n}{k}\Vert$.
 
 \begin{algorithm}[H]
   \caption{NumericalLonelyRunner}
@@ -335,7 +340,7 @@ Since the algorithm in worst case tries every single combination of
 $d$ and $d\prime$, and \cite{invis} describes no way to detect which
 values of $d$ and $d\prime$ that may be candidates for a possible
 solution. It is therefore clear that the run-time of the Numerical
-algorithm must be dependent on the order of the input.
+algorithm must be dependent on the order of the runner speeds in speeds.
 
 \subsubsection{Proofs for the numerical algorithm}
 \label{proof_num}
@@ -354,8 +359,8 @@ And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(
 
 \subsection{Conclusion}
 
-From the above we results we can see that neither of the algorithm are better in all cases. The Geometrical algorithm has a better run-time when we have many runners with low speeds, while the numerical algorithm is better when we have few runners with very high speeds. It is also clear that the numerical algorithm is far easier to implement, relying on no extra data structures than integers and decimal/floating numbers.
+From the above we results we can see that neither of the algorithm are better in all cases. The Geometrical algorithm has a better worst case time complexity when we have many runners with low speeds, while the numerical algorithm is better when we have few runners with very high speeds. It is also clear that the numerical algorithm is far easier to implement, relying on no non-standard data structures.
 
-However, since they both are very short, and do not have much in the way of dependencies, I will try to implement them both and compare their run-times for a variety of configurations, in order to truly test their strengths and weaknesses. 
+However, since they both are very short, and do not have much in the way of dependencies, I will try to implement them both and compare their run-times for a variety number of runners and speeds. 
 
-In this section I have presented 2 different methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the correct solution to equation \eqaref{eqa:lonelyRunner}, is one such exists, and otherwise inform the caller that no such value exists.
+In this section I have presented 2 different methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the correct solution to equation \eqaref{eqa:lonelyRunner}, if one such exists, and otherwise inform the caller that no such value exists.
