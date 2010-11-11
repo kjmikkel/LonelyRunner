@@ -190,7 +190,7 @@ $p_{time} = q_{time}$ and type($p$) = type($q$) and $p_{runner} < q_{runner}$
 \caption{MakeTimePoints}
 \highlights
 \SetKwData{start}{startTime}
-\Input{The old enpoint \p and the Event Point queue \li}
+\Input{The old end point \p and the Event Point queue \li}
 \Output{The time queue \li, with a new \startT and \eT inserted the runner \run}
  
 Make new \startT $start$ from \p with all the same properties as \p, except that $start_{local position} = 1$ and $start_{rounds} = \p_{rounds} + 1$
@@ -345,7 +345,27 @@ algorithm must be dependent on the order of the runner speeds in speeds.
 \subsubsection{Proofs for the numerical algorithm}
 \label{proof_num}
 \algProof{
-In \cite{invis} the authors prove that if the Lonely Runner conjecture holds, then the algorithm will produce a solution to it. To take care of the possible case that the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
+This algorithm builds on Theorem 6 in \cite{invis}. Theorem 6 says that if we have a finite set of positive integers D = $\E{d_1, d_2, \ldots, d_k}$, then  $\kappa(D) = \sup_{x \in \R}\min_{1\leq i \leq k}\Vert x d_i \Vert$ is achieved for $x_o = a/(d_i + d_j)$ for some $0 \leq i,j \leq k, i \neq j$, and some positive integer a. I will now paraphrase the proof for this from \cite{invis}:
+
+Let us look at the function $f_D(x) = \min_{1 \leq i \leq k}\Vert x d_i \Vert$. Let $x_0$ be the value that maximises $f_D$, where $x_0 \in \mathbb{T}$, where $\mathbb{T} = [0;1)$, which is the circle. Such an $x_0$ must exist since $f_D$ is continues, and the circle (and hence) $\mathbb{T}$ is compact. Thus we have $\kappa(D) = f_D(x_0) = \min_{1 \leq i \leq k} \Vert x_0 d_i \Vert$. Let $d_j \in D$ be a value that minimises $\kappa(D)$ and $f_D(x_0)$. We now have that $\kappa(D) = \Vert x_0 d_j\Vert$. 
+Furthermore, since all the functions we are dealing with are continues, there must exist a $d_i \in D$, where $j \neq i$, such that $\Vert x_0 d_j \Vert = \Vert x_0 d_i \Vert$. I will prove that this is the case by proof by contradiction:
+
+Let us assume that $x_0$ such that $\kappa(D) = \Vert x_0 d_j \Vert$, for some $d_j \in D$, and that no $d_i$ exist such that $\Vert x_0 d_j \Vert = \Vert x_0 di\Vert$. In that case, we must have that for all $d_m \in D, m \neq j: \Vert x_0 d_m \Vert > \Vert x_0 d_j$, since we explicitly found $d_j$ to be the value that minimizes $f_D(x_0)$. Then, since $f_D$ is continues, we can take $y = x_0 \pm \epsilon$ for a small value $\epsilon > 0$, and since $d_j$ was the only value that minimised $f_D(x_0)$, and changing the value of $x_0$ by $\epsilon$ will not change that, we can increase value of $f_D$ so that $f_D(y) > f_D(x_0)$. However, this contradicts our initial assumption that $x_0$ maximises $f_D$, and therefore there must exist a $d_i$ such that $\Vert x_0 d_i \Vert = \Vert x_0 d_j \Vert$.  
+ 
+In fact we have the case $\E{x_0 d_j} = 1 - \E{x_0 d_i}$, where $\E{x}$ is the fractional part of x, i.e. the position on the circle. Thus we have 
+
+\begin{equation}
+\begin{split}
+x_0d_j + x_0d_i &= \lfloor x_0d_j \rfloor + \E{x_0d_j} + \lfloor x_0d_i \rfloor + \E{x_0d_i} \\
+               &= \lfloor x_0d_j \rfloor + \lfloor x_0d_i \rfloor + 1 = a
+\end{split} 
+\end{equation}
+
+which we can rearrange into $x_0 = a / (d_j + d_i)$, which indeed gives us $\kappa(D)$, which was what we wanted to show.
+
+\cite{invis} then uses this to prove that their Conjecture 5 is equivalent to the Lonely Runner conjecture, and shows how the finding the value of a will solve their conjecture if the Lonely Runner conjecture holds.
+
+In order to make sure that the Numerical algorithm will always terminate, even in the case where the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
 }{
 It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
 }{
