@@ -71,7 +71,7 @@ or
 \end{equation}
 
 \subsection{Use of real numbers in the algorithm}
-As detailed in section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on inspection that avoiding floating point number greatly speeds up the computation.
+As detailed in Section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on inspection that avoiding floating point number greatly speeds up the computation.
 
 \subsection{Scalability of implementation}
 \label{scale}
@@ -81,19 +81,19 @@ An important question that has to be answered is how well the 2 algorithms scale
 \item How large input sizes the algorithm can handle
 \end{enumerate}
 
-For the first interpretation it is clear from section \ref{proof_geo} and \ref{proof_num} that both algorithms have a bad worst case time complexity. These are however unlikely to be relevant during most verification attempts (as we have yet to find a counter example to the Lonely Runner conjecture after more than 2 decades), and therefore not really a good measurement. 
+For the first interpretation it is clear from Section \ref{proof_geo} and \ref{proof_num} that both algorithms have a bad worst case time complexity. These are however unlikely to be relevant during most verification attempts (as we have yet to find a counter example to the Lonely Runner conjecture after more than 2 decades), and therefore not really a good measurement. 
 
 The next question to ask is whether or not the algorithms could be parallelised, to take advantage of the multiple cores we are seeing in today's modern computers. Due to its shared state (the number of runners in the Zone) and the iterative nature of the Geometrical algorithm, I do not believe that the main loop of the algorithm as implemented could be parallelised. However, as discussed in \ref{eventPoints}, there might be a variant where parts of the algorithm could be parallelised. The numerical algorithm on the other hand is ripe for paralleisation, all 4 loops can easily be parralised, having no real shared state (other than, since the algorithm is based on enlightened guesses.
 
 Since the point of this program is to strengthen our trust in Lonely Runner conjecture, the maximum number of runners, and the maximum speed of each runner, that we are able to test is important. I will therefore in the following section analyse the bounds on these values, and discuss how I have improved these.
 
 \subsubsection{Geometrical algorithm}
-In current implementation of the comparison operator is that there is a limit on the number of runners and their speeds. Let  
+In the current implementation of the comparison operator is that there is a limit on the number of runners and their speeds. Let us observe  
 \eqa{
 \label{eqa:firstCompare}
 (a + k * (n+1)) * s
 }
- from \eqaref{eqa:integerTime} with all the symbols mean the same as in \eqaref{eqa:integerTime}. The possible large numbers are $a$, which in the worst case is $n$, $n$ itself and $s$. No matter which built in number type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
+ from \eqaref{eqa:integerTime}, where all the symbols has the same meaning as before. The possible large numbers are $a$, which in the worst case is $n$, $n$ itself and $s$. No matter which built in number type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
 
 \hide{
 The best I have been able to come up with is rewriting the entire comparison to 
@@ -138,7 +138,7 @@ So if we let $s = 1000$ and $d = 2^{32}-1$ then $n = 4289$
 
 This is rather constraining, but if we use a 64 bit integer was to be used instead, then combinations such as $n = 10^6$ and $s = 4294964$ would become possible.
 
-Since I in section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made the comparisons, and other checks that might cause overflow, use arbitrary-precision arithmetic\footnote{Based on the NTL library, see section \ref{third_party}} - limiting the possible comparisons only by the memory of the system, at the cost of speed.
+Since I in Section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made the comparisons, and other checks that might cause overflow, use arbitrary-precision arithmetic\footnote{Based on the NTL library, see Section \ref{third_party}} - limiting the possible comparisons only by the memory of the system, at the cost of speed.
 
 \subsubsection{Numerical algorithm}
 A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2^{32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.

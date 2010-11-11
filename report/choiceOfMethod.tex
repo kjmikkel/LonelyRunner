@@ -110,7 +110,7 @@ My solution to this is to introduce the fake runner. The fake runner has a speed
 \label{eventPoints}
 In this subsection I will discuss the role of Event Points in the Plane Sweep algorithm, as well as define them. 
 
-As stated in section \ref{compGeo} we are only interested in whether or not a runner is in the Zone, not his exact position on the track. To take advantage of this I introduce the Event Points, which are used to indicate whether a runner is entering, or leaving, the Zone, ignoring all other time points. 
+As stated in Section \ref{compGeo} we are only interested in whether or not a runner is in the Zone, not his exact position on the track. To take advantage of this I introduce the Event Points, which are used to indicate whether a runner is entering, or leaving, the Zone, ignoring all other time points. 
 
 One question that must be answered before we go any further, is whether or not we will create all Event Points before the main part of the algorithm begins\footnote{I have already established that we do not need to produce any Event Points that happen after time 1, it is clear that we can create all the Event Points before entering the main loop.} or create the first pair for each runner generate the remaining as it becomes necessary. This also has implications whether a Linked-List or a heap, respectively, should be used for the Priority Queue that will contain the Event Points. 
 
@@ -144,7 +144,7 @@ Creating the event points on the fly is far simpler than making all the points b
 
 Based on the above I would argue that creating the Event Points on the fly is the preferred solution, as any possible gains by creating all the Event Points in parallel before entering the main loop would be minimal at best\footnote{It is worth noting that the insertions and removals from the Priority Queue cannot be used as an argument either way, since the parallel and sequential version each uses a different data structure, optimised for their operation.}, and would unduly increase the complexity of the program. 
 
-One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Based on the computer specifications I defined in section \ref{specs} on page \pageref{specs}, it is clear that I do not want to have the algorithm rely on any special floating point number hardware, it would be nice if we could represent the time as an integer. 
+One important decision we have to make, is to decide how we are going to represent for the time of the various Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have real numbers. Based on the computer specifications I defined in Section \ref{specs} on page \pageref{specs}, it is clear that I do not want to have the algorithm rely on any special floating point number hardware, it would be nice if we could represent the time as an integer. 
 
 Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we must frame the comparison we are trying to make as follows: Let $n \in \N$ be the number of runners, $a_k \in \E{1, n}$ be the local position within in the Zone, let $k_k \in \N$ be the number of rounds runner $k$ has taken, and let $s_k \in \N$ be the speed of runner $k$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
   
