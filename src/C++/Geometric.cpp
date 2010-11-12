@@ -109,7 +109,6 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
   final_point.speed = 1;
   final_point.runnerNumber = length + 1;
   final_point.local_position = length + 1;
-  //final_point.pre_computed = (length + 1) + 1 * (length + 1);
   final_point.type = FINAL;
   queue->push(final_point);
 
