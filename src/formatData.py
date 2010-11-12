@@ -6,8 +6,8 @@ import Gnuplot, Gnuplot.funcutils, re
 
 
 class bar_instance:
-	def __init__(self, speed, geo, geo_spread, num, num_spread):
-		self.speed, self.geo, self.geo_spread, self.num, self.num_spread = speed, geo, geo_spread, num, num_spread
+	def __init__(self, speed, geo, geo_sec, geo_spread, num, num_sec, num_spread):
+		self.speed, self.geo, self.geo_sec, self.geo_spread, self.num, self.num_sec, self.num_spread = speed, geo, geo_sec, geo_spread, num, num_sec, num_spread
 
 	def __str__(self):
 		return "Speed: " + str(self.speed) + ", Geometrical time: (" + str(self.geo) + ", " + str(self.geo_spread) + ", Numerical time:(" + str(self.num) + ", " + str(self.num_spread) + ")"
@@ -74,20 +74,35 @@ def doGnuPlot(filename, extra_name, maxYValue, max_speed_to_test):
 	f.flush()
 
 def make_line(info_i, num_head):
+	sec_to_micro = 1000000
+
 	geo_spread = ""
 	num_spread = ""
+
 	if num_head > 3:
 		geo_spread = " & " + str(info.geo_spread)
 		num_spread = " & " + str(info.num_spread)
 
-	return str(info_i.speed) + " & " + str(info_i.geo) + geo_spread + " & " + str(info_i.num) + num_spread
+	geo_time = "0"
+	num_time = "0"
+	if info_i.geo > 0:
+		geo_time = str(info_i.geo)
+	else:
+		geo_time = str(info_i.geo_sec * sec_to_micro)
+	
+	if info_i.num > 0:
+		num_time = str(info_i.num)
+	else:
+		num_time = str(info_i.num_sec * sec_to_micro)
+
+	return str(info_i.speed) + " & " + geo_time + geo_spread + " & " + num_time + num_spread
 
 def print_tables(info_list, filename):
 	filename = filename.replace("_", "")
 	filename = tables + os.path.basename(filename).split('.')[0] + ".tex"
 	newline = "\\\\\n"
-	header = "Speed & Geometrical & Numerical"
-	number_headlines = len(header.split("&"))
+	header = "Speed & Geometrical & Numerical\n & ($\mu$s) & ($\mu$s)\n"
+	number_headlines = len(header.split("&")) / 2
 	strAccum = "\\begin{tabular}[6]{"+ ("c|" * number_headlines) + "|" + ("c|" * number_headlines) + "}\n" + header + " & " + header + newline + "\hline\n"
 	halflength = len(info_list) / 2
 	
@@ -142,14 +157,20 @@ def find_spread(spread_list, max_second):
 	for spread in spread_list:
 		index = 0
 		for val in spread[0]:
-			spread_val += val
+			if (val > 0):
+				spread_val += val
+			else:
+				spread_val += spread[1][index] * sec_to_micro
 			print val
 			if spread[1] and spread[1][index] < max_second:
-				spread_max.append(spread[0][index])
+				spread_max.append((spread[0][index], spread[1][index]))
 			index += 1
 	
 	for max_val in spread_max:
-		spread_val_max += max_val
+		if max_val[0] > 0:
+			spread_val_max += max_val[0]
+		else:
+			spread_val_max += max_val[1] * sec_to_micro
 
 #	spread_val /= len(spread_list)
 #	spread_val_max /= len(spread_max)
@@ -169,8 +190,8 @@ def print_special_tables(all_info, s_type):
 	
 	strAcum = "\\begin{tabular}[3]{c|c|c|}\\n"
 	strAcum += " & Geometrical %s & Numerical %s\\n\hline\\n" %(s_type, s_type)
-	strAcum += "All %ss & %s & %s\\n\\hline\\n" % (s_type, geo_spread_val, num_spread_val)
-	strAcum += "Only %ss from runs & %s & %s\\n" % (s_type, geo_spread_val_max, num_spread_val_max) 
+	strAcum += "All %ss ($\mu$s) & %s & %s\\n\\hline\\n" % (s_type, geo_spread_val, num_spread_val)
+	strAcum += "Only %ss from runs ($\mu$s) & %s & %s\\n" % (s_type, geo_spread_val_max, num_spread_val_max) 
     strAcum += "that took less than %s sec & & \\n" % max_second
 	strAcum += "\\hline"
 	strAcum += "\\end{tabular}"
@@ -197,7 +218,8 @@ def processData():
 
 		bar_list = []
 		for index in range(0, len(numerical)):
-			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_spread[index], numerical[index], numerical_spread[index]))
+			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_second[index], geometrical_spread[index], 
+						                    numerical[index]  , numerical_second[index]  , numerical_spread[index]  ))
 			
 			spread_data.append(spread(geometrical_spread[index], geometrical_second[index], numerical_spread[index], numerical_second[index]))
 			speed_data.append( speed(geometrical[index], geometrical_second[index], numerical[index], numerical_second[index]))			
