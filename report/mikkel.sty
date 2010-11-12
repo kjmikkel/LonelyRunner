@@ -66,17 +66,18 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 \newcommand{\gra}[3]{\nabla #1(#2)}
 %\newcommand{\todo}[1]{}
 \newcommand{\todo}[1]{\fixme{#1}}
+\newcommand{\maxNumbers}{37}
 \newcommand{\eqaref}[1]{(\ref{#1})}
 \newcommand{\pref}[1]{See Section \ref{#1} p. \pageref{#1}}
 \newcommand{\nref}[1]{see Section \ref{#1} p. \pageref{#1}}
 \newcommand{\comStart}{startTimePoint}
 \newcommand{\comEnd}{endTimePoint}
 \newcommand{\comFin}{FinishingLinePoint}
-\newcommand{\comS}{speeds}
+\newcommand{\comS}{speed\_list}
 \newcommand{\highlights}{
 \SetKwData{return}{return}
   \SetKwData{s}{\comS}
-  \SetKwData{ti}{time}
+  \SetKwData{ti}{time\_point}
   \SetKwData{li}{priorityQueue} 
   \SetKwData{startT}{\comStart} 
   \SetKwData{eT}{\comEnd}
@@ -94,12 +95,21 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
   \SetKwInOut{Output}{output}
 }
 
-\newcommand{\algProof}[3]{
-\begin{description}
-\item[Correctness:] #1
-\item[Termination:] #2
-\item[Time analysis:] #3
-\end{description}
+\newtheorem{theo}{Theorem}
+
+\newcommand{\algProof}[6]{
+\begin{theo}[Correctness:]
+#1
+\end{theo}
+#2
+\begin{theo}[Termination:]
+  #3
+\end{theo}
+#4
+\begin{theo}[Time complexity:]
+#5
+\end{theo}
+#6
 }
 \newcommand{\testTemplate}[4]{
 \begin{description}
@@ -111,6 +121,7 @@ escapeinside={\%*}{*)}          % if you want to add a comment within your code
 }
 
 \newtheorem{defi}{Def}
+
 
 \newcommand{\adDis}[4]{
 \begin{flushleft}

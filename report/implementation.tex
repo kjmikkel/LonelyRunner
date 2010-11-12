@@ -3,7 +3,6 @@
 
 In this section I will try to describe the implementation choices I have made in this project.
 
-
 \subsection{Choice of programming language}
 I will in this section discuss the factors that decided my choice of programming languages for this project, as well as the final choice.
 
@@ -31,10 +30,10 @@ C++     & 3     &  3     &  3              &   2  \\
 Based on this I would argue that the best choice would be C++ on the grounds that it clearly scores the highest, and that it will be easy for me to implement the Geometrical and Numerical algorithms.
 
 \subsection{Problems during implementation}
-In this section I will describe some of the major problems I encountered during my implementation of the algorithms, and what I have done to resolve them.
+In this section I will describe some of the major problems one could encounter while implementing the algorithms, and what I have done to resolve them.
 
 \subsubsection{Rounding errors}
-Since the Lonely Runner conjecture in its nature deals with rational numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, it would not be valid according to \eqaref{eqa:lonelyRunner}. My solution to this was to make the check entirely discrete. As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
+Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists) in its nature deals with rational numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, it would not be valid according to \eqaref{eqa:lonelyRunner}. My solution to this was to make the check entirely discrete. As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
 \eqa{
 \Vert w_i x\Vert \geq \frac{1}{n+1}
 } 
@@ -71,21 +70,21 @@ or
 \end{equation}
 
 \subsection{Use of real numbers in the algorithm}
-As detailed in Section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. It is however clear on inspection that avoiding floating point number greatly speeds up the computation.
+As detailed in Section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. Emperical evidence, however, suggest that this is a good tradeoff.
 
 \subsection{Scalability of implementation}
 \label{scale}
 An important question that has to be answered is how well the 2 algorithms scale. In this section I will interpret scaling in 2 senses:
 \begin{enumerate}
-\item How much time it requires to give an answer given a certain input size
-\item How large input sizes the algorithm can handle
+\item How much time an algorithm requires to give an answer given a certain input size
+\item How large input sizes, in this case the number of runners and the speed of the individual runners, the algorithm can handle
 \end{enumerate}
 
 For the first interpretation it is clear from Section \ref{proof_geo} and \ref{proof_num} that both algorithms have a bad worst case time complexity. These are however unlikely to be relevant during most verification attempts (as we have yet to find a counter example to the Lonely Runner conjecture after more than 2 decades), and therefore not really a good measurement. 
 
-The next question to ask is whether or not the algorithms could be parallelised, to take advantage of the multiple cores we are seeing in today's modern computers. Due to its shared state (the number of runners in the Zone) and the iterative nature of the Geometrical algorithm, I do not believe that the main loop of the algorithm as implemented could be parallelised. However, as discussed in \ref{eventPoints}, there might be a variant where parts of the algorithm could be parallelised. The numerical algorithm on the other hand is ripe for paralleisation, all 4 loops can easily be parralised, having no real shared state (other than, since the algorithm is based on enlightened guesses.
+The next question to ask is whether or not the algorithms could be parallelised, to take advantage of the multiple cores we are seeing in today's modern computers. Due to its shared state (the number of runners in the Zone) and the iterative nature of the Geometrical algorithm, I do not believe that the main loop of the algorithm as implemented could be parallelised. However, as discussed in \ref{eventPoints}, there might be a variant where parts of the algorithm could be parallelised. The numerical algorithm on the other hand is ripe for paralleisation, all 4 loops can easily be parralised, having no real shared state, since the algorithm is based on enlightened guesses.
 
-Since the point of this program is to strengthen our trust in Lonely Runner conjecture, the maximum number of runners, and the maximum speed of each runner, that we are able to test is important. I will therefore in the following section analyse the bounds on these values, and discuss how I have improved these.
+Since the point of this program is to strengthen our trust in Lonely Runner conjecture, it is important that the program is able to check with as many runners as possible, and with as large speeds as possible. I will therefore analyse the bounds on these values in the following section, and discuss how I have improved these.
 
 \subsubsection{Geometrical algorithm}
 In the current implementation of the comparison operator is that there is a limit on the number of runners and their speeds. Let us observe  
@@ -93,7 +92,7 @@ In the current implementation of the comparison operator is that there is a limi
 \label{eqa:firstCompare}
 (a + k * (n+1)) * s
 }
- from \eqaref{eqa:integerTime}, where all the symbols has the same meaning as before. The possible large numbers are $a$, which in the worst case is $n$, $n$ itself and $s$. No matter which built in number type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
+ from \eqaref{eqa:integerTime}, where all the symbols has the same meaning as before. The possible large numbers are $a$, (which in the worst case is $n$), $n$ itself and $s$. No matter which built in number type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
 
 \hide{
 The best I have been able to come up with is rewriting the entire comparison to 
@@ -104,7 +103,7 @@ s_ia_j - s_ja_i \leq (n+1)(k_is_j - k_js_i)
 which still requires $s$ to be multiplied with $a$, making the speed of the runner and the local position (which in the worst case is $n$) the bottleneck.
 }
 
-The question then becomes what the maximum allowable value becomes by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner conjecture holds, we must make sure that the expression does not cause arithmetic overflow, even if the algorithm for that configuration of runners will terminate by finding \comFin. We must therefore assume the maximum values for the variables that change - the local position $a$ and k, the number of times the runner has completed a lap. The biggest value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
+The question then becomes what the maximum allowable value becomes by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner conjecture holds, we must make sure that the expression does not cause arithmetic overflow, even if the algorithm for that configuration of runners will terminate by finding \comFin. We must therefore assume the maximum values for the variables that change - the local position $a$ and k, the number of times the runner has completed a lap. The maximum value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
 \eqa{
 (n + s * (n+1)) * s &=& d\\
 s^2(n+1) + sn &=& d\\
@@ -138,10 +137,12 @@ So if we let $s = 1000$ and $d = 2^{32}-1$ then $n = 4289$
 
 This is rather constraining, but if we use a 64 bit integer was to be used instead, then combinations such as $n = 10^6$ and $s = 4294964$ would become possible.
 
-Since I in Section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made the comparisons, and other checks that might cause overflow, use arbitrary-precision arithmetic\footnote{Based on the NTL library, see Section \ref{third_party}} - limiting the possible comparisons only by the memory of the system, at the cost of speed.
+Since I in Section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made the Event Point comparisons, and other checks that might cause overflow, use arbitrary-precision arithmetic\footnote{Based on the NTL library, see Section \ref{third_party}} - limiting the values for $n$ and $s$ only by the memory of the system, at the cost of speed.
 
 \subsubsection{Numerical algorithm}
 A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2^{32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
+
+
 
 \subsection{Third party libraries used}
 \label{third_party}
