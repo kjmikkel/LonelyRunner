@@ -32,43 +32,6 @@ Based on this I would argue that the best choice would be C++ on the grounds tha
 \subsection{Problems during implementation}
 In this section I will describe some of the major problems one could encounter while implementing the algorithms, and what I have done to resolve them.
 
-\subsubsection{Rounding errors}
-Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists) in its nature deals with rational numbers, it is clear that this has to be taken into account when implementing it in a real programming language. During my earliest testing phases I quickly discovered that even if the Geometrical algorithm found a valid solution, it would not be valid according to \eqaref{eqa:lonelyRunner}. My solution to this was to make the check entirely discrete. As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
-\eqa{
-\Vert w_i x\Vert \geq \frac{1}{n+1}
-} 
-
-The main problem here being $\Vert w_i x\Vert$ - however, since we can be sure that the solution will always be rational (since all the speeds are integers) we have that x can be written of the form $\frac{p}{q}$ for a given $p \in \N\cup\E{0}$ and $q \in \N$ (since all speeds must be positive and the runners cannot cover negative distance). So now we have
-
-\begin{equation}
-\label{compareRewriteOne}
-\begin{split}
-\Vert w_i * \frac{p}{q}\Vert &\geq \frac{1}{n+1}\\
-\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) &\geq \frac{1}{n+1}\\
-\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) * (n+1) &\geq 1
-\end{split}
-\end{equation}
-
-Depending on whether $\frac{w_i * p \mod q}{q}$ or 1 - $\frac{w_i * p \mod q}{q}$ is the smallest value, the equation then becomes
-
-\begin{equation}
-\label{compareRewriteTwo}
-\begin{split}
-\frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
-(w_i * p \bmod q) * (n+1) &\geq q 
-\end{split}
-\end{equation}
-
-or 
-
-\begin{equation}
-\label{compareRewriteThree}
-\begin{split}
-1 - \frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
-(q - (w_i * p \bmod q)) * (n+1) &\geq q
-\end{split}
-\end{equation}
-
 \subsection{Use of real numbers in the algorithm}
 As detailed in Section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. Emperical evidence, however, suggest that this is a good tradeoff.
 

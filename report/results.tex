@@ -29,7 +29,6 @@ For brevity's sake I have only included the most important graphs, as well as a 
 }
 \subsection{Speed}
 \input{./data/tables/speed_table.tex}
-
 It is clear from these graphs that the Numerical algorithm is faster for most of the instances. 
 I believe the reason for this to belong to the fundamental differences of the 2 algorithms. While both algorithms are based on exploring all possible candidates times for a time where \eqaref{eqa:lonelyRunner} is true, the Geometrical algorithm works by sweeping through the entire first round of the final runner\footnote{The runner with speed 1}, while the Numerical algorithm often is less methodical about it, depending on the 2 selected runner speeds, trying time points against \eqaref{eqa:lonelyRunner}. In practice it is clear this is a better approach than the Geometrical algorithm.
  

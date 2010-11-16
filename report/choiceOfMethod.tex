@@ -49,12 +49,12 @@ More generally, a runner with speed $s$ will be in the Zone for the $k$'th time,
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{equation}
 
-Now it becomes a matter find out whether there is a time where the time intervals for all the runners overlap. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or any other university level, or higher textbook dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
+So in order to find a time where all the runners are in the Zone (which would make \eqaref{eqa:lonelyRunner} hold), we need to check whether or not there is a time that is contained in all the intervals, produced by all the runners. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or any other university level, or higher textbook dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
 
 \subsubsection{High level description of the algorithm}
 
 \begin{algorithm}[H]
-  \caption{SimpleLonelyRunner}
+  \caption{SimpleLonelyRunner\label{simpleLonelyRunner}}
   \highlights
   \SetKwData{and}{and}
   \Input{A list \s which contains n pairwise different speeds for n runners}
@@ -84,7 +84,7 @@ Now it becomes a matter find out whether there is a time where the time interval
       
       Record that a runner has left the Zone
 
-      Make the next \startT and \eT based on \eT
+      Make the next \startT and \eT based on \eT and add them to \li
     }
     \ElseIf{\p is \finish}{
       \return \no
@@ -97,7 +97,7 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{./images/algoIlluEPS}
-  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring all time points in-between. The vertical line is here placed at the first time point that makes \eqaref{eqa:lonelyRunner} true for the speeds 3, 5, 6 and 9.}
+  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring everything in-between. The vertical line is here placed at the first time where \eqaref{eqa:lonelyRunner} holds for the speeds 3, 5, 6 and 9.}
 \end{figure}
 
 \subsubsection{Termination criteria}
@@ -105,6 +105,51 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
 Since the Lonely Runner conjecture has not been proved for all $n \in \N$, there must be a means to terminate the algorithm, if for a given configuration of runners, there does not exists a time that make equation \eqaref{eqa:lonelyRunner} hold.
 
 My solution to this is to introduce the fake runner. The fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in \mathbb{T}$, and therefore if we reach the time $1$, no solution to equation \eqaref{eqa:lonelyRunner} exists.
+
+\begin{lemma}
+\label{maximum_event_points}
+I will in this lemma prove that given $n$ runners there will be at most $2n + 1$, and therefore at most $O(n)$ Event Points in the Priority Queue:
+
+When the algorithm enters the main loop it is clear from algorithm \ref{simpleLonelyRunner} that there must be $2n + 1$ Event Points in the Priority Queue - $1$ point from the fake runner, and $2n$ points from the real runners. In the main loop it is only when an \comEnd has been removed from the Priority Queue that more points can be added, and furthermore it is clear that an \comEnd can only be removed if its \comStart has been removed first. Since precisely 2 Event Points are added to the Priority Queue each time we encounter an \comEnd, and at least 2 Event Points have to have been removed for this to happen, the number of Event Points in the Priority Queue can never exceed $2n + 1$, and must therefore at most contain $O(n)$ Event Points, which was what we wanted to show.
+\end{lemma}
+
+\subsubsection{Proofs of the Geometric algorithm}
+\label{proof_geo}
+
+\begin{theo}[Correctness:]
+The main idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it reports the solution. The only way the algorithm can fail is therefore if either
+
+\begin{description}
+\item[Case A:] If a runner can enter the at time $t_{enter}$ Zone without the distance to the start line being $\frac{1}{n+1}$ units. 
+\item[Case B:] If a runner can leave the at time $t_{leave}$ Zone without the shortest distance to the start line being $\frac{1}{n+1}$ units.  
+\end{description}
+Let $dist_r$(t): $\R \rightarrow \mathbb{T}$ be the distance function from the start line in the runners direction to the runner r at time t along the circular track.
+
+Let entering the Zone at time $t_{enter}$ mean that $dist_r(t_{enter})$ is in the Zone, while $dist_r(t_{prev})$ is not in the Zone, where $t_{prev} = \max\E{x \in \R: x < t_{enter}}$. Similarly let leaving the Zone at time $t_{leave}$ mean that $dist_r(t_{leave})$ is in the Zone, while $dist_r(t_{next})$ is not in the Zone, where $t_{next} = \min\E{x \in \R: t_{leave} < x}$.
+ 
+I will now prove that neither case A or B can happen, and thus my algorithm will always give the correct result.
+
+\begin{description}
+\item[Case A:]I will prove case A cannot happen, by proof by contradiction:
+Let us assume that the runner r enters the Zone at time $t_{enter}$, and that $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $dist_r(t_{prev})$ is after the start line, but before the Zone. 
+
+We now have a closed interval $[dist_r(t_{prev}), dist_r(t_{enter})]$, for which the function clearly is continuous, it then follows from the Intermediate value theorem that there must exist a time $t_{real\_enter}$ where $dist_r(t_{real\_enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$, and so therefore the runner must always enter the Zone at distance $\frac{1}{n+1}$ from the start line, which means that case A cannot happen, which was what I wanted to show.
+\item[Case B:]Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not being in the Zone.
+\end{description}
+Since neither Case A or Case B can happen, the Geometrical algorithm will always report the correct result.
+\end{theo}
+
+\begin{theo}[Termination:]
+It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin\,(which cannot be removed prematurely).
+\end{theo}
+
+\begin{theo}[Time complexity:]
+The first loop of the algorithm takes $O(n\log(n))$ time, since it has to add $2n$ event points to the Priority Queue, where each insertion taking $O(\log(n))$.\\
+
+After the first loop, there will at most be $2n + 1$ or $O(n)$ Event Points in the Priority Queue, since each time we encounter a \comEnd, two new Event Points are added to the Priority Queue.\\ 
+
+It is clear that the second loop is dependent on how many Event Points are processed before \comFin, at time $1$ is encountered. For any given runner with speed $s$, it is clear that it will make $s$ rounds before the fake runner arrives at the finishing line, and each time  a runner makes a complete tour of the track, the algorithm has to deal with 2 Event Points --- a \comStart\; and an \comEnd. The \comStart\; event takes $O(1)$ to process, while the \comEnd\; will take $O(\log(n))$ time, because of Lemma \ref{maximum_event_points}. Therefore it is clear that if we let  $k$ be the sum of all the runners speeds, then the algorithm has a time complexity of $O(k\log(n))$.
+\end{theo}
 
 \subsubsection{Event Points}
 \label{eventPoints}
@@ -182,8 +227,7 @@ $p_{time} = q_{time}$ and type($p$) = type($q$) and $p_{runner} < q_{runner}$
 \end{center}
 \end{defi}
 
-
-\subsubsection{Geometrical Algorithm}
+\subsubsection{Psudocode for the Geometrical Algorithm}
 
 \begin{algorithm}[H]
 \caption{MakeTimePoints}
@@ -251,52 +295,96 @@ Add $start$ and $end$ to \li
   }
 \end{algorithm}
 
-\subsubsection{Proofs of the Geometric algorithm}
-\label{proof_geo}
-
-\algProof{
-The main idea of the algorithm is that it keeps track when runners enters and leaves the Zone, and iff it finds that all runners are in the Zone, then it reports the solution. The only way the algorithm can fail is therefore if either
-
-\begin{description}
-\item[Case A:] If a runner can enter the at time $t_{enter}$ Zone without the distance to the start line being $\frac{1}{n+1}$ units. 
-\item[Case B:] If a runner can leave the at time $t_{leave}$ Zone without the shortest distance to the start line being $\frac{1}{n+1}$ units.  
-\end{description}
-Let $dist_r$(t): $\R \rightarrow \mathbb{T}$ be the distance function from the start line in the runners direction to the runner r at time t along the circular track.
-
-Let entering the Zone at time $t_{enter}$ mean that $dist_r(t_{enter})$ is in the Zone, while $dist_r(t_{prev})$ is not in the Zone, where $t_{prev} = \max\E{x \in \R: x < t_{enter}}$. Similarly let leaving the Zone at time $t_{leave}$ mean that $dist_r(t_{leave})$ is in the Zone, while $dist_r(t_{next})$ is not in the Zone, where $t_{next} = \min\E{x \in \R: t_{leave} < x}$.
- 
-I will now prove that neither case A or B can happen, and thus my algorithm will always give the correct result.
-
-\begin{description}
-\item[Case A:]I will prove case A cannot happen, by proof by contradiction:
-Let us assume that the runner r enters the Zone at time $t_{enter}$, and that $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $dist_r(t_{prev})$ is after the start line, but before the Zone. 
-
-We now have a closed interval $[dist_r(t_{prev}), dist_r(t_{enter})]$, for which the function clearly is continuous, it then follows from the Intermediate value theorem that there must exist a time $t_{real\_enter}$ where $dist_r(t_{real\_enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$, and so therefore the runner must always enter the Zone at distance $\frac{1}{n+1}$ from the start line, which means that case A cannot happen, which was what I wanted to show.
-\item[Case B:]Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not being in the Zone.
-\end{description}
-Since neither Case A or Case B can happen, the Geometrical algorithm will always report the correct result.
-}
-{}
-{
-It is clear that the algorithm will always terminate, since the algorithm terminates when it finds \comFin\,(which cannot be removed prematurely).
-}
-{}
-{
-The first loop of the algorithm takes $O(n\log(n))$ time, since it has to add $2n$ event points to the Priority Queue, where each insertion taking $O(\log(n))$.\\
-
-After the first loop, there will at most be $2n + 1$ or $O(n)$ Event Points in the Priority Queue, since each time we encounter a \comEnd, two new Event Points are added to the Priority Queue.\\ 
-
-It is clear that the second loop is dependent on how many Event Points are processed before \comFin, at time $1$ is encountered. For any given runner with speed $s$, it is clear that it will make $s$ rounds before the fake runner arrives at the finishing line, and each time  a runner makes a complete tour of the track, the algorithm has to deal with 2 Event Points --- a \comStart\; and an \comEnd. The \comStart\; event takes $O(1)$ to process, while the \comEnd\; will take $O(\log(n))$ time, because of Lemma 1\todo{introduce Lemma 1 - it should say that there will always be O(n) points in the heap}. Therefore it is clear that if we let  $k$ be the sum of all the runners speeds, then the algorithm has a time complexity of $O(k\log(n))$.
-}
-
 \subsection{Numerical Algorithm}
 \label{numtheory:algo}
 A Numerical alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. The algorithm works by testing a number of time points which might give us a solution - a sort of enlightened guess work. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
+
+\subsubsection{Proofs for the numerical algorithm}
+\label{proof_num}
+\begin{theo}[Correctness:]
+This algorithm builds on Theorem 6 in \cite{invis}. Theorem 6 says that if we have a finite set of positive integers D = $\E{d_1, d_2, \ldots, d_k}$, then  $\kappa(D) = \sup_{x \in \R}\min_{1\leq i \leq k}\Vert x d_i \Vert$ is achieved for $x_o = a/(d_i + d_j)$ for some $0 \leq i,j \leq k, i \neq j$, and some positive integer a. I will now paraphrase the proof for this from \cite{invis}:
+
+Let us look at the function $f_D(x) = \min_{1 \leq i \leq k}\Vert x d_i \Vert$. Let $x_0$ be the value that maximises $f_D$, where $x_0 \in \mathbb{T}$. Such an $x_0$ must exist since $f_D$ is continuous, and the circle (and hence) $\mathbb{T}$ is compact. Thus we have $\kappa(D) = f_D(x_0) = \min_{1 \leq i \leq k} \Vert x_0 d_i \Vert$. Let $d_j \in D$ be a value that minimises $\kappa(D)$ and $f_D(x_0)$. We now have that $\kappa(D) = \Vert x_0 d_j\Vert$. 
+Furthermore, since all the functions we are dealing with are continuous, there must exist a $d_i \in D$, where $j \neq i$, such that $\Vert x_0 d_j \Vert = \Vert x_0 d_i \Vert$. I will prove that this is the case by proof by contradiction:
+
+Let us assume that $x_0$ such that $\kappa(D) = \Vert x_0 d_j \Vert$, for some $d_j \in D$, and that no $d_i$ exist such that $\Vert x_0 d_j \Vert = \Vert x_0 di\Vert$. In that case, we must have that for all $d_m \in D, m \neq j: \Vert x_0 d_m \Vert > \Vert x_0 d_j$, since we explicitly found $d_j$ to be the value that minimizes $f_D(x_0)$. Then, since $f_D$ is continuous, we can take $y = x_0 \pm \epsilon$ for a small value $\epsilon > 0$, and since $d_j$ was the only value that minimised $f_D(x_0)$, and changing the value of $x_0$ by $\epsilon$ will not change that, we can increase value of $f_D$ so that $f_D(y) > f_D(x_0)$. However, this contradicts our initial assumption that $x_0$ maximises $f_D$, and therefore there must exist a $d_i$ such that $\Vert x_0 d_i \Vert = \Vert x_0 d_j \Vert$.  
+ 
+In fact we have the case $\E{x_0 d_j} = 1 - \E{x_0 d_i}$, where $\E{x}$ is the fractional part of x, i.e. the position on the circle. Thus we have 
+
+\begin{equation}
+\begin{split}
+x_0d_j + x_0d_i &= \lfloor x_0d_j \rfloor + \E{x_0d_j} + \lfloor x_0d_i \rfloor + \E{x_0d_i} \\
+               &= \lfloor x_0d_j \rfloor + \lfloor x_0d_i \rfloor + 1 = a
+\end{split} 
+\end{equation}
+
+which we can rearrange into $x_0 = a / (d_j + d_i)$, which indeed gives us $\kappa(D)$, which was what we wanted to show.
+\end{theo}
+
+\cite{invis} then uses this to prove that their Conjecture 5 is equivalent to the Lonely Runner conjecture, and shows how the finding the value of a will solve their conjecture if the Lonely Runner conjecture holds.
+
+In order to make sure that the Numerical algorithm will always terminate, even in the case where the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
+
+\begin{theo}[Termination:]
+It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
+\end{theo}
+
+\begin{theo}[Time complexity:]
+It is clear that the meat of NumericalLonelyRunner is 4 nested for-loops. The 2 first loops are dependent on each other, the third is based on the speed for the two runners that have been chosen, and the last loop goes through all the runners.\\
+
+The first 2 loops gives us $\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}1 = n-1 + n-2 + \ldots 2 + 1$, which reduces to $O(n^2)$. The third loop must iterate $k-1$ times, where $k$ is the sum of 2 runner's speed.\\
+
+If we are to give a worst case time, then it is clear $k$ must be the sum of the speed of the two fastest runners - so if we let $speed_1 = max(\comS)$ and $speed_2 = max(\comS \setminus \E{speed_1})$ then $k = speed_1 + speed_2$
+And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(k * n^3)$.
+\end{theo}
+
 $$
 k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
 $$
 where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 on page 66 in \cite{invis}). It is clear that $a < k$, since if $a = k$ then $a/k$ would evaluate to $1$ and then $\Vert \frac{a}{k} d\Vert, d \in D$ would evaluate to 0, and if $a > k$ then for $n \in \N: \Vert\frac{a}{k}\Vert = \Vert\frac{k+n}{k}\Vert = \Vert\frac{n}{k}\Vert$, so there would be no point in doing so.
 
+\subsubsection{Integer verification}
+Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists), it is clear that we only need to do integer comparison when we need to check whether or not a given $a$ and $k$ gives us a valid solution.
+
+As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
+\eqa{
+\Vert w_i x\Vert \geq \frac{1}{n+1}
+} 
+
+The main problem being $\Vert w_i x\Vert$ - however, since we can be sure that the solution will always be rational, we it must be that x can be written on the form $\frac{p}{q}$ for a given $p \in \N\cup\E{0}$ and $q \in \N$. So now we have
+
+\begin{equation}
+\label{compareRewriteOne}
+\begin{split}
+\Vert w_i * \frac{p}{q}\Vert &\geq \frac{1}{n+1}\\
+\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) &\geq \frac{1}{n+1}\\
+\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) * (n+1) &\geq 1
+\end{split}
+\end{equation}
+
+Depending on whether $\frac{w_i * p \mod q}{q}$ or 1 - $\frac{w_i * p \mod q}{q}$ is the smallest value, the equation then becomes
+
+\begin{equation}
+\label{compareRewriteTwo}
+\begin{split}
+\frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
+(w_i * p \bmod q) * (n+1) &\geq q 
+\end{split}
+\end{equation}
+
+or 
+
+\begin{equation}
+\label{compareRewriteThree}
+\begin{split}
+1 - \frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
+(q - (w_i * p \bmod q)) * (n+1) &\geq q
+\end{split}
+\end{equation}
+
+where we pick the case to analyse on account of which of $w_i * (p \bmod q)$ and $q - (w_i * (p \bmod q))$ are the smallest.
+
+\subsection{Psudocode for the Numerical Algorithm}
 \begin{algorithm}[H]
   \caption{NumericalLonelyRunner}
   \highlights
@@ -304,13 +392,13 @@ where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the res
   \Input{A list \s which contains n pairwise different speeds for n runners}
   \Output{A time \ti such that all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
-  $n \gets size(\s)$
+  $\n \gets size(\s)$
 
-  \For{$i \gets 1$ \KwTo $n-1$}{
+  \For{$i \gets 1$ \KwTo $\n-1$}{
     
     $d \gets \s_i$
  
-    \For{$j \gets i + 1$ \KwTo $n$}{
+    \For{$j \gets i + 1$ \KwTo $\n$}{
       
       $d^{\prime} \gets \s_j$
 
@@ -321,8 +409,8 @@ where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the res
         $testValid \gets true$
         
         \ForEach{$s \in \s$}{
-          
-          $testValid \gets testValid\; \and\; (\Vert \frac{a}{k} * s \Vert \geq \frac{1}{n+1} )$
+          $distance = \min(s * (a \bmod k),k - (s * (a \bmod k))$
+          $testValid \gets testValid\; \and\; (distance * (\n + 1)) \geq k$
 
           \If{!$testValid$} {
             break
@@ -347,44 +435,7 @@ values of $d$ and $d\prime$ that may be candidates for a possible
 solution. It is therefore clear that the run-time of the Numerical
 algorithm must be dependent on the order of the runner speeds in \comS.
 
-\subsubsection{Proofs for the numerical algorithm}
-\label{proof_num}
-\algProof{
-This algorithm builds on Theorem 6 in \cite{invis}. Theorem 6 says that if we have a finite set of positive integers D = $\E{d_1, d_2, \ldots, d_k}$, then  $\kappa(D) = \sup_{x \in \R}\min_{1\leq i \leq k}\Vert x d_i \Vert$ is achieved for $x_o = a/(d_i + d_j)$ for some $0 \leq i,j \leq k, i \neq j$, and some positive integer a. I will now paraphrase the proof for this from \cite{invis}:
 
-Let us look at the function $f_D(x) = \min_{1 \leq i \leq k}\Vert x d_i \Vert$. Let $x_0$ be the value that maximises $f_D$, where $x_0 \in \mathbb{T}$. Such an $x_0$ must exist since $f_D$ is continuous, and the circle (and hence) $\mathbb{T}$ is compact. Thus we have $\kappa(D) = f_D(x_0) = \min_{1 \leq i \leq k} \Vert x_0 d_i \Vert$. Let $d_j \in D$ be a value that minimises $\kappa(D)$ and $f_D(x_0)$. We now have that $\kappa(D) = \Vert x_0 d_j\Vert$. 
-Furthermore, since all the functions we are dealing with are continuous, there must exist a $d_i \in D$, where $j \neq i$, such that $\Vert x_0 d_j \Vert = \Vert x_0 d_i \Vert$. I will prove that this is the case by proof by contradiction:
-
-Let us assume that $x_0$ such that $\kappa(D) = \Vert x_0 d_j \Vert$, for some $d_j \in D$, and that no $d_i$ exist such that $\Vert x_0 d_j \Vert = \Vert x_0 di\Vert$. In that case, we must have that for all $d_m \in D, m \neq j: \Vert x_0 d_m \Vert > \Vert x_0 d_j$, since we explicitly found $d_j$ to be the value that minimizes $f_D(x_0)$. Then, since $f_D$ is continuous, we can take $y = x_0 \pm \epsilon$ for a small value $\epsilon > 0$, and since $d_j$ was the only value that minimised $f_D(x_0)$, and changing the value of $x_0$ by $\epsilon$ will not change that, we can increase value of $f_D$ so that $f_D(y) > f_D(x_0)$. However, this contradicts our initial assumption that $x_0$ maximises $f_D$, and therefore there must exist a $d_i$ such that $\Vert x_0 d_i \Vert = \Vert x_0 d_j \Vert$.  
- 
-In fact we have the case $\E{x_0 d_j} = 1 - \E{x_0 d_i}$, where $\E{x}$ is the fractional part of x, i.e. the position on the circle. Thus we have 
-
-\begin{equation}
-\begin{split}
-x_0d_j + x_0d_i &= \lfloor x_0d_j \rfloor + \E{x_0d_j} + \lfloor x_0d_i \rfloor + \E{x_0d_i} \\
-               &= \lfloor x_0d_j \rfloor + \lfloor x_0d_i \rfloor + 1 = a
-\end{split} 
-\end{equation}
-
-which we can rearrange into $x_0 = a / (d_j + d_i)$, which indeed gives us $\kappa(D)$, which was what we wanted to show.}
-{
-\cite{invis} then uses this to prove that their Conjecture 5 is equivalent to the Lonely Runner conjecture, and shows how the finding the value of a will solve their conjecture if the Lonely Runner conjecture holds.
-
-In order to make sure that the Numerical algorithm will always terminate, even in the case where the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
-}
-{}
-{
-It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
-}
-{}
-{
-It is clear that the meat of NumericalLonelyRunner is 4 nested for-loops. The 2 first loops are dependent on each other, the third is based on the speed for the two runners that have been chosen, and the last loop goes through all the runners.\\
-
-The first 2 loops gives us $\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}1 = n-1 + n-2 + \ldots 2 + 1$, which reduces to $O(n^2)$. The third loop must iterate $k-1$ times, where $k$ is the sum of 2 runner's speed.\\
-
-If we are to give a worst case time, then it is clear $k$ must be the sum of the speed of the two fastest runners - so if we let $speed_1 = max(\comS)$ and $speed_2 = max(\comS \setminus \E{speed_1})$ then $k = speed_1 + speed_2$
-And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(k * n^3)$.
-}{}
 
 \subsection{Conclusion on the algorithms}
 
