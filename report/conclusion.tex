@@ -16,14 +16,20 @@
 I have in this project:
 \begin{itemize}
 \item Implemented and tested the Numerical method found in \cite{invis}
-\item 
+\item Implemented and tested a Geometrical method of my own devising.
+\item Argued that if there exist a time that makes \eqaref{eqa:lonelyRunner} hold, then it will be rational.
 \end{itemize}
 
 \subsection{Results}
 
 
 \subsection{Future work}
-
-It would be interesting to see whether the Geometrical algorithm could be made faster. One way could be only investigate the intervals where the slowest runner is in the Zone. This is based on the fact that we only have a valid solution if all the runners are in the Zone, which more specifically requires the slowest runner to be in the Zone. This could quite possibly dramatically reduce the required run-time, as since all creations, insertions and removals of Event Points when the runner is outside the Zone would never be made. While the modular nature of the Lonely Runner conjecture might make this seem like a futile task, it is important to remember that it is possible calculate the times where a runner enters the zone, and thus 
+\begin{description}
+\item[Improved Geometrical method:] It would be interesting to see whether the Geometrical algorithm could be made faster. One way could be only investigate the intervals where the slowest runner is in the Zone. This is based on the fact that we only have a valid solution if all the runners are in the Zone, which more specifically requires the slowest runner to be in the Zone. This could quite possibly dramatically reduce the required run-time, as since all creations, insertions and removals of Event Points when the runner is outside the Zone would never be made. While the modular nature of the Lonely Runner conjecture might make this seem like a futile task, it is important to remember that it is possible calculate the times where a runner enters the zone, and thus 
 
 Let SlowZone be the interval where the slowest runner is in the zone, then a pair of Event Points should be inserted on the heap iff at least one of \comStart and \comFin is in SlowZone. This would however separate the algorithm into 2 parts: The first part which finds the first Event Points that could be interesting, and the second part which is the same as before, only with a check that does not insert pairs of Event Points that are entirely outside the SlowZone.
+
+\item[Parallelism:] It is clear that the Numerical algorithm can take advantage of multiple threads. However, given the results, it can be debated whether this would significantly improve its run-time, given that it either finds the solution right of the bat, or has to run for several hours (in which case one might wonder whether it might be better to make a hybrid algorithm that runs both, that stops them both when a solution has been found). A better place to utilize parallelism would perhaps be in the Range test, distributing the intervals that each CPU (or indeed, computer) should check. This is especially true, since the memory peak load of the range test is very small.
+
+\item[Verification for many different number of runners and speeds:] Since I in this project has made a verifier for whether a given configuration holds for \eqaref{eqa:lonelyRunner} or not, it seems that the next logical step would be to set it to verify the Lonely Runner conjecture for a large verity of runner configurations. 
+\end{description}
