@@ -68,7 +68,7 @@ def doGnuPlot(filename, extra_name, maxYValue, max_speed_to_test):
 	print >>f, "set noborder"
 	print >>f, "set multiplot"	
 	print >>f, "set xlabel '%s'; set ylabel '%s'" % (speed_name, time) 	
-	print >>f, "plot '%s' using 1:2:3 with errorbars title '%s' lc rgb 'red', '%s' using 1:4:5 with errorbars title '%s' lc rgb 'green', '%s' using 1:2:3 with lines title '%s' lc rgb 'red', '%s' using 1:4:5 with lines title '%s' lc rgb 'green'" % (input_filename, geo_name, input_filename, num_name, input_filename, geo_name, input_filename, num_name)
+	print >>f, "plot '%s' using 1:2:3 with errorbars title '%s' lc rgb 'red', '%s' using 1:4:5 with errorbars title '%s' lc rgb 'green', '%s' using 1:2:3 with lines title '%s' lc rgb 'red', '%s' using 1:4:5 with lines title '%s' lc rgb 'green'" % (input_filename, geo_name + " Error bar", input_filename, num_name + " Error bar", input_filename, geo_name, input_filename, num_name)
 	print >>f, "unset multiplot"
 	print >>f, "reset"
 	f.flush()
@@ -126,15 +126,28 @@ def print_plot(info_list, filename):
 	strAccum = "#Speed\tGeo\tGeo_spread\tNum\tNum_spread\n"
 	maxGeoValue = -1	
 	maxNumValue = -1
-	max_speed_to_test = 5000	
+	max_speed_to_test = 5000
+	sec_to_micro = 1000000
+	
+	
+	
+
 	for bar in info_list:
+		num_speed = bar.num
+		if num_speed < 0:
+			num_speed = bar.num_sec * sec_to_micro
+
+		geo_speed = bar.geo
+		if geo_speed < 0:
+			geo_speed = bar.geo_sec * sec_to_micro
+
 		if bar.speed > max_speed_to_test:
 			break;
-		strAccum += str(bar.speed) + "\t" + str(bar.geo) + "\t" + str(bar.geo_spread) + "\t" + str(bar.num) + "\t" + str(bar.num_spread) +"\n"
-		maxGeoValue = max(maxGeoValue, bar.geo + bar.geo_spread)
-		maxNumValue = max(maxNumValue, bar.num + bar.num_spread)
+		strAccum += str(bar.speed) + "\t" + str(geo_speed) + "\t" + str(bar.geo_spread) + "\t" + str(num_speed) + "\t" + str(bar.num_spread) +"\n"
+		maxGeoValue = max(maxGeoValue, geo_speed + bar.geo_spread)
+		maxNumValue = max(maxNumValue, num_speed + bar.num_spread)
 		
-	saveFile(filename + ".dat", strAccum)
+		saveFile(filename + ".dat", strAccum)
 	doGnuPlot(filename, "Geo", maxGeoValue, max_speed_to_test)
 	doGnuPlot(filename, "Num", maxNumValue, max_speed_to_test)
 
@@ -143,7 +156,7 @@ class spread:
 		self.geo_spread, self.geo_sec, self.num_spread, self.num_sec = geo_spread, geo_sec, num_spread, num_sec
 
 class speed:
-	def __init__(self, geo_speed, geo_sec, num_spreed, num_sec):
+	def __init__(self, geo_speed, geo_sec, num_speed, num_sec):
 		self.geo_speed, self.geo_sec, self.num_speed, self.num_sec = geo_speed, geo_sec, num_speed, num_sec
 
 def find_spread(spread_list, max_second):
@@ -192,7 +205,7 @@ def print_special_tables(all_info, s_type):
 	strAcum += " & Geometrical %s & Numerical %s\\n\hline\\n" %(s_type, s_type)
 	strAcum += "All %ss ($\mu$s) & %s & %s\\n\\hline\\n" % (s_type, geo_spread_val, num_spread_val)
 	strAcum += "Only %ss from runs ($\mu$s) & %s & %s\\n" % (s_type, geo_spread_val_max, num_spread_val_max) 
-    strAcum += "that took less than %s sec & & \\n" % max_second
+	strAcum += "that took less than %s sec & & \\n" % max_second
 	strAcum += "\\hline"
 	strAcum += "\\end{tabular}"
 	
@@ -218,15 +231,14 @@ def processData():
 
 		bar_list = []
 		for index in range(0, len(numerical)):
-			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_second[index], geometrical_spread[index], 
-						                    numerical[index]  , numerical_second[index]  , numerical_spread[index]  ))
+			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_second[index], geometrical_spread[index],            					                numerical[index]  , numerical_second[index]  , numerical_spread[index]  ))
 			
 			spread_data.append(spread(geometrical_spread[index], geometrical_second[index], numerical_spread[index], numerical_second[index]))
 			speed_data.append( speed(geometrical[index], geometrical_second[index], numerical[index], numerical_second[index]))			
 
-#		print_plot(bar_list, infile)
-#		print_tables(bar_list, infile)		
-	print_special_tables(spread_data, "spread")
-	print_special_tables(speed_data, "speed")
+		print_plot(bar_list, infile)
+		print_tables(bar_list, infile)		
+#	print_special_tables(spread_data, "spread")
+#	print_special_tables(speed_data, "speed")
 		
 processData()

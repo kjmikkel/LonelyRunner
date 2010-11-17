@@ -25,14 +25,14 @@ I expect the reader to have the mathematical knowledge required to understand bo
 \todo{Scope and limitations}
 \begin{itemize}
 \item In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-\item I will create a program that can verify whether a given configuration of runners is true for \eqaref{eqa:lonelyRunner}, and make it return a result, within a reasonable time, for up to 1000 runners. The final program will work with more than 1000 runners, but I will prioritise readability, maintainability and portability of the program instead of extreme optimizations. 
+\item I will create a program that can verify whether a given configuration of runners is true for \eqaref{eqa:lonelyRunner}, and make it return a result, within a reasonable time, for up to 1000 runners. The final program will work with more than 1000 runners, but I will prioritise readability, maintainability and portability of the program instead of extreme optimisations. 
 \item The program will include a system to test a range of runner configurations against \eqaref{eqa:lonelyRunner}.
 \item I will only focus on runners with integer speeds - see \ref{integerSpeeds} for an justification of this.
 \end{itemize}
 
 \subsection{Computer specifications}
 \label{specs}
-I would like to define which kind of computer I would require for running my program. As mentioned above, the Lonely Runner conjecture has direct applications for View-Obstruction problems and coloring of regular chromatic graphs. Researchers working with in these fields have no special reason to work with exceedingly powerful computers, or computers with special hardware.
+I would like to define which kind of computer I would require for running my program. As mentioned above, the Lonely Runner conjecture has direct applications for View-Obstruction problems and colouring of regular chromatic graphs. Researchers working with in these fields have no special reason to work with exceedingly powerful computers, or computers with special hardware.
  
 Based on the above I would argue that any algorithm I devise and implement should be able to run on a standard computer with no special hardware\footnote{Say hardware dedicated to fast floating point calculations}. I will therefore design my verification program to run on a 2 Ghz computer with the recommended amount of RAM for the computer's OS. 
 
@@ -41,13 +41,50 @@ I reserve the right to use third-party software libraries - as long as these can
 \subsection{Integer speeds}
 \label{integerSpeeds}
 In this section I will prove that my program will only have to work with integer speeds.
-Let us assume for a given configuration of runner speeds T, there is a non-empty set $S \subset T$, of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that it only makes sense either all elements in S belong to $\mathbb{Q}$ or where at least one of the elements in S is a irrational number:
+Let us assume for a given configuration of runner speeds T, there is a non-empty set $S \subset T$, of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that there are 3 cases we have to worry about: 1) Either all elements in S belong to $\mathbb{Q}$, 2) All elements are irrational numbers, 3) There is a mix of irrational and rational numbers.
+
+I will now prove that in all 3 cases we only have to worry about finding a solution for the speeds that can be reduced to integers.
+
 \begin{description}
 \item[Only rational numbers in S:] In this instance we can convert all the runner speeds into integers, by multiplying all speeds in T with the product of the denominators of the rational numbers in S.
 \item[Only irrational numbers in S, and S = T:]
+Since we are only dealing with irrational numbers, then from example 6.1 in \cite{uniform} they must be uniform distribution mod 1 in $\R$. 
+From definition 6.1 in \cite{uniform}, we furthermore have that for every pair $a, b \in \R$ with $0 \leq a < b \leq 1$, and every $s = (s_1, s_2, \ldots, s_n)$, where $sk = (s_1k, s_2k, \ldots, s_nk)$ we have
+
+$$
+\lim_{N \rightarrow \infty} \frac{
+|\E{
+(sn) | \E{sn} \in [a, b)^{|S|} \;\mathrm{for}\;n \leq N 
+}|
+}{
+N
+} = 
+\prod^{|S|}_{j=1}(b_j - a_j) 
+$$
+
+where $\E{x} = x - [x]$, where $[x]$ is the largest integer $y$ less than or equal to x, and for $[s] = ([s_1], [s_2], \ldots, [s_n])$.
+
+From this it is clear that for any interval $[a, b]$, it will be possible to find a $k \in \N$ large enough to place all the runners inside it. Thus we pick a $k$ such that all runners in T are inside an interval that makes \eqaref{eqa:lonelyRunner} hold. So it holds trivially if we only have irrational numbers.
 
 \item[T is a mixture of natural/rational numbers and irrational numbers:]
+In this case we first multiply all the speeds in T with the product of all the denominator of the fractions in T, giving us the set of speeds $T\prime$. Let $N\prime$ be the true subset of $T\prime$ that only contains integer speeds, and $R\prime$ be the true subset of $T\prime$ that only contains irrational speeds, so we have $T\prime = N\prime \cup R\prime$, and $N\prime \cup R\prime = \empty$.
 
+Let us assume that in that case there must exist a real number $t$, which makes \eqaref{eqa:lonelyRunner} hold for $N\prime$. Let us observe the vector $(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m)$, where $r_i \in R\prime$ and $|R\prime| = k$, and $n_i \in N\prime$ and $|N\prime| = m$. 
+
+From the last case it is clear that there must exist a value $q \in \N$ which makes \eqaref{eqa:lonelyRunner} hold for all the speeds in $R\prime$, so let us now choose one such $q \in N$, such that for all the speeds in $R\prime$, $q + t$ is the value that makes them all hold for \eqaref{eqa:lonelyRunner}\footnote{Since we are able to cram all our runners into an arbitrary small interval anywhere on $\mathbb{T}$, this must be possible}.
+
+So now if observe the vector 
+\begin{equation}
+\begin{split}
+&(q + t)(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m) =\\ 
+&((q + t)r_1, (q + t)r_2, \ldots, (q + t)r_n, (q + t)n_1, (q + t)n_2, \ldots, (q + t)n_m) 
+\end{split}
+\end{equation}
+
+It might not be not entirely clear that that the natural numbers in the above vector gives us a solution, so let us take a closer look: 
+$(q + t)n_i = q * n_i + t * n_i$, and $\Vert q * n_i + t * n_i \Vert = \Vert t * n_i \Vert$ since $q \in \N$, and since we started by assuming $t$ made all speeds in $N\prime$ hold with regards to \eqaref{eqa:lonelyRunner}, it follow by tautology that $\Vert t * n_1 \Vert \geq \frac{1}{n+1}$ for all $n_i \in N\prime$.
+
+Therefore if there exists a solution for integer speeds, there must also exist a solution for the irrational numbers, and we thus we only have to worry about finding a solution for the integer speeds.
 \end{description}
 
 \subsection{Terminology}
@@ -55,7 +92,7 @@ Let us assume for a given configuration of runner speeds T, there is a non-empty
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.3\textwidth, angle=90]{./images/circleZoneEPS}
-  \caption{\label{circleZoneImg}An illustration of the Runner track. The grayed out part is the Zone}
+  \caption{\label{circleZoneImg}An illustration of the Runner track. The greyed out part is the Zone}
 \end{figure}
 
 In this report I will refer to runners as male for simplicity.
