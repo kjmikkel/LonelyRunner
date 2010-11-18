@@ -1,0 +1,25 @@
+===Build instructions===
+
+The project has a few dependencies - see below. Once the dependencies have been installed and configured, you will only need to use the command make in the C++ directoy, and the Lonely Runner program should be built. 
+
+
+===Compilers and portability===
+
+For this project I have compiled the code with gcc version 4.4.3 (Ubuntu 4.4.3-4ubuntu). 
+
+I have tried to use  compliant code, though when it comes to testing, there may be problem with running on other platforms than Linux (primarily when it comes to getting the time).
+
+
+===Dependencies===
+
+* NTL arbitrary-precision arithmetic (v. used 5.5.2 ): 
+  A software library to allow for arbitrary precision sized integers in both algorithms. 
+  The library can be found at http://www.shoup.net/ntl/doc/tour.html (last visited 10/11/2010).
+
+* The GNU Multiple Precision Arithmetic Library (GMP) (v. used 5.0.1):
+  The NTL library above should be compiled towards the GMP to increase its efficiency. 
+  The library can be found at http://gmplib.org/ (last visited 10/11/2010).  
+
+* json-c (v. 0.9): 
+  A C++ library used for importing and exporting data to/from the JSON file format. 
+  The library can be found at http://oss.metaparadigm.com/json-c/ (last visited 10/11/2010).

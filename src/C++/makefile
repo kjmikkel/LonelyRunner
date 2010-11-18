@@ -2,11 +2,11 @@
 
 op = -O2
 
-TestCode.out: main_test.o Geometric.o Numerical.o Prime_Number.o util.o 
-	g++ $(op) -o TestCode.out main_test.o Geometric.o Numerical.o Prime_Number.o util.o -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm 
-
 LonelyRunner.out: main.o Geometric.o Numerical.o Prime_Number.o util.o 
 	g++ $(op) -o LonelyRunner.out main.o Geometric.o Numerical.o util.o  `pkg-config gtk+-2.0 --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm
+
+TestCode.out: main_test.o Geometric.o Numerical.o Prime_Number.o util.o 
+	g++ $(op) -o TestCode.out main_test.o Geometric.o Numerical.o Prime_Number.o util.o -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm 
 
 # above LonelyRunner.out depends on main.o, data_structure.o and Geometric.o
 
