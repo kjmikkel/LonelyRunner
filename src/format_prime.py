@@ -20,7 +20,9 @@ def fixPrimes(number_to_find):
 	
 	primeList = matcher.findall(strFile)	
 	
-	primes_we_want = primeList[0:number_to_find -1]
+#	primes_we_want = primeList[0:number_to_find -1]
+
+	primes_we_want = primeList
 
 	json_primes = json.dumps(primes_we_want)
 	

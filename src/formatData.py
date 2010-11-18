@@ -1,5 +1,6 @@
 import json
 import os, glob
+from decimal import *
 
 import Gnuplot, Gnuplot.funcutils, re
 #from scipy import *
@@ -167,17 +168,16 @@ def find_spread(spread_list, max_second):
 	spread_val_max = 0
 	spread_max = []
 
-	for spread in spread_list:
-		index = 0
-		for val in spread[0]:
-			if (val > 0):
-				spread_val += val
-			else:
-				spread_val += spread[1][index] * sec_to_micro
-			print val
-			if spread[1] and spread[1][index] < max_second:
-				spread_max.append((spread[0][index], spread[1][index]))
-			index += 1
+	for spread_instance in spread_list:
+		val = spread_instance[0]
+		val_sec = spread_instance[1]
+		if (val > 0):
+			spread_val += val
+		else:
+			spread_val += val_sec * sec_to_micro
+		if val_sec < max_second:
+			spread_max.append((val, val_sec))
+		
 	
 	for max_val in spread_max:
 		if max_val[0] > 0:
@@ -185,8 +185,8 @@ def find_spread(spread_list, max_second):
 		else:
 			spread_val_max += max_val[1] * sec_to_micro
 
-#	spread_val /= len(spread_list)
-#	spread_val_max /= len(spread_max)
+	print (spread_val, spread_val_max)
+
 	return (spread_val, spread_val_max)
 
 
@@ -194,23 +194,75 @@ def print_special_tables(all_info, s_type):
 	geo_spread = []
 	num_spread = []
 	max_second = 2
-	for spread in all_info:
-		geo_spread.append((spread.geo_spread, spread.geo_sec))
-		num_spread.append((spread.num_spread, spread.num_sec))
-	
+	micro_to_sec = 1000000
+
+	for spread_instance in all_info:
+		if isinstance(spread_instance, spread):
+			geo_spread.append((spread_instance.geo_spread, spread_instance.geo_sec))
+			num_spread.append((spread_instance.num_spread, spread_instance.num_sec))
+		else:
+			geo_spread.append((spread_instance.geo_speed, spread_instance.geo_sec))
+			num_spread.append((spread_instance.num_speed, spread_instance.num_sec))
+
 	(geo_spread_val, geo_spread_val_max) = find_spread(geo_spread, max_second)
 	(num_spread_val, num_spread_val_max) = find_spread(num_spread, max_second)
 	
-	strAcum = "\\begin{tabular}[3]{c|c|c|}\\n"
-	strAcum += " & Geometrical %s & Numerical %s\\n\hline\\n" %(s_type, s_type)
-	strAcum += "All %ss ($\mu$s) & %s & %s\\n\\hline\\n" % (s_type, geo_spread_val, num_spread_val)
-	strAcum += "Only %ss from runs ($\mu$s) & %s & %s\\n" % (s_type, geo_spread_val_max, num_spread_val_max) 
-	strAcum += "that took less than %s sec & & \\n" % max_second
+	strAcum = "\\begin{tabular}[3]{c|c|c}\n"
+	strAcum += " & Geometrical %s & Numerical %s\n\hline\n" %(s_type, s_type)
+	strAcum += "All %ss ($\mu$s) & %s & %s\n\\hline\n" % (s_type, geo_spread_val, num_spread_val)
+	strAcum += "Only %ss from runs ($\mu$s) & %s & %s\n" % (s_type, geo_spread_val_max, num_spread_val_max) 
+	strAcum += "that took less than %s sec & & \n" % max_second
 	strAcum += "\\hline"
-	strAcum += "\\end{tabular}"
+	strAcum += "\\end{tabular}\n"
+
+	getcontext().prec = 6
 	
+	all_val = (geo_spread_val - num_spread_val)
+	all_val_sec = Decimal(all_val) / Decimal(micro_to_sec * 60 * 60) 
+
+	no_max = (geo_spread_val_max - num_spread_val_max)
+	no_max_sec = Decimal(no_max) / Decimal(micro_to_sec * 60 * 60)
+
+	all_val_str = ""
+	all_val_other_str =""
+
+	no_max_str = ""
+	no_max_other_str = ""
+	
+	if all_val < 0:
+		all_val_str = "Geometrical"
+		all_val_other_str = "Numerical"
+	else:
+		all_val_str = "Numerical"
+		all_val_other_str = "Geometrical"
+
+	if no_max_str < 0:
+		no_max_str = "Geometrical"
+		no_max_other_str = "Numerical"
+	else:
+		no_max_str = "Numerical"
+		no_max_other_str = "Geometrical"
+	
+	adjecture = ""
+	
+	type_str = ""
+	if s_type == "speed":
+		type_str = "is faster by"
+	else:
+		type_str = "has a lesser spread by"
+
+	fast  = "The %s method %s %s mu (or %s s) compared to the %s method" % (all_val_str, type_str, abs(all_val),  abs(all_val_sec), all_val_other_str)
+	fast_no_max = "The %s method %s %s mu (or %s s) if we disregard every calculation that took more than %s seconds, compared to the %s method" % (no_max_str, type_str, abs(no_max), abs(no_max_sec), max_second, no_max_other_str)
+	print fast
+	print fast_no_max
+	
+	strAcum += fast
+	strAcum += fast_no_max
+
+
 	saveFile("../report/data/tables/" + s_type + "_table.tex", strAcum)
-		
+	
+	
 
 def processData():
 	spread_data = []
@@ -233,12 +285,14 @@ def processData():
 		for index in range(0, len(numerical)):
 			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_second[index], geometrical_spread[index],            					                numerical[index]  , numerical_second[index]  , numerical_spread[index]  ))
 			
-			spread_data.append(spread(geometrical_spread[index], geometrical_second[index], numerical_spread[index], numerical_second[index]))
-			speed_data.append( speed(geometrical[index], geometrical_second[index], numerical[index], numerical_second[index]))			
+			spread_data.append(spread(geometrical_spread[index], geometrical_second[index], 
+						  numerical_spread[index], numerical_second[index]))
+			speed_data.append( speed(geometrical[index], geometrical_second[index], 
+						 numerical[index], numerical_second[index]))			
 
-		print_plot(bar_list, infile)
-		print_tables(bar_list, infile)		
-#	print_special_tables(spread_data, "spread")
-#	print_special_tables(speed_data, "speed")
+	#	print_plot(bar_list, infile)
+	#	print_tables(bar_list, infile)		
+	print_special_tables(spread_data, "spread")
+	print_special_tables(speed_data, "speed")
 		
 processData()
