@@ -1,7 +1,18 @@
 ===Build instructions===
 
-The project has a few dependencies - see below. Once the dependencies have been installed and configured, you will only need to use the command make in the C++ directoy, and the Lonely Runner program should be built. 
+The project has a few dependencies - see below. Once the dependencies have been installed and configured, you will only need to call
 
+make 
+
+or 
+
+make LonelyRunner.out
+
+or if you want the test program
+
+make TestCode.out
+
+The resulting output can be run normaly
 
 ===Compilers and portability===
 
