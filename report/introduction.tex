@@ -49,12 +49,12 @@ I will now prove that in all 3 cases we only have to worry about finding a solut
 \item[Only rational numbers in S:] In this instance we can convert all the runner speeds into integers, by multiplying all speeds in T with the product of the denominators of the rational numbers in S.
 \item[Only irrational numbers in S, and S = T:]
 Since we are only dealing with irrational numbers, then from example 6.1 in \cite{uniform} they must be uniform distribution mod 1 in $\R$. 
-From definition 6.1 in \cite{uniform}, we furthermore have that for every pair $a, b \in \R$ with $0 \leq a < b \leq 1$, and every $s = (s_1, s_2, \ldots, s_n)$, where $sk = (s_1k, s_2k, \ldots, s_nk)$ we have
+From Definition 6.1 in \cite{uniform}, we furthermore have that for every pair $\mathbf{a}, \mathbf{b} \in \R^{|S|}$, where $\mathbf{a} = (a, a, \ldots, a)$, and $\mathbf{b} = (b, b, \ldots, b)$ with $\mathbf{0} \leq \mathbf{a} < \mathbf{b} \leq \mathbf{1}$, and every $s = (s_1, s_2, \ldots, s_n)$, where $sk = (s_1k, s_2k, \ldots, s_nk)$ we have
 
 $$
 \lim_{N \rightarrow \infty} \frac{
 |\E{
-(sn) | \E{sn} \in [a, b)^{|S|} \;\mathrm{for}\;n \leq N 
+sn | \E{sn} \in [\mathbf{a}, \mathbf{b}) \;\mathrm{for}\;n \leq N 
 }|
 }{
 N
@@ -67,11 +67,11 @@ where $\E{x} = x - [x]$, where $[x]$ is the largest integer $y$ less than or equ
 From this it is clear that for any interval $[a, b]$, it will be possible to find a $k \in \N$ large enough to place all the runners inside it. Thus we pick a $k$ such that all runners in T are inside an interval that makes \eqaref{eqa:lonelyRunner} hold. So it holds trivially if we only have irrational numbers.
 
 \item[T is a mixture of natural/rational numbers and irrational numbers:]
-In this case we first multiply all the speeds in T with the product of all the denominator of the fractions in T, giving us the set of speeds $T\prime$. Let $N\prime$ be the true subset of $T\prime$ that only contains integer speeds, and $R\prime$ be the true subset of $T\prime$ that only contains irrational speeds, so we have $T\prime = N\prime \cup R\prime$, and $N\prime \cup R\prime = \empty$.
+In this case we first multiply all the speeds in T with the product of all the denominator of the fractions in T, giving us the set of speeds $T\prime$. Let $N\prime$ be the true subset of $T\prime$ that only contains integer speeds, and $R\prime$ be the true subset of $T\prime$ that only contains irrational speeds, so we have $T\prime = N\prime \cup R\prime$, and $N\prime \cap R\prime = \emptyset$.
 
 Let us assume that in that case there must exist a real number $t$, which makes \eqaref{eqa:lonelyRunner} hold for $N\prime$. Let us observe the vector $(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m)$, where $r_i \in R\prime$ and $|R\prime| = k$, and $n_i \in N\prime$ and $|N\prime| = m$. 
 
-From the last case it is clear that there must exist a value $q \in \N$ which makes \eqaref{eqa:lonelyRunner} hold for all the speeds in $R\prime$, so let us now choose one such $q \in N$, such that for all the speeds in $R\prime$, $q + t$ is the value that makes them all hold for \eqaref{eqa:lonelyRunner}\footnote{Since we are able to cram all our runners into an arbitrary small interval anywhere on $\mathbb{T}$, this must be possible}.
+From the last case it is clear that there must exist an integer which makes \eqaref{eqa:lonelyRunner} hold for all the speeds in $R\prime$, so let us now choose one such $q \in \N$, such that for all the speeds in $R\prime$, $x = q + t$ makes them hold for \eqaref{eqa:lonelyRunner}\footnote{Since we are able to cram all our runners into an arbitrary small interval anywhere on $\mathbb{T}$, this must be possible}.
 
 So now if observe the vector 
 \begin{equation}
