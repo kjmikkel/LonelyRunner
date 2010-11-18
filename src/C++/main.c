@@ -271,7 +271,7 @@ void range_test(int start_value, int end_value, int num_runners, int start_max_v
   // Now to populate the array with the values and test them
   gettimeofday(&start, &tz);
   int run = 0;
-  for(int index = first_level_index; index < max_number; index++) {
+  for(int index = first_level_index; index <= max_number; index++) {
     test_array[num_runners - 1] = real_number_array[index]; 
     std::string testing = "Now testing index " + intToString(test_array[num_runners - 1]);
     if (label != NULL) {
