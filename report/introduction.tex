@@ -17,7 +17,7 @@ Given any $n$ positive integers $w_1, w_2, \ldots, w_n$, there exists a real num
 
 for $i = 1, 2, \ldots, n$, where for $y \in \R$, $\Vert y \Vert$ is the distance from $y$ to the nearest integer. I owe the above formulations of the conjecture to \cite{ANote}. In this report it is useful to think of the track as the one-dimensional Torus $\mathbb{T} = [0,1)$.
 
-\subsection{Expectations of the reader}
+\subsection{Expectations of the Reader}
 I expect the reader to have the mathematical knowledge required to understand both the formal and informal description of the Lonely Runner Conjecture, as well having an understanding of university level Computational Geometry\footnote{For instance having read \cite{citeulike:3347056} or similar}.
 
 \subsection{Scope and Limitations}
@@ -36,7 +36,7 @@ Based on the above I would argue that any algorithm I devise and implement shoul
 
 I reserve the right to use third-party software libraries - as long as these can be freely distributed and installed.
 
-\subsection{Integer speeds}
+\subsection{Integer Speeds}
 \label{integerSpeeds}
 In this section I will prove that my program will only have to work with integer speeds.
 Let us assume for a given configuration of runner speeds T, there is a non-empty set $S \subset T$, of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that there are 3 cases we have to worry about: 1) Either all elements in S belong to $\mathbb{Q}$, 2) All elements are irrational numbers, 3) There is a mix of irrational and rational numbers.
@@ -111,20 +111,20 @@ Configurations of runners, will in this report refer to a set S of $n \in \N$ ru
 When talking about the fake runner, I will be referring to a runner that is not actually in race, but rather a runner with speed 1, who I have introduced in order to have a convenient termination criterion for the Geometrical algorithm\footnote{\pref{compGeo}}. \pref{termination} for more.
 \end{defi}  
 }
-\subsection{Canonical example}
+\subsection{Canonical Example}
 Through the rest of this report I will use the following configuration
 of runners to give an example:
 We have 4 runners with the speeds of 3, 5, 6, 9
 
-\subsection{Background material used}
+\subsection{Background Material Used}
 \label{background}
 For this project I have read the following papers dealing with the Lonely Runner conjecture: ``View-Obstruction Problems''\cite{Bienia97flows.view-obstructions}, ``The lonely runner problem with seven runners'' \cite{serra_thelonely}, ``Regular chromatic number and the lonely runner problem'' \cite{Barajas2007479}, ``View-Obstruction Problems'' \cite{springerlink:10.1007/BF01832623}, ``Tight Instances of the Lonely Runner'' \cite{Goddyn96tightinstances}, ``A Note on the Lonely Runner Conjecture'' \cite{ANote} and ``Invisible runners in finite fields'' \cite{invis}.
 
 I have also used the follow support literature:
 ``Computational Geometry'' \cite{citeulike:3347056}, ``Uniform Distribution of Sequences'' \cite{uniform} and ``Kalkulus'' \cite{kalkulus}.
 
-\subsection{Source code and test data}
-The source code for the program can be found in my GitHub repo at https://github.com/kjmikkel/LonelyRunner, there you will also be able to find the machine readable data I have used as the basis for my results, as well as the source code for this report.
+\subsection{Source Code and Test Data}
+The source code for the program can be found in my GitHub repo at \underline{https://github.com/kjmikkel/LonelyRunner}, there you will also be able to find the machine readable data I have used as the basis for my results, as well as the source code for this report.
 
 \subsection{Overview}
 In this section I give a quick overview of what the different sections in report will cover.

@@ -4,7 +4,7 @@
 \subsection{Introduction}
 In this section I will describe the two different algorithms I have used in this project, and discuss their merits and flaws.\\
 
-\subsection{Possible methods}
+\subsection{Possible Methods}
 
 \begin{description}
 \item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (\nref{introduction}) lends itself well to a geometrical interpretation, and leads me to wonder whether such an algorithm could efficiently find a solution.
@@ -51,7 +51,7 @@ More generally, a runner with speed $s$ will be in the Zone for the $k$'th time,
 
 So in order to find a time where all the runners are in the Zone (which would make equation \eqaref{eqa:lonelyRunner} hold), we need to check whether or not there is a time that is contained in all the intervals, produced by all the runners. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or any other university level, or higher textbook dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
 
-\subsubsection{High level description of the algorithm}
+\subsubsection{High Level Description of the Algorithm}
 
 \begin{algorithm}[H]
   \caption{SimpleLonelyRunner\label{simpleLonelyRunner}}
@@ -100,7 +100,7 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
   \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring everything in-between. The vertical line is here placed at the first time where equation \eqaref{eqa:lonelyRunner} holds for the speeds 3, 5, 6 and 9.}
 \end{figure}
 
-\subsubsection{Termination criteria}
+\subsubsection{Termination Criteria}
 \label{termination}
 Since the Lonely Runner conjecture has not been proved for all $n \in \N$, there must be a means to terminate the algorithm, if for a given configuration of runners, there does not exists a time that make equation equation \eqaref{eqa:lonelyRunner} hold.
 
@@ -113,7 +113,7 @@ I will in this lemma prove that given $n$ runners there will be at most $2n + 1$
 When the algorithm enters the main loop it is clear from algorithm \ref{simpleLonelyRunner} that there must be $2n + 1$ Event Points in the Priority Queue - $1$ point from the fake runner, and $2n$ points from the real runners. In the main loop it is only when an \comEnd has been removed from the Priority Queue that more points can be added, and furthermore it is clear that an \comEnd can only be removed if its \comStart has been removed first. Since precisely 2 Event Points are added to the Priority Queue each time we encounter an \comEnd, and at least 2 Event Points have to have been removed for this to happen, the number of Event Points in the Priority Queue can never exceed $2n + 1$, and must therefore at most contain $O(n)$ Event Points, which was what we wanted to show.
 \end{lemma}
 
-\subsubsection{Proofs of the Geometric algorithm}
+\subsubsection{Proofs of the Geometric Algorithm}
 \label{proof_geo}
 
 \begin{theo}[Correctness:]
@@ -209,7 +209,7 @@ In order to distinguish entering and leaving the Zone, and the fake runner I int
 \item[\comFin] The final point in that will be processed --- which has set values of $a = n+1$, $k = 1$ and $s = 1$ and runner number to $n+1$. If this point is ever reached, then equation \eqaref{eqa:lonelyRunner} does not hold for the given configuration - and the configuration would serve as a counterexample to the Lonely Runner conjecture.
 \end{description}
 
-\subsubsection{Order of points}
+\subsubsection{Order of Points}
 \label{order}
 In order to avoid any ambiguity concerning the order of the points, I will now define an order $\prec$. \hide{One of the degenerate cases we need to avoid is when we have $(n-1)$ runners that are in the Zone, and the next two points are a \comEnd\, and a \comStart, both at the same time. Since the Zone is a closed set, it is clear that this instance should return a valid solution, but if \comEnd\, comes first, then the solution would not be reported - therefore \comStart\, must be placed before \comEnd.}
 
@@ -299,7 +299,7 @@ Add $start$ and $end$ to \li
 \label{numtheory:algo}
 A Numerical alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. The algorithm works by testing a number of time points which might give us a solution - a sort of enlightened guess work. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
 
-\subsubsection{Proofs for the numerical algorithm}
+\subsubsection{Proofs for the Numerical Algorithm}
 \label{proof_num}
 \begin{theo}[Correctness:]
 This algorithm builds on Theorem 6 in \cite{invis}. Theorem 6 says that if we have a finite set of positive integers D = $\E{d_1, d_2, \ldots, d_k}$, then  $\kappa(D) = \sup_{x \in \R}\min_{1\leq i \leq k}\Vert x d_i \Vert$ is achieved for $x_o = a/(d_i + d_j)$ for some $0 \leq i,j \leq k, i \neq j$, and some positive integer a. I will now paraphrase the proof for this from \cite{invis}:
@@ -437,13 +437,13 @@ algorithm must be dependent on the order of the runner speeds in \comS.
 
 
 
-\subsection{Conclusion on the algorithms}
+\subsection{Conclusion on the Algorithms}
 
 From the above it is clear that neither of the algorithm are better in all cases. The Geometrical algorithm has a better worst case time complexity when we have many runners with low speeds, while the numerical algorithm is better when we have few runners with very high speeds. It is also clear that the numerical algorithm is far easier to implement, relying on no non-standard data structures.
 
 However, since they both are very short, and do not have much in the way of dependencies, I have implemented them both and have compared their run-times with a variety number of runners and speeds.\\
 
-\subsection{Range test}
+\subsection{Range Test}
 As stated in the introduction, one of the goals of this project was to create a program that could test whether there was a speed configurations in a certain range, that had no solution that made equation \eqaref{eqa:lonelyRunner} hold. I have interpreted ``range of runner speed configurations'' as follows:\\
 
 Given a \comS of $n$ runners with a maximum speed of $m \in \N$, the program should test all possible configurations between such that for $i, j \in \N, i < j: \comS_i < \comS_j$, where $\comS_n \leq m$. Furthermore I believe the range test to be most useful if it went about its search in a through manner, such that the last index in the $\comS$ should only be increased when all the permutations, with it as the largest value, have been tested\footnote{In practice this means index $n$ would only increase when, for a \comS with 10 runners, has tested the configuration $[\comS_n - 9, \comS_n - 8, \ldots, \comS_n - 1, \comS_n]$}. 

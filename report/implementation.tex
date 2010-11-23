@@ -3,12 +3,12 @@ section{Implementation}
 
 In this section I will try to describe the implementation choices I have made in this project.
 
-\subsection{Choice of programming language}
+\subsection{Choice of Programming Language}
 I will in this section discuss the factors that decided my choice of programming languages for this project, as well as the final choice.
 
 I have used the following parameters to decide my choice of programming language:
 \begin{description}
-\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to test a large number of configurations in short time. I have based these on the results found at ``The Computer Language Benchmarks Game''\footnote{The site can be found at http://shootout.alioth.debian.org/u32q/which-programming-languages-are-fastest.php and was last accessed the 7/11 2010}.
+\item[Speed:] The point of this project is to make a program that can not only verify whether or not a given configuration of the Lonely Runner conjecture holds, but also to strengthen our belief in the Lonely Runner conjecture. The program must therefore be able to test a large number of configurations in short time. I have based these on the results found at ``The Computer Language Benchmarks Game''\footnote{The site can be found at \underline{http://shootout.alioth.debian.org/u32q/which-programming-languages-are-fastest.php} and was last accessed the 7/11 2010}.
 \item[Memory footprint:] Memory is slightly less essential than speed, but if the memory footprint is smaller, then we can have more runners in a given configuration. A smaller memory footprint would also seem to indicate that the program will be faster, since less has to be allocated and cleaned up. 
 \item[Already implemented data-structures:] I would rather avoid having to implement, debug, and optimise the Priority Queue, and instead relying on a built-in implementation that has proved itself to be free of bugs.
 \item[My familiarity with the language:] Familiarity with the language would enable me to get create a bug free implementation of the algorithms faster.
@@ -29,13 +29,13 @@ C++     & 3     &  3     &  3              &   2  \\
 \subsubsection{Conclusion}
 Based on this I would argue that the best choice would be C++ on the grounds that it clearly scores the highest, and that it will be easy for me to implement the Geometrical and Numerical algorithms.
 
-\subsection{Problems during implementation}
+\subsection{Problems During Implementation}
 In this section I will describe some of the major problems one could encounter while implementing the algorithms, and what I have done to resolve them.
 
-\subsection{Use of real numbers in the algorithm}
-As detailed in Section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. Emperical evidence, however, suggest that this is a good tradeoff.
+\subsection{Use of Real Numbers in the Algorithm}
+As detailed in Section \ref{eventPoints} I choose to implement the comparison of the Event Points through integer comparison, on the grounds that it is much faster than working with floating numbers, on most hardware. It is clear from equation \eqaref{eqa:integerTime} that neither side of the expression can be wholly precomputed, as it requires the other Event Point's speed, meaning that this solution trades floating point comparison with several integer multiplications. Emperical evidence, however, suggest that this is a good tradeoff.
 
-\subsection{Scalability of implementation}
+\subsection{Scalability of Implementation}
 \label{scale}
 An important question that has to be answered is how well the 2 algorithms scale. In this section I will interpret scaling in 2 senses:
 \begin{enumerate}
@@ -49,13 +49,13 @@ The next question to ask is whether or not the algorithms could be parallelised,
 
 Since the point of this program is to strengthen our trust in Lonely Runner conjecture, it is important that the program is able to check with as many runners as possible, and with as large speeds as possible. I will therefore analyse the bounds on these values in the following section, and discuss how I have improved these.
 
-\subsubsection{Geometrical algorithm}
+\subsubsection{Geometrical Algorithm}
 In the current implementation of the comparison operator is that there is a limit on the number of runners and their speeds. Let us observe  
 \eqa{
 \label{eqa:firstCompare}
 (a + k * (n+1)) * s
 }
- from \eqaref{eqa:integerTime}, where all the symbols has the same meaning as before. The possible large numbers are $a$, (which in the worst case is $n$), $n$ itself and $s$. No matter which built in number type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
+ from equation \eqaref{eqa:integerTime}, where all the symbols has the same meaning as before. The possible large numbers are $a$, (which in the worst case is $n$), $n$ itself and $s$. No matter which built in number type we choose to represent the above expression with, it is clear there exists values for $n$ and $s$ that will cause an arithmetic overflow.
 
 \hide{
 The best I have been able to come up with is rewriting the entire comparison to 
@@ -66,7 +66,7 @@ s_ia_j - s_ja_i \leq (n+1)(k_is_j - k_js_i)
 which still requires $s$ to be multiplied with $a$, making the speed of the runner and the local position (which in the worst case is $n$) the bottleneck.
 }
 
-The question then becomes what the maximum allowable value becomes by \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner conjecture holds, we must make sure that the expression does not cause arithmetic overflow, even if the algorithm for that configuration of runners will terminate by finding \comFin. We must therefore assume the maximum values for the variables that change - the local position $a$ and k, the number of times the runner has completed a lap. The maximum value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
+The question then becomes what the maximum allowable value becomes by equation \eqaref{eqa:firstCompare}. Since we are not sure whether or not the Lonely Runner conjecture holds, we must make sure that the expression does not cause arithmetic overflow, even if the algorithm for that configuration of runners will terminate by finding \comFin. We must therefore assume the maximum values for the variables that change - the local position $a$ and k, the number of times the runner has completed a lap. The maximum value of $a$ is $n$ and given a speed $s$, the runner can at most run $s$ rounds before the final runner arrives at the the finishing line. Let $d$ be the maximum positive number that a given number type can represent, then to find the maximum value of $s$ with respect to $n$ and $d$, we have the expression 
 \eqa{
 (n + s * (n+1)) * s &=& d\\
 s^2(n+1) + sn &=& d\\
@@ -102,15 +102,15 @@ This is rather constraining, but if we use a 64 bit integer was to be used inste
 
 Since I in Section \ref{specs} detailed that I wanted the program to run on a normal computer, which yet does not cover 64-bit architectures, I have made the Event Point comparisons, and other checks that might cause overflow, use arbitrary-precision arithmetic\footnote{Based on the NTL library, see Section \ref{third_party}} - limiting the values for $n$ and $s$ only by the memory of the system, at the cost of speed.
 
-\subsubsection{Numerical algorithm}
+\subsubsection{Numerical Algorithm}
 A problem in the numerical implementation is that no sum $k$ of any 2 speeds must exceed the maximum value of the numerical type used (say, $2^{32} - 1$ for 32 bit integers). Even if this is far better than the Geometrical algorithm, I have implemented arbitrary-precision arithmetic, in order to make the algorithms equal in this regard.
 
 
 
-\subsection{Third party libraries used}
+\subsection{Third Party Libraries Used}
 \label{third_party}
 \begin{description}
-\item[NTL arbitrary-precision arithmetic (v. 5.5.2 ):] A software library to allow for arbitrary precision sized integers in both algorithms. The library can be found at http://www.shoup.net/ntl/doc/tour.html (last visited 10/11/2010).
-\item[The GNU Multiple Precision Arithmetic Library (GMP) (v. 5.0.1):] The NTL library has been compiled towards the GMP to increase its efficiency. The library can be found at http://gmplib.org/ (last visited 10/11/2010).  
-\item[json-c (v. 0.9):] A C++ library used for importing and exporting data to/from the JSON file format. The library can be found at http://oss.metaparadigm.com/json-c/ (last visited 10/11/2010).
+\item[NTL arbitrary-precision arithmetic (v. 5.5.2 ):] A software library to allow for arbitrary precision sized integers in both algorithms. The library can be found at \underline{http://www.shoup.net/ntl/doc/tour.html} (last visited 10/11/2010).
+\item[The GNU Multiple Precision Arithmetic Library (GMP) (v. 5.0.1):] The NTL library has been compiled towards the GMP to increase its efficiency. The library can be found at \underline{http://gmplib.org/} (last visited 10/11/2010).  
+\item[json-c (v. 0.9):] A C++ library used for importing and exporting data to/from the JSON file format. The library can be found at \underline{http://oss.metaparadigm.com/json-c/} (last visited 10/11/2010).
 \end{description}
