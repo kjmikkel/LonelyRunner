@@ -1,36 +1,34 @@
 \section{Introduction}
 \label{introduction}
-The Lonely Runner conjecture was first stated by J. M. Wills in \cite{JMWills}, where it was presented as a purely formal problem in the field of Diophantine approximation. It remained so until 1998, where it was given its more memorable name, and intuitive interpretation, from \cite{Bienia97flows.view-obstructions}. As of 2010 the Lonely Runner conjecture has only been proved for up to n = 6 \cite{serra_thelonely}.
+The Lonely Runner conjecture was first stated by J. M. Wills in \cite{JMWills}, where it was presented as a purely formal problem in the field of Diophantine approximation. It remained so until 1998, where it was given its more memorable name, and intuitive interpretation, from \cite{Bienia97flows.view-obstructions}. As of 2010 the Lonely Runner conjecture has only been proved for up to $n$ = 6 \cite{serra_thelonely}.
 
 There exist several equivalent interpretations of the Lonely Runner conjecture, and I will here state widely used versions\footnote{See \cite{ANote}}:
 \begin{enumerate}
 \item Imagine $n$ runners at a circular, unit length track\footnote{i.e. the track has a circumference of 1}, where every runner runs with constant, pairwise different speeds\footnote{These speeds can, without loss of generality be assumed to be in $\N$ - see \cite{Bienia97flows.view-obstructions} and Section \ref{integerSpeeds}}, there will then exist a time t where all runners will be at least $\frac{1}{n + 1}$ units away from their common start-point.\\
 
-\item Imagine we have n + 1 runners, then the conjecture states that for every runner there exists a time where all other runners are at least $\frac{1}{n + 1}$ units away from it. Everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
+\item Imagine we have $n$ + 1 runners, then the conjecture states that for every runner there exists a time where all other runners are at least $\frac{1}{n + 1}$ units away from it. Everything else is the same as in the first interpretation \cite{Bienia97flows.view-obstructions}.\\
 \end{enumerate}
 
 More formally the problem can be stated thus: 
-Given any n positive integers $w_1, w_2, \ldots, w_n$, there exists a real number $x$ such that 
+Given any $n$ positive integers $w_1, w_2, \ldots, w_n$, there exists a real number $x$ such that 
 \eqn{
 \label{eqa:lonelyRunner} \Vert w_i x\Vert \geq \frac{1}{n+1}
 }
 
 for $i = 1, 2, \ldots, n$, where for $y \in \R$, $\Vert y \Vert$ is the distance from $y$ to the nearest integer. I owe the above formulations of the conjecture to \cite{ANote}. In this report it is useful to think of the track as the one-dimensional Torus $\mathbb{T} = [0,1)$.
 
-\subsection{Expectations to the reader}
-\todo{Expectations}
-I expect the reader to have the mathematical knowledge required to understand both the formal and informal description of the Lonely Runner Conjecture, as well as having read Computational Geometry on the level of \cite{citeulike:3347056} or similar.
+\subsection{Expectations of the reader}
+I expect the reader to have the mathematical knowledge required to understand both the formal and informal description of the Lonely Runner Conjecture, as well having an understanding of university level Computational Geometry\footnote{For instance having read \cite{citeulike:3347056} or similar}.
 
 \subsection{Scope and Limitations}
-\todo{Scope and limitations}
 \begin{itemize}
 \item In this project I will not attempt to prove the Lonely Runner conjecture for all n. 
-\item I will create a program that can verify whether a given configuration of runners is true for \eqaref{eqa:lonelyRunner}, and make it return a result, within a reasonable time, for up to 1000 runners. The final program will work with more than 1000 runners, but I will prioritise readability, maintainability and portability of the program instead of extreme optimisations. 
-\item The program will include a system to test a range of runner configurations against \eqaref{eqa:lonelyRunner}.
+\item I will create a program that can verify whether a given configuration of runners is true for equation \eqaref{eqa:lonelyRunner}, and make it return a result, within a reasonable time, for up to 1000 runners. The final program will work with more than 1000 runners, but I will prioritise readability, maintainability and portability of the program instead of extreme optimisations. 
+\item The program will include a system to test a range of runner configurations against equation \eqaref{eqa:lonelyRunner}.
 \item I will only focus on runners with integer speeds - see \ref{integerSpeeds} for an justification of this.
 \end{itemize}
 
-\subsection{Computer specifications}
+\subsection{Computer Specifications}
 \label{specs}
 I would like to define which kind of computer I would require for running my program. As mentioned above, the Lonely Runner conjecture has direct applications for View-Obstruction problems and colouring of regular chromatic graphs. Researchers working with in these fields have no special reason to work with exceedingly powerful computers, or computers with special hardware.
  
@@ -54,7 +52,7 @@ From Definition 6.1 in \cite{uniform}, we furthermore have that for every pair $
 $$
 \lim_{N \rightarrow \infty} \frac{
 |\E{
-sn | \E{sn} \in [\mathbf{a}, \mathbf{b}) \;\mathrm{for}\;n \leq N 
+sn | \E{sn} \in [\mathbf{a}, \mathbf{b}) \;\mathrm{for}\;n \leq N
 }|
 }{
 N
@@ -64,14 +62,14 @@ $$
 
 where $\E{x} = x - [x]$, where $[x]$ is the largest integer $y$ less than or equal to x, and for $[s] = ([s_1], [s_2], \ldots, [s_n])$.
 
-From this it is clear that for any interval $[a, b]$, it will be possible to find a $k \in \N$ large enough to place all the runners inside it. Thus we pick a $k$ such that all runners in T are inside an interval that makes \eqaref{eqa:lonelyRunner} hold. So it holds trivially if we only have irrational numbers.
+From this it is clear that for any interval $[a, b]$, it will be possible to find a $k \in \N$ large enough to place all the runners inside it. Thus we pick a $k$ such that all runners in T are inside an interval that makes equation \eqaref{eqa:lonelyRunner} hold. So it holds trivially if we only have irrational numbers.
 
 \item[T is a mixture of natural/rational numbers and irrational numbers:]
 In this case we first multiply all the speeds in T with the product of all the denominator of the fractions in T, giving us the set of speeds $T\prime$. Let $N\prime$ be the true subset of $T\prime$ that only contains integer speeds, and $R\prime$ be the true subset of $T\prime$ that only contains irrational speeds, so we have $T\prime = N\prime \cup R\prime$, and $N\prime \cap R\prime = \emptyset$.
 
-Let us assume that in that case there must exist a real number $t$, which makes \eqaref{eqa:lonelyRunner} hold for $N\prime$. Let us observe the vector $(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m)$, where $r_i \in R\prime$ and $|R\prime| = k$, and $n_i \in N\prime$ and $|N\prime| = m$. 
+Let us assume that in that case there must exist a real number $t$, which makes equation \eqaref{eqa:lonelyRunner} hold for $N\prime$ (where the number of runners is $|N\prime|$). Let us observe the vector $(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m)$, where $r_i \in R\prime$ and $|R\prime| = k$, and $n_i \in N\prime$ and $|N\prime| = m$. 
 
-From the last case it is clear that there must exist an integer which makes \eqaref{eqa:lonelyRunner} hold for all the speeds in $R\prime$, so let us now choose one such $q \in \N$, such that for all the speeds in $R\prime$, $x = q + t$ makes them hold for \eqaref{eqa:lonelyRunner}\footnote{Since we are able to cram all our runners into an arbitrary small interval anywhere on $\mathbb{T}$, this must be possible}.
+From the last case it is clear that there must exist an integer which makes equation \eqaref{eqa:lonelyRunner} hold for all the speeds in $R\prime$, so observing $t$ from before, let us now choose a $q \in \N$, such that for all the speeds in $R\prime$, $x = q + t$ makes them hold for equation \eqaref{eqa:lonelyRunner}\footnote{Since we are able to cram all our runners into an arbitrary small interval anywhere on $\mathbb{T}$, this can be done}.
 
 So now if observe the vector 
 \begin{equation}
@@ -82,7 +80,7 @@ So now if observe the vector
 \end{equation}
 
 It might not be not entirely clear that that the natural numbers in the above vector gives us a solution, so let us take a closer look: 
-$(q + t)n_i = q * n_i + t * n_i$, and $\Vert q * n_i + t * n_i \Vert = \Vert t * n_i \Vert$ since $q \in \N$, and since we started by assuming $t$ made all speeds in $N\prime$ hold with regards to \eqaref{eqa:lonelyRunner}, it follow by tautology that $\Vert t * n_1 \Vert \geq \frac{1}{n+1}$ for all $n_i \in N\prime$.
+$(q + t)n_i = q * n_i + t * n_i$, and $\Vert q * n_i + t * n_i \Vert = \Vert t * n_i \Vert$ since $q \in \N$, and since we started by assuming $t$ made all speeds in $N\prime$ hold with regards to equation \eqaref{eqa:lonelyRunner}, it follow by tautology that $\Vert t * n_1 \Vert \geq \frac{1}{n+1}$ for all $n_i \in N\prime$.
 
 Therefore if there exists a solution for integer speeds, there must also exist a solution for the irrational numbers, and we thus we only have to worry about finding a solution for the integer speeds.
 \end{description}
@@ -125,9 +123,10 @@ For this project I have read the following papers dealing with the Lonely Runner
 I have also used the follow support literature:
 ``Computational Geometry'' \cite{citeulike:3347056}, ``Uniform Distribution of Sequences'' \cite{uniform} and ``Kalkulus'' \cite{kalkulus}.
 
-\subsection{Overview}
-\todo{Make sure overview fits with the actual content}
+\subsection{Source code and test data}
+The source code for the program can be found in my GitHub repo at https://github.com/kjmikkel/LonelyRunner, there you will also be able to find the machine readable data I have used as the basis for my results, as well as the source code for this report.
 
+\subsection{Overview}
 In this section I give a quick overview of what the different sections in report will cover.
 \begin{description}
 \item[Section \ref{introduction}] The introduction to the report, which will introduce the subject and explain my goals

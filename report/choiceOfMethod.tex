@@ -4,7 +4,7 @@
 \subsection{Introduction}
 In this section I will describe the two different algorithms I have used in this project, and discuss their merits and flaws.\\
 
-\section{Possible methods}
+\subsection{Possible methods}
 
 \begin{description}
 \item[Computational Geometry:] The intuitive description of the Lonely Runner conjecture (\nref{introduction}) lends itself well to a geometrical interpretation, and leads me to wonder whether such an algorithm could efficiently find a solution.
@@ -37,7 +37,7 @@ t &= \frac{n}{s * (n+1)}
 \end{split}
 \end{equation}
 
-From \eqaref{eqa:speedOne} and \eqaref{eqa:speedTwo} it is clear that the time interval for the first time the runner is in the Zone will be 
+From equation \eqaref{eqa:speedOne} and equation \eqaref{eqa:speedTwo} it is clear that the time interval for the first time the runner is in the Zone will be 
 \begin{displaymath}
 \left[\frac{1}{s * (n+1)}, \frac{n}{s * (n+1)}\right]
 \end{displaymath}
@@ -49,7 +49,7 @@ More generally, a runner with speed $s$ will be in the Zone for the $k$'th time,
 \left[\frac{1 + k * (n+1)}{s * (n+1)}, \frac{n + k * (n+1)}{s * (n+1)}\right] 
 \end{equation}
 
-So in order to find a time where all the runners are in the Zone (which would make \eqaref{eqa:lonelyRunner} hold), we need to check whether or not there is a time that is contained in all the intervals, produced by all the runners. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or any other university level, or higher textbook dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
+So in order to find a time where all the runners are in the Zone (which would make equation \eqaref{eqa:lonelyRunner} hold), we need to check whether or not there is a time that is contained in all the intervals, produced by all the runners. To do this I propose using a horizontal Plane Sweep algorithm\footnote{For a general overview of Plane Sweep algorithms, please consult \cite{citeulike:3347056} or any other university level, or higher textbook dealing with Computational Geometry}, where the interesting cases are when a runner enters, and leaves the Zone. 
 
 \subsubsection{High level description of the algorithm}
 
@@ -57,14 +57,14 @@ So in order to find a time where all the runners are in the Zone (which would ma
   \caption{SimpleLonelyRunner\label{simpleLonelyRunner}}
   \highlights
   \SetKwData{and}{and}
-  \Input{A list \s which contains n pairwise different speeds for n runners}
-  \Output{A time \ti where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  \Input{A list \s which contains $n$ pairwise different speeds for $n$ runners}
+  \Output{A time \ti where all $n$ runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
   Make \finish with time $1$ and add it to \li
 
   \ForEach{speed $\in$ \s}{
     
-    Make the first \startT and \eT based on speed - see \eqaref{eqa:speedOne} and \eqaref{eqa:speedTwo}, and insert it in \li
+    Make the first \startT and \eT based on speed - see equation \eqaref{eqa:speedOne} and equation \eqaref{eqa:speedTwo}, and insert it in \li
   }
   
   \While{\true}{
@@ -97,14 +97,14 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{./images/algoIlluEPS}
-  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring everything in-between. The vertical line is here placed at the first time where \eqaref{eqa:lonelyRunner} holds for the speeds 3, 5, 6 and 9.}
+  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring everything in-between. The vertical line is here placed at the first time where equation \eqaref{eqa:lonelyRunner} holds for the speeds 3, 5, 6 and 9.}
 \end{figure}
 
 \subsubsection{Termination criteria}
 \label{termination}
-Since the Lonely Runner conjecture has not been proved for all $n \in \N$, there must be a means to terminate the algorithm, if for a given configuration of runners, there does not exists a time that make equation \eqaref{eqa:lonelyRunner} hold.
+Since the Lonely Runner conjecture has not been proved for all $n \in \N$, there must be a means to terminate the algorithm, if for a given configuration of runners, there does not exists a time that make equation equation \eqaref{eqa:lonelyRunner} hold.
 
-My solution to this is to introduce the fake runner. The fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in \mathbb{T}$, and therefore if we reach the time $1$, no solution to equation \eqaref{eqa:lonelyRunner} exists.
+My solution to this is to introduce the fake runner. The fake runner has a speed of $1$, and will only serve as a marker for when to terminate the algorithm. The intuition behind this is that based on equation equation \eqaref{eqa:lonelyRunner} - it is clear that if a solution exist it must do so for $x \in \mathbb{T}$, and therefore if we reach the time $1$, no solution to equation equation \eqaref{eqa:lonelyRunner} exists.
 
 \begin{lemma}
 \label{maximum_event_points}
@@ -182,14 +182,14 @@ Creating event points on the fly
 }{
 \item Creating every Event Point sequentially could potentially take a lot more time than the parallel solution, but only if the solution is very hard to find, in which case it would take a long time anyway.
 }{
-Creating the Event Points when needed is far simpler than making all the points before the algorithm starts, although it is potentially slower in situations where we have runners with large speeds, or where the solution to equation \eqaref{eqa:lonelyRunner} is close to $1$ or no solution to the equation exist for the given configuration of runners. 
+Creating the Event Points when needed is far simpler than making all the points before the algorithm starts, although it is potentially slower in situations where we have runners with large speeds, or where the solution to equation equation \eqaref{eqa:lonelyRunner} is close to $1$ or no solution to the equation exist for the given configuration of runners. 
 }
 
 Based on the above I would argue that creating the Event Points when needed is the preferred solution. 
 
-Another important decision we have to make, is to decide how we are going to represent for the time for the Event Points. From \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have rational numbers. Based on the computer specifications in Section \ref{specs}, it would be preferable if we could avoid floating point calculating altogether, instead work with integers.
+Another important decision we have to make, is to decide how we are going to represent for the time for the Event Points. From equation \eqaref{eqa:genericZone}, it is clear that the Event Points are going to have times that have rational numbers. Based on the computer specifications in Section \ref{specs}, it would be preferable if we could avoid floating point calculating altogether, instead work with integers.
 
-Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we could try to make this on integer comparisons: Let $n \in \N$ be the number of runners, and $r$ be the runner in question, $a_r \in \E{1, n}$ be the local position within the Zone, let $k_r \in \N$ be the number of rounds runner $r$ has taken, and let $s_r \in \N$ be the speed of runner $r$, then if we are to compare Event Point i's to Event Point j's time, we have from \eqaref{eqa:genericZone}:
+Since the point of the time property of an Event Point is to compare it with the time of another Event Point, we could try to make this on integer comparisons: Let $n \in \N$ be the number of runners, and $r$ be the runner in question, $a_r \in \E{1, n}$ be the local position within the Zone, let $k_r \in \N$ be the number of rounds runner $r$ has taken, and let $s_r \in \N$ be the speed of runner $r$, then if we are to compare Event Point i's to Event Point j's time, we have from equation \eqaref{eqa:genericZone}:
   
 \begin{equation}
 \label{eqa:integerTime}
@@ -206,7 +206,7 @@ In order to distinguish entering and leaving the Zone, and the fake runner I int
 \begin{description}
 \item[\comStart] The first point represents the time where the runner is $\frac{1}{n + 1}$ units away from the start line.
 \item[\comEnd] The first point after the \comStart\, where the runner is $\frac{1}{n + 1}$ units away from the start line. Since \comEnd\, is the last Event Point for any given runner in the Priority Queue, \comEnd\, will be used to signal that the algorithm must add new a \comStart\, and \comEnd\ to the Priority Queue.
-\item[\comFin] The final point in that will be processed --- which has set values of $a = n+1$, $k = 1$ and $s = 1$ and runner number to $n+1$. If this point is ever reached, then \eqaref{eqa:lonelyRunner} does not hold for the given configuration - and the configuration would serve as a counterexample to the Lonely Runner conjecture.
+\item[\comFin] The final point in that will be processed --- which has set values of $a = n+1$, $k = 1$ and $s = 1$ and runner number to $n+1$. If this point is ever reached, then equation \eqaref{eqa:lonelyRunner} does not hold for the given configuration - and the configuration would serve as a counterexample to the Lonely Runner conjecture.
 \end{description}
 
 \subsubsection{Order of points}
@@ -249,8 +249,8 @@ Add $start$ and $end$ to \li
   \caption{FindLonelyRunnerTime}
   \highlights
   \SetKwData{and}{and}
-  \Input{A list \s which contains n pairwise different speeds for n runners}
-  \Output{A point \p where all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  \Input{A list \s which contains $n$ pairwise different speeds for $n$ runners}
+  \Output{A point \p where all $n$ runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
 
   Create and initialise \li
   
@@ -346,7 +346,7 @@ where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the res
 \subsubsection{Integer verification}
 Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists), it is clear that we only need to do integer comparison when we need to check whether or not a given $a$ and $k$ gives us a valid solution.
 
-As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
+As stated in equation \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
 \eqa{
 \Vert w_i x\Vert \geq \frac{1}{n+1}
 } 
@@ -384,13 +384,13 @@ or
 
 where we pick the case to analyse on account of which of $w_i * (p \bmod q)$ and $q - (w_i * (p \bmod q))$ are the smallest.
 
-\subsection{Psudocode for the Numerical Algorithm}
+\subsection{Pseudocode for the Numerical Algorithm}
 \begin{algorithm}[H]
   \caption{NumericalLonelyRunner}
   \highlights
   \SetKwData{and}{and}
-  \Input{A list \s which contains n pairwise different speeds for n runners}
-  \Output{A time \ti such that all n runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
+  \Input{A list \s which contains $n$ pairwise different speeds for $n$ runners}
+  \Output{A time \ti such that all $n$ runners are at least $\frac{1}{n + 1}$ units away from the starting line, or a \no, indicating that no such time exists}
   
   $\n \gets size(\s)$
 
@@ -444,12 +444,12 @@ From the above it is clear that neither of the algorithm are better in all cases
 However, since they both are very short, and do not have much in the way of dependencies, I have implemented them both and have compared their run-times with a variety number of runners and speeds.\\
 
 \subsection{Range test}
-As stated in the introduction, one of the goals of this project was to create a program that could test whether there was a speed configurations in a certain range, that had no solution that made \eqaref{eqa:lonelyRunner} hold. I have interpreted ``range of runner speed configurations'' as follows:\\
+As stated in the introduction, one of the goals of this project was to create a program that could test whether there was a speed configurations in a certain range, that had no solution that made equation \eqaref{eqa:lonelyRunner} hold. I have interpreted ``range of runner speed configurations'' as follows:\\
 
 Given a \comS of $n$ runners with a maximum speed of $m \in \N$, the program should test all possible configurations between such that for $i, j \in \N, i < j: \comS_i < \comS_j$, where $\comS_n \leq m$. Furthermore I believe the range test to be most useful if it went about its search in a through manner, such that the last index in the $\comS$ should only be increased when all the permutations, with it as the largest value, have been tested\footnote{In practice this means index $n$ would only increase when, for a \comS with 10 runners, has tested the configuration $[\comS_n - 9, \comS_n - 8, \ldots, \comS_n - 1, \comS_n]$}. 
 
-It is important to note that even though a range test has been performed with n runners (say, all possible configurations with 20 runners up to a max speed of 40), then this does not verify it for all configurations with less runners (up to a max speed of 40), there could theoretically be a configuration with less runners in that speed range that was a counter example for the Lonely Runner conjecture. I have made this decision on the grounds that checking all possible combinations would be prohibitively expensive, if the check was only meant to be done for a given number of runners. However, changing the algorithm to test up to a max number of runners, should however be simple change. 
+It is important to note that even though a range test has been performed with $n$ runners (say, all possible configurations with 20 runners up to a max speed of 40), then this does not verify it for all configurations with less runners (up to a max speed of 40), there could theoretically be a configuration with less runners in that speed range that was a counter example for the Lonely Runner conjecture. I have made this decision on the grounds that checking all possible combinations would be prohibitively expensive, if the check was only meant to be done for a given number of runners. However, changing the algorithm to test up to a max number of runners, should however be simple change. 
 
 
 \subsection{Conclusion}
-In this section I have presented 2 different methods that can be used to decide whether equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the time that makes \eqaref{eqa:lonelyRunner} holds, if one such exists, and otherwise inform the caller that no such value exists.
+In this section I have presented 2 different methods that can be used to decide whether equation equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the time that makes equation \eqaref{eqa:lonelyRunner} holds, if one such exists, and otherwise inform the caller that no such value exists.

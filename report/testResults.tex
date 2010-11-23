@@ -1,4 +1,4 @@
-\section{Tests}
+\section{Test description}
 \label{test}
 
 \subsection{Introduction}
@@ -37,6 +37,14 @@ For the Prime, and Sequential number tests the second parameter will be the maxi
 
 All values in all sets will be positive and within the sets all values are pair-wise unique.
 
+\subsubsection{Justifications for tests}
+
+Given the many interesting properties of Prime numbers, I thought there might be some interesting time results. 
+
+I test with sequential numbers because it is very similar to what is going to happen during the range test. 
+
+The test with random numnbers (which tend to be above 100000) is made to check how both algorithms handles large numbers.
+
 \subsection{Tests made on the Numerical method}
 As I stated in Section \ref{numtheory:algo}, the numerical
 method's run-time is dependent on order that its input. I will
@@ -53,10 +61,8 @@ To do this test in practise I have chosen to do it with a sliding window, with t
 
 For example if we have to test 10 runners for values up to 100 with sequential numbers, then the first array to be tested will be [1, 2, 3, $\ldots$, 8, 9, 10], the second array to be tested [11, 12, 13, $\ldots$, 18, 19, 20] and so on.
 
-
-
 \subsection{Hardware and software setup}
-As mentioned in the implementation part I have implemented the software in C++ using g++ 4.4.3 compiler for Debian. The test was run on a [] \todo{name computer type, hardware, os and so forth once final tests have been made}.
+As mentioned in the implementation part I have implemented the software in C++ using g++ 4.3.5 compiler for Debian 2.6.32-27 with a 3.00GHz Intel Core 2 CPU and 7,8 Gigabyte RAM.
 
 \subsection{Combinations of Parameters} 
 
@@ -67,4 +73,4 @@ As mentioned in the implementation part I have implemented the software in C++ u
 \end{description}
 
 \subsection{Range test}
-Using the Numerical algorithm I have tested all possible configurations for 20 runners with all speeds up to \maxNumbers.
+Using the Geometrical algorithm I have tested all possible configurations for 20 runners with all speeds up to \maxNumbers.
