@@ -69,7 +69,7 @@ def doGnuPlot(filename, extra_name, maxYValue, max_speed_to_test):
 	print >>f, "set noborder"
 	print >>f, "set multiplot"	
 	print >>f, "set xlabel '%s'; set ylabel '%s'" % (speed_name, time) 	
-	print >>f, "plot '%s' using 1:2:3 with errorbars title '%s' lc rgb 'red', '%s' using 1:4:5 with errorbars title '%s' lc rgb 'green', '%s' using 1:2:3 with lines title '%s' lc rgb 'red', '%s' using 1:4:5 with lines title '%s' lc rgb 'green'" % (input_filename, geo_name + " Error bar", input_filename, num_name + " Error bar", input_filename, geo_name, input_filename, num_name)
+	print >>f, "plot '%s' using 1:2:3 with errorbars title '%s' lc rgb 'red', '%s' using 1:4:5 with errorbars title '%s' lc rgb 'blue', '%s' using 1:2:3 with lines title '%s' lc rgb 'red', '%s' using 1:4:5 with lines title '%s' lc rgb 'blue'" % (input_filename, geo_name + " Error bar", input_filename, num_name + " Error bar", input_filename, geo_name, input_filename, num_name)
 	print >>f, "unset multiplot"
 	print >>f, "reset"
 	f.flush()
@@ -123,20 +123,18 @@ def print_tables(info_list, filename):
 
 def print_plot(info_list, filename):
 	filename = graphs + os.path.basename(filename).split('.')[0]
-	
 	strAccum = "#Speed\tGeo\tGeo_spread\tNum\tNum_spread\n"
 	maxGeoValue = -1	
 	maxNumValue = -1
-	max_speed_to_test = 5000
+#	max_speed_to_test = 500000
 	sec_to_micro = 1000000
-	
-	
-	
-
+	max_speed_to_test = -1
 	for bar in info_list:
 		num_speed = bar.num
 		if num_speed < 0:
 			num_speed = bar.num_sec * sec_to_micro
+
+		max_speed_to_test = max(bar.speed, max_speed_to_test)
 
 		geo_speed = bar.geo
 		if geo_speed < 0:
@@ -144,17 +142,19 @@ def print_plot(info_list, filename):
 
 		if bar.speed > max_speed_to_test:
 			break;
+
 		strAccum += str(bar.speed) + "\t" + str(geo_speed) + "\t" + str(bar.geo_spread) + "\t" + str(num_speed) + "\t" + str(bar.num_spread) +"\n"
 		maxGeoValue = max(maxGeoValue, geo_speed + bar.geo_spread)
 		maxNumValue = max(maxNumValue, num_speed + bar.num_spread)
 		
-		saveFile(filename + ".dat", strAccum)
+	saveFile(filename + ".dat", strAccum)
 	doGnuPlot(filename, "Geo", maxGeoValue, max_speed_to_test)
 	doGnuPlot(filename, "Num", maxNumValue, max_speed_to_test)
+	
 
 class spread:
-	def __init__(self, geo_spread, geo_sec, num_spread, num_sec):
-		self.geo_spread, self.geo_sec, self.num_spread, self.num_sec = geo_spread, geo_sec, num_spread, num_sec
+	def __init__(self, speed, geo_spread, geo_sec, num_spread, num_sec):
+		self.speed, self.geo_spread, self.geo_sec, self.num_spread, self.num_sec = speed, geo_spread, geo_sec, num_spread, num_sec
 
 class speed:
 	def __init__(self, geo_speed, geo_sec, num_speed, num_sec):
@@ -171,57 +171,111 @@ def find_spread(spread_list, max_second):
 	for spread_instance in spread_list:
 		val = spread_instance[0]
 		val_sec = spread_instance[1]
+	
+		val_query = val
+		val_sec_query = val_sec
+
+		#if len(spread_instance) == 3:
+						
+	#		val_query = spread_instance[2][0]
+	#		val_sec_query = spread_instance[2][1]
+			
 		if (val > 0):
 			spread_val += val
 		else:
 			spread_val += val_sec * sec_to_micro
-		if val_sec < max_second:
-			spread_max.append((val, val_sec))
 		
+		if (val_sec_query < max_second) or (val_query < max_second * sec_to_micro):
+			spread_max.append((val, val_sec))
+	
 	
 	for max_val in spread_max:
 		if max_val[0] > 0:
 			spread_val_max += max_val[0]
 		else:
 			spread_val_max += max_val[1] * sec_to_micro
+	
+	spread_val_avg = spread_val / len(spread_list)
+	spread_max_avg = spread_val_max / len(spread_max)
 
-	print (spread_val, spread_val_max)
+	num_over_max = len(spread_list) - len(spread_max)
 
-	return (spread_val, spread_val_max)
+	return (spread_val, spread_val_avg, spread_val_max, spread_max_avg, num_over_max)
 
 
-def print_special_tables(all_info, s_type):
+def print_special_tables(all_info, s_type, number_type_name, number):
 	geo_spread = []
 	num_spread = []
-	max_second = 2
+	max_second = 1
 	micro_to_sec = 1000000
 
+	sec_str = ""
+	if max_second <= 1:
+		sec_str = "second"
+	else:
+		sec_str = "seconds"
+
+	exclusion = "took less than"
+	if s_type == "spread":
+		exclusion = "had less spread than"
+	
+
 	for spread_instance in all_info:
+		
 		if isinstance(spread_instance, spread):
-			geo_spread.append((spread_instance.geo_spread, spread_instance.geo_sec))
-			num_spread.append((spread_instance.num_spread, spread_instance.num_sec))
+			speed = spread_instance.speed
+			geo_spread.append((spread_instance.geo_spread, spread_instance.geo_sec, (speed.geo_speed, speed.geo_sec)))
+			num_spread.append((spread_instance.num_spread, spread_instance.num_sec, (speed.num_speed, speed.num_sec)))
 		else:
 			geo_spread.append((spread_instance.geo_speed, spread_instance.geo_sec))
 			num_spread.append((spread_instance.num_speed, spread_instance.num_sec))
 
-	(geo_spread_val, geo_spread_val_max) = find_spread(geo_spread, max_second)
-	(num_spread_val, num_spread_val_max) = find_spread(num_spread, max_second)
-	
-	strAcum = "\\begin{tabular}[3]{c|c|c}\n"
-	strAcum += " & Geometrical %s & Numerical %s\n\hline\n" %(s_type, s_type)
-	strAcum += "All %ss ($\mu$s) & %s & %s\n\\hline\n" % (s_type, geo_spread_val, num_spread_val)
-	strAcum += "Only %ss from runs ($\mu$s) & %s & %s\n" % (s_type, geo_spread_val_max, num_spread_val_max) 
-	strAcum += "that took less than %s sec & & \n" % max_second
-	strAcum += "\\hline"
-	strAcum += "\\end{tabular}\n"
+	(geo_spread_val, geo_spread_avg, geo_spread_val_max, geo_spread_max_avg, geo_over_max) = find_spread(geo_spread, max_second)
+	(num_spread_val, num_spread_avg, num_spread_val_max, num_spread_max_avg, num_over_max) = find_spread(num_spread, max_second)
 
-	getcontext().prec = 6
+	strAcum = "\\begin{tabular}[3]{c|c|c}\n"
+	strAcum += " & Geometrical ($\mu$s) %s & Numerical ($\mu$s)%s\\\\\n\hline\n" %(s_type, s_type)
+	strAcum += "Total %ss & %s & %s \\\\ \n" % (s_type, geo_spread_val, num_spread_val)
+	if (geo_over_max > 0) or (num_over_max > 0):
+		strAcum += "\\hline \n"
+		strAcum += "Only %ss from runs & %s & %s \\\\ \n" % (s_type, geo_spread_val_max, num_spread_val_max) 
+		strAcum += "that took less than %s %s & & \\\\ \n" % (max_second, sec_str)
+	strAcum += "\\hline\n"
+
+	strAcum += "Average %s & %s & %s \\\\\n" % (s_type, geo_spread_avg, num_spread_avg)
+	strAcum += "\hline\n"
+	if (geo_over_max > 0) or (num_over_max > 0):
+		strAcum += "Average %s from runs that & %s & %s \\\\ \n" % (s_type, geo_spread_max_avg, num_spread_max_avg)
+		strAcum += "%s %s %s & & \\\\ \n" % (exclusion, max_second, sec_str)
+	
+	strAcum += "\\end{tabular}\\\\ \\\\\n"
+	
+	getcontext().prec = 3
+
+	time_mes1 = "hours"
+	time_mes2 = "hours"
 	
 	all_val = (geo_spread_val - num_spread_val)
 	all_val_sec = Decimal(all_val) / Decimal(micro_to_sec * 60 * 60) 
+	
+	if abs(all_val_sec) < 1:
+		all_val_sec *= 60
+		time_mes1 = "minutes"
+	
+	if abs(all_val_sec) < 1:
+		all_val_sec *= 60
+		time_mes1 = "seconds"
 
 	no_max = (geo_spread_val_max - num_spread_val_max)
 	no_max_sec = Decimal(no_max) / Decimal(micro_to_sec * 60 * 60)
+	
+	if abs(no_max_sec) < 1:
+		no_max_sec *= 60
+		time_mes2 = "minutes"
+	
+	if abs(no_max_sec) < 1:
+		no_max_sec *= 60
+		time_mes2 = "seconds"
 
 	all_val_str = ""
 	all_val_other_str =""
@@ -236,7 +290,7 @@ def print_special_tables(all_info, s_type):
 		all_val_str = "Numerical"
 		all_val_other_str = "Geometrical"
 
-	if no_max_str < 0:
+	if no_max < 0:
 		no_max_str = "Geometrical"
 		no_max_other_str = "Numerical"
 	else:
@@ -248,25 +302,117 @@ def print_special_tables(all_info, s_type):
 	type_str = ""
 	if s_type == "speed":
 		type_str = "is faster by"
+		exclusion = "calculation that took more"
 	else:
 		type_str = "has a lesser spread by"
+		exclusion = "spread that is larger"
 
-	fast  = "The %s method %s %s mu (or %s s) compared to the %s method" % (all_val_str, type_str, abs(all_val),  abs(all_val_sec), all_val_other_str)
-	fast_no_max = "The %s method %s %s mu (or %s s) if we disregard every calculation that took more than %s seconds, compared to the %s method" % (no_max_str, type_str, abs(no_max), abs(no_max_sec), max_second, no_max_other_str)
+	fast  = "The %s method %s %s $\mu$s (or %s %s) compared to the %s method.\\\\\n" % (all_val_str, type_str, abs(all_val),  abs(all_val_sec), time_mes1, all_val_other_str)
+	
+	if (geo_over_max > 0) or (num_over_max > 0):
+		fast_no_max = "The %s method %s %s $\mu$s (or %s %s), if we disregard every %s than %s %s, compared to the %s method.\\\\\n" % (no_max_str, type_str, abs(no_max), abs(no_max_sec), time_mes2, exclusion, max_second, sec_str, no_max_other_str)
+	else:
+		fast_no_max = ""
+
 	print fast
 	print fast_no_max
-	
+
 	strAcum += fast
 	strAcum += fast_no_max
 
+	cal = ""
+	spre = ""
+	if (geo_over_max > 1) or (geo_over_max == 0 and num_over_max > 1):
+		cal = "calculations"
+		spre = "spreads"
+	else:
+		cal = "calculation"
+		spre = "spread"
+	
+	if s_type == "speed":
+		type_str = "is faster by"
+		exclusion = "%s that took more" % cal
+	else:
+		type_str = "has a lesser spread by"
+		exclusion = "%s that is larger" % spre
 
-	saveFile("../report/data/tables/" + s_type + "_table.tex", strAcum)
+
+		
+
+	number_over_max_str = ""
+	if (geo_over_max > 0) and (num_over_max > 0):
+		number_over_max_str = "The Geometrical algorithm produced %s %s than %s %s, while the Numerical algorithm produced %s, out of %s data sets (with a total of %s data points)\\\\\n" % (geo_over_max, exclusion, max_second, sec_str, num_over_max, str(number), str(len(geo_spread)))
+	else:
+		num_to_put = -1
+		algo_type_str = ""
+		if num_over_max > 0:
+			num_to_put = num_over_max
+			algo_type_str = "Numerical"
+		elif geo_over_max > 0:
+			num_to_put = geo_over_max
+			algo_type_str = "Geometrical"
+		
+		if num_to_put > 0:
+			number_over_max_str = "The %s algorithm produced %s %s than %s %s out of %s data sets (with a total of %s data points)\\\\\n" % (algo_type_str, num_to_put, exclusion, max_second, sec_str, str(number), str(len(num_spread)))
+			
 	
+	strAcum += number_over_max_str
+
+
+	saveFile("../report/data/tables/" + number_type_name + "_" + s_type + "_table.tex", strAcum)
+
+def special_tables(spread, speed, name):
+	if len(speed.normal) > 0:
+		print_special_tables(spread.normal, "spread", name + "-normal", speed.normal_num)
+		print_special_tables(speed.normal, "speed", name + "-normal", spread.normal_num)
+
+	if len(speed.random) > 0:
+		print_special_tables(spread.random, "spread", name + "-random", speed.random_num)
+		print_special_tables(speed.random, "speed", name + "-random", spread.random_num)
+
+	if len(speed.total) > 0:
+		print_special_tables(spread.total, "spread", name, speed.total_num)
+		print_special_tables(speed.total, "speed", name, spread.total_num)
+
 	
+class speed_spread:
+	def __init__(self):
+		self.random, self.normal, self.total, self.normal_num, self.random_num, self.total_num = [], [], [], 0, 0, 0
+	
+	def into_random(self, data_list):
+		self.random_num += 1
+		self.total_num += 1
+
+		self.random.extend(data_list)
+		self.total.extend(data_list)
+	
+	def into_normal(self, data_list):
+		self.normal_num += 1
+		self.total_num += 1
+
+		self.normal.extend(data_list)
+		self.total.extend(data_list)
+
+	def add_speed_spread(self, ss_instance):
+		self.normal_num += ss_instance.normal_num
+		self.random_num += ss_instance.random_num
+		self.total_num += ss_instance.total_num
+		
+		self.normal.extend(ss_instance.normal)
+		self.random.extend(ss_instance.random)
+		self.total.extend(ss_instance.total)
 
 def processData():
-	spread_data = []
-	speed_data = []
+	sequential_speed = speed_spread()
+	sequential_spread = speed_spread()
+
+	prime_speed = speed_spread()
+	prime_spread = speed_spread()
+
+	random_speed = speed_spread()
+	random_spread = speed_spread()
+
+	items = 0
 	
 	for infile in glob.glob(os.path.join(inData, '*.json')):
 		json = loadJsonFile(infile)
@@ -282,17 +428,72 @@ def processData():
 		speeds = json.get('Speeds used')
 
 		bar_list = []
+		spread_data = []
+		speed_data = []
+		items += len(numerical)
+		
 		for index in range(0, len(numerical)):
-			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_second[index], geometrical_spread[index],            					                numerical[index]  , numerical_second[index]  , numerical_spread[index]  ))
-			
-			spread_data.append(spread(geometrical_spread[index], geometrical_second[index], 
-						  numerical_spread[index], numerical_second[index]))
+			bar_list.append(bar_instance(speeds[index], geometrical[index], geometrical_second[index], geometrical_spread[index],            					                                                                numerical[index]  , numerical_second[index]  , numerical_spread[index]  ))
+
 			speed_data.append( speed(geometrical[index], geometrical_second[index], 
-						 numerical[index], numerical_second[index]))			
+						 numerical[index], numerical_second[index]))	 			
+			spread_data.append(spread(speed_data[index], geometrical_spread[index], geometrical_second[index], 
+						  numerical_spread[index], numerical_second[index]))
+
+		
+		if "sequential" in infile.lower():			
+			if "random" in infile.lower():
+				sequential_spread.into_random(spread_data)
+				sequential_speed.into_random(speed_data)
+			else:
+				sequential_spread.into_normal(spread_data)
+				sequential_speed.into_normal(speed_data)
+			print "Sequential: \t" + infile
+		elif "prime" in infile.lower():
+			if "random" in infile.lower():
+				prime_spread.into_random(spread_data)
+				prime_speed.into_random(speed_data)
+			else:
+				prime_spread.into_normal(spread_data)
+				prime_speed.into_normal(speed_data)
+			print "Prime: \t\t" + infile
+		elif "random" in infile.lower():
+			if "sorted" in infile.lower():
+				random_spread.into_normal(spread_data)
+				random_speed.into_normal(speed_data)
+			else:
+				random_speed.into_random(spread_data)
+				random_spread.into_random(speed_data)
+			print "Random: \t" + infile
+		else:
+			print "No found: \t\t" + infile
 
 	#	print_plot(bar_list, infile)
 	#	print_tables(bar_list, infile)		
-	print_special_tables(spread_data, "spread")
-	print_special_tables(speed_data, "speed")
-		
+			
+	start = "***\n"
+	print start + "Sequential:\n" + start 
+	special_tables(sequential_spread, sequential_speed, "sequential")
+	
+	print start + "Primes:\n" + start
+	special_tables(prime_spread, prime_speed, "prime")
+
+	print start + "Random:\n" + start
+	special_tables(random_spread, random_speed, "random")
+
+	total_spread = speed_spread()
+	total_spread.add_speed_spread(sequential_spread)
+	total_spread.add_speed_spread(prime_spread)
+	total_spread.add_speed_spread(random_spread)
+
+	total_speed = speed_spread()
+	total_speed.add_speed_spread(sequential_speed)
+	total_speed.add_speed_spread(prime_speed)
+	total_speed.add_speed_spread(random_speed)
+
+	print start + "Total:\n" + start
+	special_tables(total_spread, total_speed, "total")
+	
+	print "items: " + str(items) + ", total: " + str(len(total_spread.total))
+	
 processData()
