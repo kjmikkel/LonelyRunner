@@ -14,19 +14,20 @@ When a graph in the following contains a hyphenated ``Random'' in its title, it 
 
 \subsection{Interesting Graphs}
 
+\subsubsection{Sequential Numbers}
 
+\graph{Sequential}{500}{Num_5000}{Here it is very clear that there are several configuration in the start where that takes an inordiante amount of time.}
+\graph{Sequential}{500}{Geo}{After the Maximum number is greater than 1000, the Numerical algorithm is much faster than the Geometrical}
+
+
+\graph{Sequential}{1000}{Num_5000}{The same as in figure \ref{Sequential_500_Num_5000} apllies here, only to a greater extent - and here the cutoff is 2000 runners.}
+\graph{Sequential}{1000}{Geo}{Again we see that outside of this special zone the Numerical algorithm is far far faster than the Geometrical}
+
+The best explanation I have been able to come up with for cases like figure \ref{Sequential_500_Num_5000} and figure \ref{Sequential_1000_Num_5000} this is that equation \eqaref{eqa:lonelyRunner} does not so much depend on the size of the numbers, but rather on the on the number of the runners, and the interaction of the runners speeds. In believe cases like the two graphs referenced above, the Numerical algorithm is forced to search through a large part of the possible candiates solutions, which means, that the Numerical algorithms run-time of $O(k * n^3)$\footnote{As proved back in Section \ref{proof_num} on p. \pageref{proof_num}} becomes an influence.
 
 \subsubsection{Primes-Random}
 %\graph{Primes-Random}{500}{Geo}{}
 %\graph{Primes-Random}{1000}{Geo}{}
-
-\subsubsection{Sequential Numbers}
-Figure \ref{Sequential_100_Num} and \ref{Sequential_100_Geo} is the same figure, just with different ranges on the y-axis.
-
-\graph{Sequential}{100}{Num}{The time anomaly for the Numerical algorithm is very clear}
-\graph{Sequential}{100}{Geo}{We can see, that once the anomaly is over, the Numerical algorithm is clearly faster than the Geometrical algorithm}
-
-The above pattern is one that appears every time the input is Sequential, but only for the first configuration.
 
 \subsubsection{Sequential-Random}
 \graph{Sequential-Random}{100}{Num}{Please note the very large Error bar, which is not present in figure \ref{Sequential_100_Num}. This is because of randomized order of the input}
@@ -37,10 +38,6 @@ The above pattern is one that appears every time the input is Sequential, but on
 \graph{Sequential-Random}{2000}{Num}{This graph is very interesting because it shows us, that even when the order has been permuted, there is still a high chance of having the Numerical run for a very long time for the first case. In this case it is around 7 hours. It is also very interesting to note that the Error Bar is very small, meaning that the permutation of the order does not guarantee that a fast solution can be found}
 %\graph{Sequential-Random}{500}{Num}{}
 
-\subsubsection{Random}
-%\graph{Random}{500}{Geo}{}
-%\graph{Random}{2000}{Geo}{}
-%\graph{Random}{4000}{Geo}{}
 
 \subsection{Sequential Results}
 \subsubsection{Random Sequential Results}
@@ -98,6 +95,8 @@ The above pattern is one that appears every time the input is Sequential, but on
 \subsubsection{Sequential Numbers}
 In Section \ref{combined_sequential} it is clear that, not only is the Geometrical algorithm more stable than the Numerical algorithm, but I would also argue that, for this instance, it is the preferable algorithm. Even if we were to use somehow could exclude the extreme cases, we would only save 3 minutes by using the Numerical algorithm. Clearly it is not worth risking about 12 hours of run-time for that. 
 
+  
+
 \subsubsection{Random Numbers}
 The result in Section \ref{non-sorted_random_results} This result is actually rather surprising. Since the random numbers tend to be rather large (since they lie between 1 and $2^{32} - 1$), I would have expected the Geometrical solution to be slower, since more Event Points would have had to be created, inserted and removed from the Event Queue, before any of the Runners could enter the Zone. The fact that there are no calculations by the Numerical algorithm that took over 1 second is not that surprising, given that completely random speeds were being used for the tested configurations.\\
 
@@ -114,22 +113,12 @@ From Section \ref{total_combined_results} it seems clear that using the Geometri
 
 Another fact worth noting is that while both the Numerical and the Geometrical algorithm have near the same number of calculations that takes more than 1 second, but clearly the time taken by the Numerical ones must take far longer, in for the Numerical solution to be the fastest when these are not counted.
 
------
 
-
-From the above graphs it would seem tempting to assume that the Numerical algorithm was dramatically better than the Geometrical, even if we included the extreme times reported, however a closer look shows that the truth is more complicated than that. The below table and calculations are based on all the reported speeds:
-
-%\input{./data/tables/speed_table.tex}
 
 While it from the graphs would seem clear that the Numerical algorithm is faster for most of the instances. 
 I believe the reason for this to belong to the fundamental differences of the 2 algorithms. While both algorithms are based on exploring all possible candidates times for a time where equation \eqaref{eqa:lonelyRunner} is true, the Geometrical algorithm works by sweeping through the entire first round of the final runner\footnote{The runner with speed 1}, while the Numerical algorithm often is less methodical about it, depending on the 2 selected runner speeds, trying time points against equation \eqaref{eqa:lonelyRunner}. In practice it is clear this is a better approach than the Geometrical algorithm.
  
-It however also clear that for some configurations (even when accounting for the spread), finding a time where equation \eqaref{eqa:lonelyRunner} is true, takes much more time than most of the other configurations for that number of runners. Two good examples of this are \figureref{Primes_1000_Geo} and \figureref{Sequential-Random_1000_Geo}. The best explanation I have been able to come up with for cases like the first is that equation \eqaref{eqa:lonelyRunner} depends not so much on the size of the numbers, but rather on the on the number of the runners and the interaction of the runners speeds. I believe cases like the second are caused by the input based run-time of the Numerical algorithm - if the order of the runner speeds are in such a way that a good part of list has to be searched through, then the Numerical algorithms run-time of $O(k * n^3)$ (as proved back in Section \ref{proof_num} on page \pageref{proof_num}) begins to show itself.  
-
-\subsection{Spread}
-%\input{./data/tables/spread_table.tex}
-
-
+It however also clear that for some configurations (even when accounting for the spread), finding a time where equation \eqaref{eqa:lonelyRunner} is true, takes much more time than most of the other configurations for that number of runners. Two good examples of this are \figureref{Primes_1000_Geo} and \figureref{Sequential-Random_1000_Geo}. 
 
 \subsection{Conclusion}
 

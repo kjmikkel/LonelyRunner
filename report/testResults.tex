@@ -59,17 +59,29 @@ Since a configuration of the Lonely Runner conjecture requires $n$ runners and e
 
 To do this test in practise I have chosen to do it with a sliding window, with the number of runners being the deciding factor. If we have to test for $n$ runners, then we let the first configuration to test contain the first $n$ numbers, the second contain from ($n+1$)'th number to the $2n$'th number and so on, until we cannot do this anymore.
 
-For example if we have to test 10 runners for values up to 100 with sequential numbers, then the first array to be tested will be [1, 2, 3, $\ldots$, 8, 9, 10], the second array to be tested [11, 12, 13, $\ldots$, 18, 19, 20] and so on.
+For example if we have to test 10 runners for values up to 100 with sequential numbers, then the first array to be tested will be [1, 2, 3, $\ldots$, 8, 9], the second array to be tested [10, 11, 12, $\ldots$, 18, 19] and so on.
 
 \subsection{Hardware and software setup}
-As mentioned in the implementation part I have implemented the software in C++ using g++ 4.3.5 compiler for Debian 2.6.32-27 with a 3.00GHz Intel Core 2 CPU and 7,8 Gigabyte RAM.
+As mentioned in the implementation part I have implemented the software in C++ and compiled it with the g++ 4.3.5 compiler for Debian 2.6.32-27 with the -O2 flag enabled. The computer it was compiled and tested on had a 3.00GHz Intel Core 2 CPU and 7,8 GB of RAM.
 
 \subsection{Combinations of Parameters} 
 
+Due to time constraints I have been unable to run every algorithm with the same number of runners, for every type of numbers.
+
+\subsubsection{Prime numbers}
 \begin{description}
-\item[Runners:] I will test both algorithms with 100, 500, 1000, 2000, 4000, 5000, 8000, 12000, 300000, 5000 runners 
-\item[Speeds:] For the sequential and the prime numbers, I will use
-  500000 as the maximum speed, and randomly generate 5000 pairwise distinct numbers and test them on both algorithms.
+\item[Runners:]For the prime numbers I have been able to test both algorithms with 100, 500, 1000, 2000, 4000, 5000, 8000, 12000, 30000 and 50000 runners. I have been able to perform both the normal Numerical algorithm, as well as the one where the order of the inputs were randomized.  
+\item[Speeds:] I have used 500000 as the max speed.
+\end{description}
+
+\subsubsection{Sequential numbers}
+\item[Runners:]For the sequential numbers I have been able to test both algorithms with 100, 500 and 1000 runners. I have been able to perform both the normal Numerical algorithm, as well as the one where the order of the inputs were randomized.  
+\item[Speeds:] I have used 500000 as the max speed.
+
+\subsubsection{Random numbers}
+\begin{description}
+\item[Runners:] I will test both algorithms with 100, 500, 1000, 2000 and 4000 runners. Since we are dealing with random numbers I have made the decision not to randomize the input for the Numerial algorithm.
+\item[Speeds:] For the non-sorted I have just taken the neccessery numbers, without any regard to a maximum value. I have sadly not had the time to test the sorted random numbers. 
 \end{description}
 
 \subsection{Range test}

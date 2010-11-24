@@ -1,4 +1,5 @@
 \section{Program}
+\label{section:program}
 
 \begin{figure}[H]
   \centering
@@ -22,8 +23,8 @@ The labels in figure \ref{fig:main_window} define the following:
 
 The labels in figure \ref{fig:options} define the following:
 \begin{enumerate}
-\item If checked, the program will make a simple check to see if there exist a $k \in \E{2, \ldots, n+1}$, where $n$ is the number of runners, that does not evenly divide any of the runner speeds. If such a $k$ exist, then there must be a solution, and the program will report it. This option is not compatible with option 3.
-\item If checked, the program will find and report the maximum value that makes equation \eqaref{eqa:lonelyRunner} hold for the Numerical algorithm. Since this requires an exhaustive search, this can take a while, since we in Section \ref{proof_num} established that the worst case run-time for the Numerical algorithm is $O(k * n^3)$, where $k$ is the sum of the 2 largest speeds, and $n$ is the number of Runners. This option is not compatible with option 2.
+\item If checked, the program will perform the check described in Section \ref{detect} before trying the algorithm selected in 3. This option is currently not compatible with option 2.
+\item If checked, the program will find and report the maximum value that makes equation \eqaref{eqa:lonelyRunner} hold for the Numerical algorithm. Since this requires an exhaustive search, this can take a while\footnote{Since we in Section \ref{proof_num} established that the worst case run-time for the Numerical algorithm is $O(k * n^3)$, where $k$ is the sum of the 2 largest speeds, and $n$ is the number of Runners.} This option is not currently compatible with option 1.
 \item Here you can define whether you would like the configuration to be checked with the Geometrical or the Numerical algorithm.
 \end{enumerate}
 

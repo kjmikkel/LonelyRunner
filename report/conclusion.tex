@@ -15,29 +15,37 @@
 
 I have in this project:
 \begin{itemize}
-\item Implemented and tested the Numerical method found in \cite{invis}
-\item Implemented and tested a Geometrical method of my own devising.
-\item Argued that if there exist a time that makes equation \eqaref{eqa:lonelyRunner} hold, then it will be rational.
+\item Described the Lonely Runner conjecture and pointed towards several articles on the subject.
+\item Designed, implemented, and tested a Geometrical algorithm that is able to find out whether or not a given configuration of runners can make equation \eqaref{eqa:lonelyRunner} hold.
+\item Described, implemented and tested the Numerical algorithm found in \cite{invis}
+\item Descried and implemented my advisors Divisor check algorithm
+\item Given proofs that all 3 algorithms works as intended, as well as given termination and  worst-case run-times for the 2 first algorithms.
+\item Used the 3 above algorithms to create a program that can verify whether or not a given runner configuration makes equation \eqaref{eqa:lonelyRunner} hold. This tool can also be used to test ranges of configurations.
+\item Tested both the Numerical and the Geometrical algorithm against a variety of configurations.
 \end{itemize}
 
 \subsection{Results}
 \begin{itemize}
-\item Created a practical tool to verify whether or not a given runner configuration holds, or whether a range of configurations hold
-\item Verified for 20 runners all possible configuration up to a max speed of \maxNumbers
-\item Noted that in practice most solutions with runners with less speed than 1000000 (even if the computation of the result may require arbitery precision to ensure no aritchmic overflow occours) can be stored in a single word, and more so when 64-bit computers become mainstream.
+\item Verified, for 20 runners, all possible configuration up to a max speed of \maxNumbers
+\item Noted that in practice most solutions with runners with less speed than 1000000 can be stored in a single word\footnote{Even if the computation of the result may require arbitrary precision to ensure no arithmetic overflow occurs}, and more so when 64-bit computers become mainstream.
+\item Shown that the Geometrical algorithm is preferable to the Numerical algorithm.
 \end{itemize}
 
 \subsection{Future work}
 \begin{description}
-\item[Improved Geometrical method:] It would be interesting to see whether the Geometrical algorithm could be made faster. One way could be only investigate the intervals where the slowest runner is in the Zone. Since we only have a valid solution if all the runners are in the Zone, we must specificly have the slowest runner in the Zone. This could quite possibly dramatically reduce the required run-time, as since all creations, insertions and removals of Event Points when the runner is outside the Zone will never be made. 
+\item[Improve the Geometrical algorithm:] It would be interesting to see whether the Geometrical algorithm could be made faster. One way could be only investigate the intervals where the slowest runner is in the Zone. Since we only have a valid solution if all the runners are in the Zone, we must specifically have the slowest runner in the Zone. This might reduce the required run-time dramatically, since all creations, insertions and removals of Event Points when the runner is outside the Zone won't be made. 
 
 Let SlowZone be the interval where the slowest runner is in the zone, then a pair of Event Points should be inserted on the heap iff at least one of \comStart and \comFin is in SlowZone. This would however separate the algorithm into 2 parts: The first part which finds the first Event Points that could be interesting, and the second part which is the same as before, only with a check that does not insert pairs of Event Points that are entirely outside the SlowZone.
 
-\item[Parallelism:] It is clear that the Numerical algorithm can take advantage of multiple threads. However, given the results, it can be debated whether this would significantly improve its run-time, given that it either finds the solution right of the bat, or has to run for several hours (in which case one might wonder whether it might be better to make a hybrid algorithm that runs both, that stops them both when a solution has been found). A better place to utilize parallelism would perhaps be in the Range test, distributing the intervals that each CPU (or indeed, computer) should check. This is especially true, since the memory peak load of the range test is very small.
+\item[Parallelism:] It is clear that the Numerical algorithm can take advantage of multiple threads/CPU's. However, given the results, it can be debated whether this would significantly improve its run-time, given that the algorithm either finds the solution right of the bat, or has to run for several hours. A better place to utilize parallelism would perhaps be in the Range test, distributing the intervals so that we can take advantage of multiple CPU's (or computers) should check. Given that neither of the algorithms has any large memory requirements, this is a feasible path.
+
+\item[Create and test a hybrid algorithm] It would be interesting to create a hybrid algorithm that ran both the Numerical and the Geometrical algorithm for any given configuration, and then returned the first answer, terminating the other algorithm. The problem with such an approach would be the overhead for starting both algorithms, as well as the fact that it would take away threads/CPU's/Computers that otherwise could have been used for running multiple configurations. 
 
 \item[Verification for many different number of runners and speeds:] Since I in this project has made a verifier for whether a given configuration holds for equation \eqaref{eqa:lonelyRunner} or not, it seems that the next logical step would be to set it to verify the Lonely Runner conjecture for a large verity of runner configurations. 
 
-\item[A study of the Numerical anomlies:] From Section \ref{results}, it is clear that there are cases where the Numerical algorithm takes an exceedingly long time to find a solution. The fact that this is most prominent in the cases where we are working with sequantial numbers (random or not), and mostly when the individual runner speeds are less than/equal to the number of runners. A study into why this happens, might make it possible to avoid these in the future, giving the Numerical algorithm a huge boost.
+\item[A study of the Numerical anomalies:] From Section \ref{results}, it is clear that there are cases where the Numerical algorithm takes an exceedingly long time to find a solution. The fact that this is most prominent in the cases where we are working with sequential numbers (random or not), and mostly when the individual runner speeds are less than/equal to the number of runners. A study into why this happens, might make it possible to avoid these in the future, giving the Numerical algorithm a huge boost.
 
-\item[Perform Range test performance test:] Since one of the major features of the created program is to test the range of configurations, measuring the performence of both algorithms doing this task is a logical performence test. However, due to time constraints I have been unable to do so.
+\item[Perform Range test performance test:] Since one of the major features of the created program is to test the range of configurations, measuring the performance of both algorithms doing this task is a logical performance test. However, due to time constraints I have been unable to do so.
+
+\item[Perform benchmark tests for the Divisor check:] It would be interesting to see whether it is worthwhile running the Divisor check algorithm, compared to the Geometrical and Numerical algorithm.
 \end{description}

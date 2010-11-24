@@ -2,7 +2,7 @@
 \label{choiceOfMethod}
 
 \subsection{Introduction}
-In this section I will describe the two different algorithms I have used in this project and discuss their merits and flaws.\\
+In this section I will describe the two main algorithms I have used in this project and discuss their merits and flaws.\\
 
 \subsection{Possible Methods}
 
@@ -97,7 +97,7 @@ See figure \ref{algoIlluImg} for an intuitive illustration of idea behind the al
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{./images/algoIlluEPS}
-  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the example speed of 3, 5, 6 and 9. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring everything in-between. The vertical line is here placed at the first time where equation \eqaref{eqa:lonelyRunner} holds for the speeds 3, 5, 6 and 9.}
+  \caption{\label{algoIlluImg}An illustration of the Plane Sweep algorithm with the canonical speeds: 3, 5, 6 and 8. The dots are the Event Points, and the horizontal line between Event Points are when a given runner is in the Zone. The Vertical line is the sweep line, which jumps from Event Point to Event Point from the left to the right, ignoring everything in-between. The vertical line is here placed at the first time where equation \eqaref{eqa:lonelyRunner} holds for the speeds 3, 5, 6 and 8.}
 \end{figure}
 
 \subsubsection{Termination Criteria}
@@ -450,11 +450,14 @@ Given a \comS of $n$ runners with a maximum speed of $m \in \N$, the program sho
 
 It is important to note that even though a range test has been performed with $n$ runners (say, all possible configurations with 20 runners up to a max speed of 40), then this does not verify any configuration that contains fewer runner. Thus there could theoretically be a configuration with fewer runners in the given speed range that was a counter example for the Lonely Runner conjecture. I have done so because I felt the Range Test tool was designed to check for a specific number of runners, and also that checking every possible   . It should however be little problem to change the code to allow it to test ranges of runners. 
 
-\subsection{The divisor check}
+\subsection{The Divisor Check}
 \label{detect}
-From personal communication with my projects adviser I have been informed of a new method,and its proof, to check whether a configuration makes equation \eqaref{eqa:lonelyRunner} hold. The check can 
+From personal communication with my projects advisor I have been informed of a new method, and its proof, to check whether a configuration makes equation \eqaref{eqa:lonelyRunner} hold. 
 
-If we let $n$ be the number of runners, let $S = \E{s_1, s_2, \ldots, s_n}$ be the set of runner speeds, and $p \in \E{2, \ldots, n+1}$. If there exist a $p$ such that it does not evenly divide any of the speeds in $S$, then equation \eqaref{eqa:lonelyRunner} holds for the set of runner speeds $S$.
+Let $n$ be the number of runners, $S = \E{s_1, s_2, \ldots, s_n}$ be the set of runner speeds, and $p \in \E{2, \ldots, n+1}$. If there exist a $p$ such that it does not evenly divide any of the speeds in $S$, then equation \eqaref{eqa:lonelyRunner} holds for the set of runner speeds $S$. 
+
+The divisor check cannot stand alone however, as there exist configurations that does make equation \eqaref{eqa:lonelyRunner} hold, but are not validated by the divisor check. A good example of this is the canonical example, with the speeds 3, 5, 6 and 8. We know from \cite{serra_thelonely} that equation \eqaref{eqa:lonelyRunner} holds when the number of runners is less or equal to 6, so the canonical example must hold for equation \eqaref{eqa:lonelyRunner}. But the divisor check clearly fails, since all of the speeds in $\E{2, 3, 4, 5}$ can evenly divide at least one speed in the canonical example.
+
 
 \subsubsection{Proof}
 Let $d_i$ be an arbitrary chosen speed in $S$, and $p \in \E{2, \ldots, n+1}$, be a number that does not divide any number in S. It is clear that we can write $d_i$ as
@@ -467,10 +470,63 @@ d_i &= \rfloor\frac{d_i}{p}\lfloor * p + (d_i \bmod p) \Leftrightarrow\\
 
 It is clear that $\rfloor\frac{d_i}{p}\lfloor$ is an integer, and that we must therefore have that $(\frac{d_i}{p} \bmod 1) = (\frac{d_i \bmod p}{p} \bmod 1)$. Intuitively we can think of this like the runner with speed $d_i$ runs $\rfloor \frac{d_i}{p}\lfloor$ times around the entire track. It is clear that we can ignore these, and concentrate on $\frac{d_i \bmod p}{p}$. 
 
-We know that $d_i \bmod p \neq 0$, since we assumed $p$ did not evenly divide $d_i$, so it must be that $0 < (d_i \bmod p) < 1$. However, since $p \leq n+1$ we more specifically must have $\frac{1}{n+1} \leq \frac{d_i \bmod p}{p} \leq \frac{n}{n+1}$.
+We know that $d_i \bmod p \neq 0$, since we assumed $p$ did not evenly divide $d_i$, so it must be that $0 < (d_i \bmod p) < 1$. However, since $p \leq n+1$ we must have that $\frac{1}{n+1} \leq \frac{d_i \bmod p}{p} \leq \frac{n}{n+1}$.
 
 Thus, if we pick the time $\frac{1}{p}$, runner $d_i$ must be in the Zone. Since $d_i$ was an arbitrary chosen speed in $S$, it must hold that all the runners must be in the Zone for $\frac{1}{p}$, and thus the configuration $S$ must hold for equation \eqaref{eqa:lonelyRunner}, which was what we wanted to show.
 
+\subsection{Integer Speeds}
+\label{integerSpeeds}
+In this section I will prove that my program will only have to work with integer speeds.
+Let us assume for a given configuration of runner speeds T there is a non-empty set $S \subset T$ of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that there are 3 cases we have to worry about: 
+\begin{itemize}
+\item Either all elements in S belong to $\mathbb{Q}$
+\item All elements are irrational numbers
+\item There is a mix of irrational and rational numbers.
+\end{itemize}
+
+I will now prove that in all 3 cases we only have to worry about finding a solution for the speeds that can be reduced to integers.
+
+\begin{description}
+\item[Only rational numbers in S:] In this instance we can convert all the runner speeds into integers, by multiplying all speeds in T with the product of the denominators of the rational numbers in S.
+\item[Only irrational numbers in S, and S = T:]
+Since we are only dealing with irrational numbers, then from example 6.1 in \cite{uniform} they must be uniform distribution mod 1 in $\R$. 
+From Definition 6.1 in \cite{uniform}, we furthermore have that for every pair $\mathbf{a}, \mathbf{b} \in \R^{|S|}$, where $\mathbf{a} = (a, a, \ldots, a)$, and $\mathbf{b} = (b, b, \ldots, b)$ with $\mathbf{0} \leq \mathbf{a} < \mathbf{b} \leq \mathbf{1}$, and every $s = (s_1, s_2, \ldots, s_n)$, where $sk = (s_1k, s_2k, \ldots, s_nk)$ we have
+
+$$
+\lim_{N \rightarrow \infty} \frac{
+|\E{
+sn | \E{sn} \in [\mathbf{a}, \mathbf{b}) \;\mathrm{for}\;n \leq N
+}|
+}{
+N
+} = 
+\prod^{|S|}_{j=1}(b_j - a_j) 
+$$
+
+where $\E{x} = x - [x]$, where $[x]$ is the largest integer $y$ less than or equal to x, and for $[s] = ([s_1], [s_2], \ldots, [s_n])$.
+
+From this it is clear that for any interval $[a, b]$, it will be possible to find a $k \in \N$ large enough to place all the runners inside it. Thus we pick a $k$ such that all runners in T are inside an interval that makes equation \eqaref{eqa:lonelyRunner} hold. So it holds trivially if we only have irrational numbers.
+
+\item[T is a mixture of natural/rational numbers and irrational numbers:]
+In this case we first multiply all the speeds in T with the product of all the denominator of the fractions in T, giving us the set of speeds $T\prime$. Let $N\prime$ be the true subset of $T\prime$ that only contains integer speeds, and $R\prime$ be the true subset of $T\prime$ that only contains irrational speeds, so we have $T\prime = N\prime \cup R\prime$, and $N\prime \cap R\prime = \emptyset$.
+
+Let us assume that in that case there must exist a real number $t$, which makes equation \eqaref{eqa:lonelyRunner} hold for $N\prime$ (where the number of runners is $|N\prime|$). Let us observe the vector $(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m)$, where $r_i \in R\prime$ and $|R\prime| = k$, and $n_i \in N\prime$ and $|N\prime| = m$. 
+
+From the last case it is clear that there must exist an integer which makes equation \eqaref{eqa:lonelyRunner} hold for all the speeds in $R\prime$, so observing $t$ from before, let us now choose a $q \in \N$, such that for all the speeds in $R\prime$, $x = q + t$ makes them hold for equation \eqaref{eqa:lonelyRunner}\footnote{Since we are able to cram all our runners into an arbitrary small interval anywhere on $\mathbb{T}$, this can be done}.
+
+So now if observe the vector 
+\begin{equation}
+\begin{split}
+&(q + t)(r_1, r_2, \ldots, r_k, n_1, n_2, \ldots, n_m) =\\ 
+&((q + t)r_1, (q + t)r_2, \ldots, (q + t)r_n, (q + t)n_1, (q + t)n_2, \ldots, (q + t)n_m) 
+\end{split}
+\end{equation}
+
+It might not be not entirely clear that that the natural numbers in the above vector gives us a solution, so let us take a closer look: 
+$(q + t)n_i = q * n_i + t * n_i$, and $\Vert q * n_i + t * n_i \Vert = \Vert t * n_i \Vert$ since $q \in \N$, and since we started by assuming $t$ made all speeds in $N\prime$ hold with regards to equation \eqaref{eqa:lonelyRunner}, it follow by tautology that $\Vert t * n_1 \Vert \geq \frac{1}{n+1}$ for all $n_i \in N\prime$.
+
+Therefore if there exists a solution for integer speeds, there must also exist a solution for the irrational numbers, and we thus we only have to worry about finding a solution for the integer speeds.
+\end{description}
 
 \subsection{Conclusion}
 In this section I have presented 2 different methods that can be used to decide whether equation equation \eqaref{eqa:lonelyRunner} is true for a given configuration. I have analysed their run-times and given proofs that they will always terminate, and that they will return the time that makes equation \eqaref{eqa:lonelyRunner} holds, if one such exists, and otherwise inform the caller that no such value exists.
