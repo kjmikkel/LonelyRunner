@@ -448,7 +448,28 @@ As stated in the introduction, one of the goals of this project was to create a 
 
 Given a \comS of $n$ runners with a maximum speed of $m \in \N$, the program should test all possible configurations between such that for $i, j \in \N, i < j: \comS_i < \comS_j$, where $\comS_n \leq m$. Furthermore I believe the range test to be most useful if it went about its search in a through manner, such that the last index in the $\comS$ should only be increased when all the permutations, with it as the largest value, have been tested\footnote{In practice this means index $n$ would only increase when, for a \comS with 10 runners, has tested the configuration $[\comS_n - 9, \comS_n - 8, \ldots, \comS_n - 1, \comS_n]$}. 
 
-It is important to note that even though a range test has been performed with $n$ runners (say, all possible configurations with 20 runners up to a max speed of 40), then this does not verify it for all configurations with less runners (up to a max speed of 40), there could theoretically be a configuration with less runners in that speed range that was a counter example for the Lonely Runner conjecture. I have made this decision on the grounds that checking all possible combinations would be prohibitively expensive, if the check was only meant to be done for a given number of runners. However, changing the algorithm to test up to a max number of runners, should however be simple change. 
+It is important to note that even though a range test has been performed with $n$ runners (say, all possible configurations with 20 runners up to a max speed of 40), then this does not verify any configuration that contains fewer runner. Thus there could theoretically be a configuration with fewer runners in the given speed range that was a counter example for the Lonely Runner conjecture. I have done so because I felt the Range Test tool was designed to check for a specific number of runners, and also that checking every possible   . It should however be little problem to change the code to allow it to test ranges of runners. 
+
+\subsection{The divisor check}
+\label{detect}
+From personal communication with my projects adviser I have been informed of a new method,and its proof, to check whether a configuration makes equation \eqaref{eqa:lonelyRunner} hold. The check can 
+
+If we let $n$ be the number of runners, let $S = \E{s_1, s_2, \ldots, s_n}$ be the set of runner speeds, and $p \in \E{2, \ldots, n+1}$. If there exist a $p$ such that it does not evenly divide any of the speeds in $S$, then equation \eqaref{eqa:lonelyRunner} holds for the set of runner speeds $S$.
+
+\subsubsection{Proof}
+Let $d_i$ be an arbitrary chosen speed in $S$, and $p \in \E{2, \ldots, n+1}$, be a number that does not divide any number in S. It is clear that we can write $d_i$ as
+\begin{equation}
+\begin{split}
+d_i &= \rfloor\frac{d_i}{p}\lfloor * p + (d_i \bmod p) \Leftrightarrow\\
+\frac{d_i}{p} &= \rfloor\frac{d_i}{p}\lfloor + \frac{d_i \bmod p}{p}
+\end{split}
+\end{equation}
+
+It is clear that $\rfloor\frac{d_i}{p}\lfloor$ is an integer, and that we must therefore have that $(\frac{d_i}{p} \bmod 1) = (\frac{d_i \bmod p}{p} \bmod 1)$. Intuitively we can think of this like the runner with speed $d_i$ runs $\rfloor \frac{d_i}{p}\lfloor$ times around the entire track. It is clear that we can ignore these, and concentrate on $\frac{d_i \bmod p}{p}$. 
+
+We know that $d_i \bmod p \neq 0$, since we assumed $p$ did not evenly divide $d_i$, so it must be that $0 < (d_i \bmod p) < 1$. However, since $p \leq n+1$ we more specifically must have $\frac{1}{n+1} \leq \frac{d_i \bmod p}{p} \leq \frac{n}{n+1}$.
+
+Thus, if we pick the time $\frac{1}{p}$, runner $d_i$ must be in the Zone. Since $d_i$ was an arbitrary chosen speed in $S$, it must hold that all the runners must be in the Zone for $\frac{1}{p}$, and thus the configuration $S$ must hold for equation \eqaref{eqa:lonelyRunner}, which was what we wanted to show.
 
 
 \subsection{Conclusion}
