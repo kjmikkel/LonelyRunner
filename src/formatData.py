@@ -185,7 +185,7 @@ def find_spread(spread_list, max_second):
 		else:
 			spread_val += val_sec * sec_to_micro
 		
-		if (val_sec_query < max_second) or (val_query < max_second * sec_to_micro):
+		if (val_sec_query < max_second) and (val_query < max_second * sec_to_micro):
 			spread_max.append((val, val_sec))
 	
 	
@@ -234,7 +234,7 @@ def print_special_tables(all_info, s_type, number_type_name, number):
 	(num_spread_val, num_spread_avg, num_spread_val_max, num_spread_max_avg, num_over_max) = find_spread(num_spread, max_second)
 
 	strAcum = "\\begin{tabular}[3]{c|c|c}\n"
-	strAcum += " & Geometrical ($\mu$s) %s & Numerical ($\mu$s)%s\\\\\n\hline\n" %(s_type, s_type)
+	strAcum += " & Geometrical ($\mu$s) %s & Numerical ($\mu$s) %s\\\\\n\hline\n" %(s_type, s_type)
 	strAcum += "Total %ss & %s & %s \\\\ \n" % (s_type, geo_spread_val, num_spread_val)
 	if (geo_over_max > 0) or (num_over_max > 0):
 		strAcum += "\\hline \n"
@@ -307,10 +307,10 @@ def print_special_tables(all_info, s_type, number_type_name, number):
 		type_str = "has a lesser spread by"
 		exclusion = "spread that is larger"
 
-	fast  = "The %s method %s %s $\mu$s (or %s %s) compared to the %s method.\\\\\n" % (all_val_str, type_str, abs(all_val),  abs(all_val_sec), time_mes1, all_val_other_str)
+	fast  = "The %s algorithm %s %s $\mu$s (or %s %s) compared to the %s algorithm.\\\\\n" % (all_val_str, type_str, abs(all_val),  abs(all_val_sec), time_mes1, all_val_other_str)
 	
 	if (geo_over_max > 0) or (num_over_max > 0):
-		fast_no_max = "The %s method %s %s $\mu$s (or %s %s), if we disregard every %s than %s %s, compared to the %s method.\\\\\n" % (no_max_str, type_str, abs(no_max), abs(no_max_sec), time_mes2, exclusion, max_second, sec_str, no_max_other_str)
+		fast_no_max = "The %s algorithm %s %s $\mu$s (or %s %s), if we disregard every %s than %s %s, compared to the %s algorithm.\\\\\n" % (no_max_str, type_str, abs(no_max), abs(no_max_sec), time_mes2, exclusion, max_second, sec_str, no_max_other_str)
 	else:
 		fast_no_max = ""
 
