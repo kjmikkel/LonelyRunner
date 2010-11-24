@@ -30,16 +30,21 @@ I expect the reader to have the mathematical knowledge required to understand bo
 
 \subsection{Computer Specifications}
 \label{specs}
-I would like to define which kind of computer I would require for running my program. As mentioned above, the Lonely Runner conjecture has direct applications for View-Obstruction problems and colouring of regular chromatic graphs. Researchers working with in these fields have no special reason to work with exceedingly powerful computers, or computers with special hardware.
+In this section I define the computer requirements for running my program. As mentioned above, the Lonely Runner conjecture has direct applications for View-Obstruction problems and colouring of regular chromatic graphs. Researchers working with in these fields have no special reason to work with exceedingly powerful computers, or computers with special hardware.
  
-Based on the above I would argue that any algorithm I devise and implement should be able to run on a standard computer with no special hardware\footnote{Say hardware dedicated to fast floating point calculations}. I will therefore design my verification program to run on a 2 Ghz computer with the recommended amount of RAM for the computer's OS. 
+Thus, any algorithm I devise and implement should be able to run on a standard computer with no special hardware\footnote{Say hardware dedicated to fast floating point calculations}. I will therefore design my verification program to run on a 2 Ghz computer with the recommended amount of RAM for the computer's OS. 
 
 I reserve the right to use third-party software libraries - as long as these can be freely distributed and installed.
 
 \subsection{Integer Speeds}
 \label{integerSpeeds}
 In this section I will prove that my program will only have to work with integer speeds.
-Let us assume for a given configuration of runner speeds T, there is a non-empty set $S \subset T$, of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that there are 3 cases we have to worry about: 1) Either all elements in S belong to $\mathbb{Q}$, 2) All elements are irrational numbers, 3) There is a mix of irrational and rational numbers.
+Let us assume for a given configuration of runner speeds T there is a non-empty set $S \subset T$ of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that there are 3 cases we have to worry about: 
+\begin{itemize}
+\item Either all elements in S belong to $\mathbb{Q}$
+\item All elements are irrational numbers
+\item There is a mix of irrational and rational numbers.
+\end{itemize}
 
 I will now prove that in all 3 cases we only have to worry about finding a solution for the speeds that can be reduced to integers.
 
@@ -97,7 +102,7 @@ In this report I will refer to runners as male for simplicity.
 
 \begin{defi}
 \label{def:theZone}
-In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, and a runner who is in this interval, as ``being in the Zone''. see figure \ref{circleZoneImg} for an illustration of the Zone.
+In this report I will refer to the track interval [$\frac{1}{n + 1}$, $\frac{n}{n+1}$] as the Zone, where $n$ is the number of runners, and a runner who is in this interval, as ``being in the Zone''. see figure \ref{circleZoneImg} for an illustration of the Zone.
 \end{defi}
 
 \begin{defi}
@@ -124,7 +129,7 @@ I have also used the follow support literature:
 \emph{``Computational Geometry''} \cite{citeulike:3347056}, \emph{``Uniform Distribution of Sequences''} \cite{uniform} and \emph{``Kalkulus''} \cite{kalkulus}.
 
 \subsection{Source Code and Test Data}
-The source code for the program can be found in my GitHub repo at \underline{https://github.com/kjmikkel/LonelyRunner}, there you will also be able to find the machine readable data I have used as the basis for my results, as well as the source code for this report.
+The source code and the data used in this report (in machine readable form) can be forund in my GitHub repo at \underline{https://github.com/kjmikkel/LonelyRunner}.
 
 \subsection{Overview}
 In this section I give a quick overview of what the different sections in report will cover.

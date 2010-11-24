@@ -2,7 +2,7 @@
 \label{choiceOfMethod}
 
 \subsection{Introduction}
-In this section I will describe the two different algorithms I have used in this project, and discuss their merits and flaws.\\
+In this section I will describe the two different algorithms I have used in this project and discuss their merits and flaws.\\
 
 \subsection{Possible Methods}
 
@@ -297,7 +297,7 @@ Add $start$ and $end$ to \li
 
 \subsection{Numerical Algorithm}
 \label{numtheory:algo}
-A Numerical alternative to the Geometric Algorithm can be made by applying the results of \cite{invis}. The algorithm works by testing a number of time points which might give us a solution - a sort of enlightened guess work. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
+A Numerical alternative to the Geometric algorithm can be made by applying the results of \cite{invis}. The algorithm works by testing a number of time points which might give us a solution - a sort of enlightened guess work. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
 
 \subsubsection{Proofs for the Numerical Algorithm}
 \label{proof_num}
@@ -343,7 +343,7 @@ k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
 $$
 where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 on page 66 in \cite{invis}). It is clear that $a < k$, since if $a = k$ then $a/k$ would evaluate to $1$ and then $\Vert \frac{a}{k} d\Vert, d \in D$ would evaluate to 0, and if $a > k$ then for $n \in \N: \Vert\frac{a}{k}\Vert = \Vert\frac{k+n}{k}\Vert = \Vert\frac{n}{k}\Vert$, so there would be no point in doing so.
 
-\subsubsection{Integer verification}
+\subsubsection{Integer Verification}
 Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists), it is clear that we only need to do integer comparison when we need to check whether or not a given $a$ and $k$ gives us a valid solution.
 
 As stated in equation \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
@@ -384,7 +384,7 @@ or
 
 where we pick the case to analyse on account of which of $w_i * (p \bmod q)$ and $q - (w_i * (p \bmod q))$ are the smallest.
 
-\subsection{Pseudocode for the Numerical Algorithm}
+\subsection{Psudocode for the Numerical Algorithm}
 \begin{algorithm}[H]
   \caption{NumericalLonelyRunner}
   \highlights
