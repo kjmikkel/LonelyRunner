@@ -1,0 +1,16 @@
+\begin{tabular}[3]{c|c|c}
+ & Geometrical ($\mu$s) spread & Numerical ($\mu$s) spread\\
+\hline
+Total spreads & 1804756 & 3230237 \\ 
+\hline 
+Only spreads from runs & 1784441 & 1179042 \\ 
+that took less than 1 second & & \\ 
+\hline
+Average spread & 83 & 148 \\
+\hline
+Average spread from runs that & 82 & 54 \\ 
+had less spread than 1 second & & \\ 
+\end{tabular}\\ \\
+The Geometrical algorithm has a lesser spread by 1425481 $\mu$s (or 1.43 seconds) compared to the Numerical algorithm.\\
+The Numerical algorithm has a lesser spread by 605399 $\mu$s (or 0.606 seconds), if we disregard every spread that is larger than 1 second, compared to the Geometrical algorithm.\\
+The Geometrical algorithm produced 18 spreads that is larger than 1 second, while the Numerical algorithm produced 18, out of 13 data sets (with a total of 21708 data points)\\
