@@ -43,8 +43,8 @@ def doGnuPlot(filename, extra_name, maxYValue, max_speed_to_test):
 	title = title.strip()
 	minNum = m.group(1)
 
-	if int(minNum) >= max_speed_to_test:
-		return
+#	if int(minNum) >= max_speed_to_test:
+#		return
 
 	time = "Time (mu)"
 	speed_name = ""
@@ -153,6 +153,7 @@ def print_plot(info_list, filename):
 	doGnuPlot(filename, "Geo", maxGeoValue, max_speed_to_test)
 	doGnuPlot(filename, "Num", maxNumValue, max_speed_to_test)
 	
+	print filename + "\n"
 	doGnuPlot(filename, "Geo_" + str(second_max), maxGeoValue, second_max)
 	doGnuPlot(filename, "Num_" + str(second_max), maxNumValue, second_max)
 
@@ -488,9 +489,10 @@ def processData():
 		else:
 			print "No found: \t\t" + infile
 	
-	#	print_plot(bar_list, infile)
+		print_plot(bar_list, infile)
 	#	print_tables(bar_list, infile)		
 			
+	return
 	start = "***\n"
 	print start + "Sequential:\n" + start 
 	special_tables(sequential_spread, sequential_speed, "sequential")
