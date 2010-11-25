@@ -1,16 +1,19 @@
-\begin{tabular}[3]{c|c|c}
+\begin{table}[bth!]\footnotesize
+ \begin{tabular}[3]{c|r|r}
  & Geometrical ($\mu$s) speed & Numerical ($\mu$s) speed\\
 \hline
-Total speeds & 1259240230 & 44231746046 \\ 
+All speeds & 2366333542 & 20292979320 \\ 
 \hline 
-Only speeds from runs & 1246946717 & 115885241 \\ 
+Only speeds from calculations & 1900581470 & 181393488 \\ 
 that took less than 1 second & & \\ 
 \hline
-Average speed & 17174 & 603269 \\
+Average speed & 25372 & 217586 \\
 \hline
-Average speed from runs that & 17026 & 1582 \\ 
+Average speed from calculations that & 20471 & 1947 \\ 
 took less than 1 second & & \\ 
 \end{tabular}\\ \\
-The Geometrical algorithm is faster by 42972505816 $\mu$s (or 11.9 hours) compared to the Numerical algorithm.\\
-The Numerical algorithm is faster by 1131061476 $\mu$s (or 18.8 minutes), if we disregard every calculation that took more than 1 second, compared to the Geometrical algorithm.\\
-The Geometrical algorithm produced 84 calculations that took more than 1 second, while the Numerical algorithm produced 82, out of 32 data sets (with a total of 73320 data points)\\
+\caption{Complete  Results\\
+The Geometrical algorithm is faster than the Numerical algorithm by 17926645778 $\mu$s (or 4.98 hours).\\
+The Numerical algorithm is faster than the Geometrical algorithm by 1719187982 $\mu$s (or 28.7 minutes), if we disregard every calculation that took more than 1 second.\\
+The Geometrical algorithm produced 425 calculations that took more than 1 second, while the Numerical algorithm produced 124, using 36 data sets (with a total of 93264 data points)\\
+}\label{total_speedtable}\end{table}

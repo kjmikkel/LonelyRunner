@@ -1,16 +1,18 @@
-\begin{tabular}[3]{c|c|c}
+\begin{table}[bth!]\footnotesize
+ \begin{tabular}[3]{c|r|r}
  & Geometrical ($\mu$s) spread & Numerical ($\mu$s) spread\\
 \hline
-Total spreads & 656562 & 30502561 \\ 
+All spreads & 656562 & 30502561 \\ 
 \hline 
-Only spreads from runs & 656562 & 28009439 \\ 
+Only spreads from calculations & 656562 & 28009439 \\ 
 that took less than 1 second & & \\ 
 \hline
 Average spread & 97 & 4536 \\
 \hline
-Average spread from runs that & 97 & 4166 \\ 
+Average spread from calculations that & 97 & 4166 \\ 
 had less spread than 1 second & & \\ 
 \end{tabular}\\ \\
-The Geometrical algorithm has a lesser spread by 29845999 $\mu$s (or 29.8 seconds) compared to the Numerical algorithm.\\
-The Geometrical algorithm has a lesser spread by 27352877 $\mu$s (or 27.4 seconds), if we disregard every spread that is larger than 1 second, compared to the Numerical algorithm.\\
-The Numerical algorithm produced 1 spread that is larger than 1 second out of 10 data sets (with a total of 6724 data points)\\
+\caption{Random Prime Results\\
+The Geometrical algorithm has a lesser spread than the Numerical algorithm by 29845999 $\mu$s (or 29.8 seconds).\\
+The Geometrical algorithm has a lesser spread than the Numerical algorithm by 27352877 $\mu$s (or 27.4 seconds), if we disregard every spread that is larger than 1 second.\\
+The Numerical algorithm produced 1 spread that is larger than 1 second using 10 data sets (with a total of 6724 data points)}\label{prime-random_spreadtable}\end{table}
