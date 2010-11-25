@@ -126,7 +126,9 @@ def print_plot(info_list, filename):
 	strAccum = "#Speed\tGeo\tGeo_spread\tNum\tNum_spread\n"
 	maxGeoValue = -1	
 	maxNumValue = -1
-#	max_speed_to_test = 500000
+	
+	second_max = 5000
+
 	sec_to_micro = 1000000
 	max_speed_to_test = -1
 	for bar in info_list:
@@ -151,6 +153,8 @@ def print_plot(info_list, filename):
 	doGnuPlot(filename, "Geo", maxGeoValue, max_speed_to_test)
 	doGnuPlot(filename, "Num", maxNumValue, max_speed_to_test)
 	
+	doGnuPlot(filename, "Geo_" + str(second_max), maxGeoValue, second_max)
+	doGnuPlot(filename, "Num_" + str(second_max), maxNumValue, second_max)
 
 class spread:
 	def __init__(self, speed, geo_spread, geo_sec, num_spread, num_sec):
@@ -233,23 +237,40 @@ def print_special_tables(all_info, s_type, number_type_name, number):
 	(geo_spread_val, geo_spread_avg, geo_spread_val_max, geo_spread_max_avg, geo_over_max) = find_spread(geo_spread, max_second)
 	(num_spread_val, num_spread_avg, num_spread_val_max, num_spread_max_avg, num_over_max) = find_spread(num_spread, max_second)
 
-	strAcum = "\\begin{tabular}[3]{c|c|c}\n"
+	text_name_type = ""
+	text_name_order = ""
+	if "sequential"  in  number_type_name.lower():
+		text_name_type = "Sequential"
+	elif "prime" in number_type_name.lower():
+		text_name_type = "Prime"
+	elif "random-" in number_type_name.lower():
+		text_name_type = "Random"
+
+	if "-normal" in number_type_name.lower():
+		text_name_order = "Sorted"
+	elif "-random" in number_type_name.lower():
+		text_name_order = "Random"
+	else:
+		text_name_order = "Complete"
+
+	strAcum = "\\begin{table}[bth!]\\footnotesize\n "
+        strAcum += "\\begin{tabular}[3]{c|r|r}\n"
 	strAcum += " & Geometrical ($\mu$s) %s & Numerical ($\mu$s) %s\\\\\n\hline\n" %(s_type, s_type)
-	strAcum += "Total %ss & %s & %s \\\\ \n" % (s_type, geo_spread_val, num_spread_val)
+	strAcum += "All %ss & %s & %s \\\\ \n" % (s_type, geo_spread_val, num_spread_val)
 	if (geo_over_max > 0) or (num_over_max > 0):
 		strAcum += "\\hline \n"
-		strAcum += "Only %ss from runs & %s & %s \\\\ \n" % (s_type, geo_spread_val_max, num_spread_val_max) 
+		strAcum += "Only %ss from calculations & %s & %s \\\\ \n" % (s_type, geo_spread_val_max, num_spread_val_max) 
 		strAcum += "that took less than %s %s & & \\\\ \n" % (max_second, sec_str)
 	strAcum += "\\hline\n"
 
 	strAcum += "Average %s & %s & %s \\\\\n" % (s_type, geo_spread_avg, num_spread_avg)
 	strAcum += "\hline\n"
 	if (geo_over_max > 0) or (num_over_max > 0):
-		strAcum += "Average %s from runs that & %s & %s \\\\ \n" % (s_type, geo_spread_max_avg, num_spread_max_avg)
+		strAcum += "Average %s from calculations that & %s & %s \\\\ \n" % (s_type, geo_spread_max_avg, num_spread_max_avg)
 		strAcum += "%s %s %s & & \\\\ \n" % (exclusion, max_second, sec_str)
 	
-	strAcum += "\\end{tabular}\\\\ \\\\\n"
-	
+	strAcum += "\\end{tabular}\\\\ \\\\\n\caption{" + text_name_order + " " + text_name_type + " Results\\\\\n"
+
 	getcontext().prec = 3
 
 	time_mes1 = "hours"
@@ -301,16 +322,16 @@ def print_special_tables(all_info, s_type, number_type_name, number):
 	
 	type_str = ""
 	if s_type == "speed":
-		type_str = "is faster by"
+		type_str = "is faster"
 		exclusion = "calculation that took more"
 	else:
-		type_str = "has a lesser spread by"
+		type_str = "has a lesser spread"
 		exclusion = "spread that is larger"
 
-	fast  = "The %s algorithm %s %s $\mu$s (or %s %s) compared to the %s algorithm.\\\\\n" % (all_val_str, type_str, abs(all_val),  abs(all_val_sec), time_mes1, all_val_other_str)
+	fast  = "The %s algorithm %s than the %s algorithm by %s $\mu$s (or %s %s).\\\\\n" % (all_val_str, type_str, all_val_other_str, abs(all_val), abs(all_val_sec), time_mes1)
 	
 	if (geo_over_max > 0) or (num_over_max > 0):
-		fast_no_max = "The %s algorithm %s %s $\mu$s (or %s %s), if we disregard every %s than %s %s, compared to the %s algorithm.\\\\\n" % (no_max_str, type_str, abs(no_max), abs(no_max_sec), time_mes2, exclusion, max_second, sec_str, no_max_other_str)
+		fast_no_max = "The %s algorithm %s than the %s algorithm by %s $\mu$s (or %s %s), if we disregard every %s than %s %s.\\\\\n" % (no_max_str, type_str, no_max_other_str, abs(no_max), abs(no_max_sec), time_mes2, exclusion, max_second, sec_str)
 	else:
 		fast_no_max = ""
 
@@ -336,12 +357,9 @@ def print_special_tables(all_info, s_type, number_type_name, number):
 		type_str = "has a lesser spread by"
 		exclusion = "%s that is larger" % spre
 
-
-		
-
 	number_over_max_str = ""
 	if (geo_over_max > 0) and (num_over_max > 0):
-		number_over_max_str = "The Geometrical algorithm produced %s %s than %s %s, while the Numerical algorithm produced %s, out of %s data sets (with a total of %s data points)\\\\\n" % (geo_over_max, exclusion, max_second, sec_str, num_over_max, str(number), str(len(geo_spread)))
+		number_over_max_str = "The Geometrical algorithm produced %s %s than %s %s, while the Numerical algorithm produced %s, using %s data sets (with a total of %s data points)\\\\\n" % (geo_over_max, exclusion, max_second, sec_str, num_over_max, str(number), str(len(geo_spread)))
 	else:
 		num_to_put = -1
 		algo_type_str = ""
@@ -353,10 +371,12 @@ def print_special_tables(all_info, s_type, number_type_name, number):
 			algo_type_str = "Geometrical"
 		
 		if num_to_put > 0:
-			number_over_max_str = "The %s algorithm produced %s %s than %s %s out of %s data sets (with a total of %s data points)\\\\\n" % (algo_type_str, num_to_put, exclusion, max_second, sec_str, str(number), str(len(num_spread)))
+			number_over_max_str = "The %s algorithm produced %s %s than %s %s using %s data sets (with a total of %s data points)" % (algo_type_str, num_to_put, exclusion, max_second, sec_str, str(number), str(len(num_spread)))
 			
 	
 	strAcum += number_over_max_str
+	strAcum += "}\label{" + number_type_name + "_" + s_type + "table}"
+	strAcum += "\end{table}"
 
 
 	saveFile("../report/data/tables/" + number_type_name + "_" + s_type + "_table.tex", strAcum)
@@ -467,7 +487,7 @@ def processData():
 			print "Random: \t" + infile
 		else:
 			print "No found: \t\t" + infile
-
+	
 	#	print_plot(bar_list, infile)
 	#	print_tables(bar_list, infile)		
 			
