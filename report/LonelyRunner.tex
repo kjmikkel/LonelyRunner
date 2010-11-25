@@ -1,17 +1,18 @@
-\documentclass[letter,12pt,english, draft]{article}
-%\documentclass[letter, 12pt, english]{article}
+\documentclass[letter, 12pt, english]{article}
 \usepackage{mikkel}
 \usepackage[ruled,vlined]{algorithm2e}
 \title{Experimental Verification of the Lonely Runner Conjecture}
 \author{Mikkel Kjær Jensen}
 \date{\today}
 \begin{document}
-\pagestyle{headings}
+
+\pagestyle{fancy}
+
+%\pagestyle{headings}
 \maketitle
 \abstract{
   The Lonely Runner conjecture states that given $n$ runners on a circular track with a circumference 1, with pairwise distinct positive integer speeds, there will be a time where every runner will be at least $\frac{1}{n + 1}$ distance away from their common start position. The conjecture has been proved up to $n$ = 6 (see \cite{serra_thelonely}). Since the Lonely Runner conjecture has applications in both graph theory, number theory, and view-obstruction problems, it would be preferable if it could be proved for all $n$, so that these research areas could utilize the properties of the conjecture without any reservations. In this project I have implemented the numerical algorithm found in \cite{invis} and a geometrical algorithm of my own devising, in order to create a program that can verify whether or not there exists a time that makes  the runner speeds fulfills the conjecture (and report the time), as well as a tool to test the conjecture for a range of runner speeds. As a direct application of this tool I have, for 20 runners, verified all possible combinations of pairwise distinct integer speeds (with no regard to order) , up to a maximum speed of \maxNumbers.
 }
-\listoffixmes
 \tableofcontents
 \include{introduction}
 \include{choiceOfMethod}
@@ -22,8 +23,5 @@
 \include{conclusion}
 \bibliography{LonelyRunner}{}
 \bibliographystyle{plain}
-\appendix
-\include{appendix}
-
 
 \end{document}

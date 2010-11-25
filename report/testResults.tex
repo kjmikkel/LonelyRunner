@@ -2,7 +2,7 @@
 \label{test}
 
 \subsection{Introduction}
-In this section I will introduce how I am going to test the algorithms, which parameters I am going to test them on, which software and hardware setup I have tested them on, description of the test themselves, and finally the results.
+In this section I will introduce how I am going to test the algorithms, which parameters I am going to test them on, which software and hardware setup I have tested them on, description of the test themselves.
 
 \subsection{Input parameters}
 For the Lonely Runner conjecture there are 2 parameters we can check
@@ -28,14 +28,14 @@ the time complexity of the respective algorithms, and in different ways.
 \subsection{Test input}
 In the following tests I will test 3 kinds of speeds for the runners
 \begin{enumerate}
-\item Prime numbers
 \item Sequential numbers
-\item Random numbers\footnote{Since the Lonely Runner conjecture is about the relation between numbers, it is interesting to test the algorithms in the cases where the numbers are pairwise prime. Hence the prime number test.}
+\item Prime numbers\footnote{Since the Lonely Runner conjecture is about the relation between numbers, it is interesting to test the algorithms in the cases where the numbers are pairwise prime. Hence the prime number test.}
+\item Random numbers
 \end{enumerate}
 
 For the Prime, and Sequential number tests the second parameter will be the maximum speed, while for the random numbers I will use the second interpretation.
 
-All values in all sets will be positive and within the sets all values are pair-wise unique.
+All values in all sets will be positive and within the sets all values are pairwise distinct.
 
 \subsubsection{Justifications for tests}
 
@@ -43,7 +43,7 @@ Given the many interesting properties of Prime numbers, I thought there might be
 
 I test with sequential numbers because it is very similar to what is going to happen during the range test. 
 
-The test with random numnbers (which tend to be above 100000) is made to check how both algorithms handles large numbers.
+The test with random numbers (which tend to be above 100000) is made to check how both algorithms handles large numbers.
 
 \subsection{Tests made on the Numerical method}
 As I stated in Section \ref{numtheory:algo}, the numerical
@@ -80,8 +80,8 @@ Due to time constraints I have been unable to run every algorithm with the same 
 
 \subsubsection{Random numbers}
 \begin{description}
-\item[Runners:] I will test both algorithms with 100, 500, 1000, 2000 and 4000 runners. Since we are dealing with random numbers I have made the decision not to randomize the input for the Numerial algorithm.
-\item[Speeds:] For the non-sorted I have just taken the neccessery numbers, without any regard to a maximum value. I have sadly not had the time to test the sorted random numbers. 
+\item[Runners:] I will test both algorithms with 100, 500, 1000, 2000 and 4000 runners. Since we are dealing with random numbers I have made the decision not to randomize the input for the Numerical algorithm.
+\item[Speeds:] For the non-sorted I have just taken the necessary numbers, without any regard to a maximum value. 
 \end{description}
 
 \subsection{Range test}

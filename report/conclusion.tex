@@ -16,11 +16,11 @@
 I have in this project:
 \begin{itemize}
 \item Described the Lonely Runner conjecture and pointed towards several articles on the subject.
-\item Designed, implemented, and tested a Geometrical algorithm that is able to find out whether or not a given configuration of runners can make equation \eqaref{eqa:lonelyRunner} hold.
+\item Designed, implemented, and tested a Geometrical algorithm that is able to find out whether or not a given configuration of runners can make \eqaref{eqa:lonelyRunner} hold.
 \item Described, implemented and tested the Numerical algorithm found in \cite{invis}
-\item Descried and implemented my advisors Divisor check algorithm
+\item Descried and implemented my adviser's Divisor check algorithm
 \item Given proofs that all 3 algorithms works as intended, as well as given termination and  worst-case run-times for the 2 first algorithms.
-\item Used the 3 above algorithms to create a program that can verify whether or not a given runner configuration makes equation \eqaref{eqa:lonelyRunner} hold. This tool can also be used to test ranges of configurations.
+\item Used the 3 above algorithms to create a program that can verify whether or not a given runner configuration makes \eqaref{eqa:lonelyRunner} hold. This tool can also be used to test ranges of configurations.
 \item Tested both the Numerical and the Geometrical algorithm against a variety of configurations.
 \end{itemize}
 
@@ -41,7 +41,9 @@ Let SlowZone be the interval where the slowest runner is in the zone, then a pai
 
 \item[Create and test a hybrid algorithm] It would be interesting to create a hybrid algorithm that ran both the Numerical and the Geometrical algorithm for any given configuration, and then returned the first answer, terminating the other algorithm. The problem with such an approach would be the overhead for starting both algorithms, as well as the fact that it would take away threads/CPU's/Computers that otherwise could have been used for running multiple configurations. 
 
-\item[Verification for many different number of runners and speeds:] Since I in this project has made a verifier for whether a given configuration holds for equation \eqaref{eqa:lonelyRunner} or not, it seems that the next logical step would be to set it to verify the Lonely Runner conjecture for a large verity of runner configurations. 
+\item[Prime Numerical algorithm:] As mentioned back in Section \ref{result_prime}, I think it would be worthwhile to try to create a version of the Numerical algorithm that would skip $speed_2$ if it was not prime with $speed_1$. Such an algorithm would of course need a fallback mechanism, so that in the case there was no such combination (or none of the combinations yielded a solution to \eqaref{eqa:lonelyRunner}), it would still try every single possibility.
+
+\item[Verification for many different number of runners and speeds:] Since I in this project has made a verifier for whether a given configuration holds for \eqaref{eqa:lonelyRunner} or not, it seems that the next logical step would be to set it to verify the Lonely Runner conjecture for a large verity of runner configurations. 
 
 \item[A study of the Numerical anomalies:] From Section \ref{results}, it is clear that there are cases where the Numerical algorithm takes an exceedingly long time to find a solution. The fact that this is most prominent in the cases where we are working with sequential numbers (random or not), and mostly when the individual runner speeds are less than/equal to the number of runners. A study into why this happens, might make it possible to avoid these in the future, giving the Numerical algorithm a huge boost.
 

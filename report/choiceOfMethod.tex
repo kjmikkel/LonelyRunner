@@ -125,7 +125,7 @@ The main idea of the algorithm is that it keeps track when runners enters and le
 \end{description}
 Let $dist_r$(t): $\R \rightarrow \mathbb{T}$ be the distance function from the start line in the runners direction to the runner r at time t along the circular track.
 
-Let entering the Zone at time $t_{enter}$ mean that $dist_r(t_{enter})$ is in the Zone, while $dist_r(t_{prev})$ is not in the Zone, where $t_{prev} = \max\E{x \in \R: x < t_{enter}}$. Analogusly let leaving the Zone at time $t_{leave}$ mean that $dist_r(t_{leave})$ is in the Zone, while $dist_r(t_{next})$ is not in the Zone, where $t_{next} = \min\E{x \in \R: t_{leave} < x}$.
+Let entering the Zone at time $t_{enter}$ mean that $dist_r(t_{enter})$ is in the Zone, while $dist_r(t_{prev})$ is not in the Zone, where $t_{prev} = \max\E{x \in \R: x < t_{enter}}$. Analogously let leaving the Zone at time $t_{leave}$ mean that $dist_r(t_{leave})$ is in the Zone, while $dist_r(t_{next})$ is not in the Zone, where $t_{next} = \min\E{x \in \R: t_{leave} < x}$.
  
 I will now prove that neither case A or B can happen, and thus my algorithm will always give the correct result.
 
@@ -134,13 +134,13 @@ I will now prove that neither case A or B can happen, and thus my algorithm will
 Let us assume that the runner r enters the Zone at time $t_{enter}$, and that $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$. As defined above, there must therefore exist a time $t_{prev}$ just before $t_{enter}$ where $dist_r(t_{prev})$ is after the start line, but before the Zone. 
 
 We now have a closed interval $[dist_r(t_{prev}), dist_r(t_{enter})]$, for which the function clearly is continuous, it then follows from the Intermediate value theorem that there must exist a time $t_{real\_enter}$ where $dist_r(t_{real\_enter}) = \frac{1}{n+1}$. This however contradicts our assumption that the runner enters the Zone at $dist_r(t_{enter}) \in (\frac{1}{n+1}, \frac{n}{n+1}]$, and so therefore the runner must always enter the Zone at distance $\frac{1}{n+1}$ from the start line, which means that case A cannot happen, which was what I wanted to show.
-\item[Case B:]Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not being in the Zone, but before the startline.
+\item[Case B:]Case B can be proved analogously, with $dist_r(t_{leave}) \in [\frac{1}{n+1}, \frac{n}{n+1})$, and $dist_r(t_{next})$ not being in the Zone, but before the start-line.
 \end{description}
 Since neither Case A or Case B can happen, the Geometrical algorithm will always report the correct result.
 \end{theo}
 
 \begin{theo}[Termination:]
-It is clear that the algorithm will always terminate, since the algorithm terminates when it finds a timepoint where all the runners are in the Zone, or when it encounters \comFin\,(which cannot be removed prematurely).
+It is clear that the algorithm will always terminate, since the algorithm terminates when it finds a time point where all the runners are in the Zone, or when it encounters \comFin\,(which cannot be removed prematurely).
 \end{theo}
 
 \begin{theo}[Time complexity:]
@@ -176,7 +176,7 @@ Given that generating an Event Point is a trivial operation, this does not seem 
 }
 
 \adDis{
-Creating event points on the fly
+Creating Event Points on the fly
 }{
 \item We would have a very small memory footprint.
 }{
@@ -297,92 +297,7 @@ Add $start$ and $end$ to \li
 
 \subsection{Numerical Algorithm}
 \label{numtheory:algo}
-A Numerical alternative to the Geometric algorithm can be made by applying the results of \cite{invis}. The algorithm works by testing a number of time points which might give us a solution - a sort of enlightened guess work. I have sketched the algorithm described from \cite{invis} below. \cite{invis} studies the the function 
-
-\subsubsection{Proofs for the Numerical Algorithm}
-\label{proof_num}
-\begin{theo}[Correctness:]
-This algorithm builds on Theorem 6 in \cite{invis}. Theorem 6 says that if we have a finite set of positive integers D = $\E{d_1, d_2, \ldots, d_k}$, then  $\kappa(D) = \sup_{x \in \R}\min_{1\leq i \leq k}\Vert x d_i \Vert$ is achieved for $x_o = a/(d_i + d_j)$ for some $0 \leq i,j \leq k, i \neq j$, and some positive integer a. I will now paraphrase the proof for this from \cite{invis}:
-
-Let us look at the function $f_D(x) = \min_{1 \leq i \leq k}\Vert x d_i \Vert$. Let $x_0$ be the value that maximises $f_D$, where $x_0 \in \mathbb{T}$. Such an $x_0$ must exist since $f_D$ is continuous, and the circle (and hence) $\mathbb{T}$ is compact. Thus we have $\kappa(D) = f_D(x_0) = \min_{1 \leq i \leq k} \Vert x_0 d_i \Vert$. Let $d_j \in D$ be a value that minimises $\kappa(D)$ and $f_D(x_0)$. We now have that $\kappa(D) = \Vert x_0 d_j\Vert$. 
-Furthermore, since all the functions we are dealing with are continuous, there must exist a $d_i \in D$, where $j \neq i$, such that $\Vert x_0 d_j \Vert = \Vert x_0 d_i \Vert$. I will prove that this is the case by proof by contradiction:
-
-Let us assume that $x_0$ such that $\kappa(D) = \Vert x_0 d_j \Vert$, for some $d_j \in D$, and that no $d_i$ exist such that $\Vert x_0 d_j \Vert = \Vert x_0 di\Vert$. In that case, we must have that for all $d_m \in D, m \neq j: \Vert x_0 d_m \Vert > \Vert x_0 d_j$, since we explicitly found $d_j$ to be the value that minimizes $f_D(x_0)$. Then, since $f_D$ is continuous, we can take $y = x_0 \pm \epsilon$ for a small value $\epsilon > 0$, and since $d_j$ was the only value that minimised $f_D(x_0)$, and changing the value of $x_0$ by $\epsilon$ will not change that, we can increase value of $f_D$ so that $f_D(y) > f_D(x_0)$. However, this contradicts our initial assumption that $x_0$ maximises $f_D$, and therefore there must exist a $d_i$ such that $\Vert x_0 d_i \Vert = \Vert x_0 d_j \Vert$.  
- 
-In fact we have the case $\E{x_0 d_j} = 1 - \E{x_0 d_i}$, where $\E{x}$ is the fractional part of x, i.e. the position on the circle. Thus we have 
-
-\begin{equation}
-\begin{split}
-x_0d_j + x_0d_i &= \lfloor x_0d_j \rfloor + \E{x_0d_j} + \lfloor x_0d_i \rfloor + \E{x_0d_i} \\
-               &= \lfloor x_0d_j \rfloor + \lfloor x_0d_i \rfloor + 1 = a
-\end{split} 
-\end{equation}
-
-which we can rearrange into $x_0 = a / (d_j + d_i)$, which indeed gives us $\kappa(D)$, which was what we wanted to show.
-\end{theo}
-
-\cite{invis} then uses this to prove that their Conjecture 5 is equivalent to the Lonely Runner conjecture, and shows how the finding the value of a will solve their conjecture if the Lonely Runner conjecture holds.
-
-In order to make sure that the Numerical algorithm will always terminate, even in the case where the Lonely Runner conjecture does not hold, I have added the last return statement, ensuring that the correct answer will always be reported.
-
-\begin{theo}[Termination:]
-It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
-\end{theo}
-
-\begin{theo}[Time complexity:]
-It is clear that the meat of NumericalLonelyRunner is 4 nested for-loops. The 2 first loops are dependent on each other, the third is based on the speed for the two runners that have been chosen, and the last loop goes through all the runners.\\
-
-The first 2 loops gives us $\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}1 = n-1 + n-2 + \ldots 2 + 1$, which reduces to $O(n^2)$. The third loop must iterate $k-1$ times, where $k$ is the sum of 2 runner's speed.\\
-
-If we are to give a worst case time, then it is clear $k$ must be the sum of the speed of the two fastest runners - so if we let $speed_1 = max(\comS)$ and $speed_2 = max(\comS \setminus \E{speed_1})$ then $k = speed_1 + speed_2$
-And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(k * n^3)$.
-\end{theo}
-
-$$
-k(D) = \sup_{x \in \R}\min_{1 \leq i \leq k}\Vert x d_i \Vert
-$$
-where D is a set $\E{d_1, d_2, \ldots, d_k}$ of integers. They arrive at the result that given D, $k(D)$ ``is attained for $x_0 = a /(d_i + d_j)$ for some $i \neq j$ and some positive integer a''. (Theorem 6 on page 66 in \cite{invis}). It is clear that $a < k$, since if $a = k$ then $a/k$ would evaluate to $1$ and then $\Vert \frac{a}{k} d\Vert, d \in D$ would evaluate to 0, and if $a > k$ then for $n \in \N: \Vert\frac{a}{k}\Vert = \Vert\frac{k+n}{k}\Vert = \Vert\frac{n}{k}\Vert$, so there would be no point in doing so.
-
-\subsubsection{Integer Verification}
-Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists), it is clear that we only need to do integer comparison when we need to check whether or not a given $a$ and $k$ gives us a valid solution.
-
-As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
-\eqa{
-\Vert w_i x\Vert \geq \frac{1}{n+1}
-} 
-
-The main problem being $\Vert w_i x\Vert$ - however, since we can be sure that the solution will always be rational, we it must be that x can be written on the form $\frac{p}{q}$ for a given $p \in \N\cup\E{0}$ and $q \in \N$. So now we have
-
-\begin{equation}
-\label{compareRewriteOne}
-\begin{split}
-\Vert w_i * \frac{p}{q}\Vert &\geq \frac{1}{n+1}\\
-\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) &\geq \frac{1}{n+1}\\
-\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) * (n+1) &\geq 1
-\end{split}
-\end{equation}
-
-Depending on whether $\frac{w_i * p \mod q}{q}$ or 1 - $\frac{w_i * p \mod q}{q}$ is the smallest value, the equation then becomes
-
-\begin{equation}
-\label{compareRewriteTwo}
-\begin{split}
-\frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
-(w_i * p \bmod q) * (n+1) &\geq q 
-\end{split}
-\end{equation}
-
-or 
-
-\begin{equation}
-\label{compareRewriteThree}
-\begin{split}
-1 - \frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
-(q - (w_i * p \bmod q)) * (n+1) &\geq q
-\end{split}
-\end{equation}
-
-where we pick the case to analyse on account of which of $w_i * (p \bmod q)$ and $q - (w_i * (p \bmod q))$ are the smallest.
+A Numerical alternative to the Geometric algorithm can be made by applying the results of \cite{invis}. The algorithm works by testing a number of time points which might give us a solution - a sort of enlightened guesswork. I have sketched the algorithm described from \cite{invis} below. 
 
 \subsection{Psudocode for the Numerical Algorithm}
 \begin{algorithm}[H]
@@ -435,24 +350,105 @@ values of $d$ and $d\prime$ that may be candidates for a possible
 solution. It is therefore clear that the run-time of the Numerical
 algorithm must be dependent on the order of the runner speeds in \comS.
 
+\subsubsection{Proofs for the Numerical Algorithm}
+\label{proof_num}
+\begin{theo}[Correctness:]
+This algorithm builds on Theorem 6 in \cite{invis}. Theorem 6 says that if we have a finite set of positive integers D = $\E{d_1, d_2, \ldots, d_k}$, then  $\kappa(D) = \sup_{x \in \R}\min_{1\leq i \leq k}\Vert x d_i \Vert$ is achieved for $x_o = a/(d_i + d_j)$ for some $0 \leq i,j \leq k, i \neq j$, and some positive integer a. I will now paraphrase the proof for this from \cite{invis}:
+
+Let us look at the function $f_D(x) = \min_{1 \leq i \leq k}\Vert x d_i \Vert$. Let $x_0$ be the value that maximises $f_D$, where $x_0 \in \mathbb{T}$. Such an $x_0$ must exist since $f_D$ is continuous, and the circle (and hence $\mathbb{T}$) is compact. Thus we have $\kappa(D) = f_D(x_0) = \min_{1 \leq i \leq k} \Vert x_0 d_i \Vert$. Let $d_j \in D$ be a value that minimises $\kappa(D)$ and $f_D(x_0)$. We now have that $\kappa(D) = \Vert x_0 d_j\Vert$. 
+Furthermore, since all the functions we are dealing with are continuous, there must exist a $d_i \in D$, where $j \neq i$, such that $\Vert x_0 d_j \Vert = \Vert x_0 d_i \Vert$. I will prove that this is the case by proof by contradiction:
+
+Let us assume that $x_0$ such that $\kappa(D) = \Vert x_0 d_j \Vert$, for some $d_j \in D$, and that no $d_i$ exist such that $\Vert x_0 d_j \Vert = \Vert x_0 d_i\Vert$. In that case, we must have that for all $d_m \in D, m \neq j: \Vert x_0 d_m \Vert > \Vert x_0 d_j\Vert$, since we explicitly selected $d_j$ to be the value that minimizes $f_D(x_0)$. Then, since $f_D$ is continuous, we can take $y = x_0 \pm \epsilon$ for a small value $\epsilon > 0$, and since $d_j$ was the only value that minimised $f_D(x_0)$, and changing the value of $x_0$ by $\epsilon$ will not change that, we can increase value of $f_D$ so that $f_D(y) > f_D(x_0)$. However, this contradicts our initial assumption that $x_0$ maximises $f_D$, and therefore there must exist a $d_i$ such that $\Vert x_0 d_i \Vert = \Vert x_0 d_j \Vert$.  
+ 
+In fact we have the case $\E{x_0 d_j} = 1 - \E{x_0 d_i}$, where $\E{x}$ is the fractional part of x, i.e. the position on the circle. Thus we have 
+
+\begin{equation}
+\begin{split}
+x_0d_j + x_0d_i &= \lfloor x_0d_j \rfloor + \E{x_0d_j} + \lfloor x_0d_i \rfloor + \E{x_0d_i} \\
+               &= \lfloor x_0d_j \rfloor + \lfloor x_0d_i \rfloor + 1 = a
+\end{split} 
+\end{equation}
+
+which we can rearrange into $x_0 = a / (d_j + d_i)$, which indeed gives us $\kappa(D)$, which was what we wanted to show.
+\end{theo}
+
+\cite{invis} then uses this to prove that their Conjecture 5 is equivalent to the Lonely Runner conjecture, and shows how the finding the value of $a$ will solve their conjecture if the Lonely Runner conjecture holds.
+
+In order to make sure that the Numerical algorithm will always terminate, even in the case no solution to \eqaref{eqa:lonelyRunner} exist, I have added the last return statement, ensuring that the correct answer will always be reported.
+
+\begin{theo}[Termination:]
+It is clear that the algorithm will always terminate, $\Vert x \Vert $ is the only function call in the algorithm, and it will always terminate.
+\end{theo}
+
+\begin{theo}[Time complexity:]
+It is clear that the meat of NumericalLonelyRunner is 4 nested for-loops. The 2 first loops are dependent on each other, the third is based on the speed for the two runners that have been chosen, and the last loop goes through all the runners, to check whether the candidate solution works.\\
+
+The first 2 loops gives us $\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}1 = n-1 + n-2 + \ldots 2 + 1$, which reduces to $O(n^2)$. The third loop must iterate $k-1$ times, where $k$ is the sum of 2 runner's speed.\\
+
+If we are to give a worst case time, then it is clear $k$ must be the sum of the speed of the two fastest runners - so if we let $speed_1 = max(\comS)$ and $speed_2 = max(\comS \setminus \E{speed_1})$ then $k = speed_1 + speed_2$
+And we go through the last loop $n$ times. Thus the entire algorithm runs in $O(k * n^3)$.
+\end{theo}
+
+\subsubsection{Integer Verification}
+Since the Lonely Runner conjecture will always have a rational number as a solution\footnote{We can be sure of this thanks to the correctness proofs for both the Geometrical and the Numerical algorithms in Section \ref{proof_geo} and \ref{proof_num} respectively} (if one such exists), it is clear that we only need to do integer comparison when we need to check whether or not a given $a$ and $k$ gives us a valid solution.
+
+As stated in \eqaref{eqa:lonelyRunner}, we have a Lonely Runner iff
+\eqa{
+\Vert w_i x\Vert \geq \frac{1}{n+1}
+} 
+
+The main problem being $\Vert w_i x\Vert$ - however, since we can be sure that the solution will always be rational, we it must be that x can be written on the form $\frac{p}{q}$ for a given $p \in \N\cup\E{0}$ and $q \in \N$. So now we have
+
+\begin{equation}
+\label{compareRewriteOne}
+\begin{split}
+\Vert w_i * \frac{p}{q}\Vert &\geq \frac{1}{n+1}\\
+\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) &\geq \frac{1}{n+1}\\
+\min(\frac{w_i * p \bmod q}{q}, 1 - \frac{w_i * p \bmod q}{q}) * (n+1) &\geq 1
+\end{split}
+\end{equation}
+
+Depending on whether $\frac{w_i * p \mod q}{q}$ or 1 - $\frac{w_i * p \mod q}{q}$ is the smallest value, the equation then becomes
+
+\begin{equation}
+\label{compareRewriteTwo}
+\begin{split}
+\frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
+(w_i * p \bmod q) * (n+1) &\geq q 
+\end{split}
+\end{equation}
+
+or 
+
+\begin{equation}
+\label{compareRewriteThree}
+\begin{split}
+1 - \frac{w_i * p \bmod q}{q} * (n+1) &\geq 1\\
+(q - (w_i * p \bmod q)) * (n+1) &\geq q
+\end{split}
+\end{equation}
+
+where we pick the case to analyse on account of which of $w_i * (p \bmod q)$ and $q - (w_i * (p \bmod q))$ are the smallest.
+
+
 
 
 \subsection{Conclusion on the Algorithms}
 
-From the above it is clear that neither of the algorithm are better in all cases. The Geometrical algorithm has a better worst case time complexity when we have many runners with low speeds, while the numerical algorithm is better when we have few runners with very high speeds. It is also clear that the numerical algorithm is far easier to implement, relying on no non-standard data structures.
+From the above it is clear that neither of the algorithm are better in all cases. The Geometrical algorithm has a better worst case time complexity when we have many runners with low speeds, while the Numerical algorithm is better when we have few runners with very high speeds. It is also clear that the Numerical algorithm is far easier to implement, relying on no non-standard data structures.
 
 However, since they both are very short, and do not have much in the way of dependencies, I have implemented them both and have compared their run-times with a variety number of runners and speeds.\\
 
 \subsection{Range Test}
 As stated in the introduction, one of the goals of this project was to create a program that could test whether there was a speed configurations in a certain range, that had no solution that made \eqaref{eqa:lonelyRunner} hold. I have interpreted ``range of runner speed configurations'' as follows:\\
 
-Given a \comS of $n$ runners with a maximum speed of $m \in \N$, the program should test all possible configurations between such that for $i, j \in \N, i < j: \comS_i < \comS_j$, where $\comS_n \leq m$. Furthermore I believe the range test to be most useful if it went about its search in a through manner, such that the last index in the $\comS$ should only be increased when all the permutations, with it as the largest value, have been tested\footnote{In practice this means index $n$ would only increase when, for a \comS with 10 runners, has tested the configuration $[\comS_n - 9, \comS_n - 8, \ldots, \comS_n - 1, \comS_n]$}. 
+Given a \comS\; of $n$ runners with a maximum speed of $m \in \N$, the program should test all possible configurations between such that for $i, j \in \N, i < j: \comS_i < \comS_j$, where $\comS_n \leq m$. Furthermore I believe the range test to be most useful if it went about its search in a through manner, such that the last index in the $\comS$ should only be increased when all the permutations, with it as the largest value, have been tested\footnote{In practice this means index $n$ would only increase when, for a \comS with 10 runners, has tested the configuration $[\comS_{n - 9}, \comS_{n - 8}, \ldots, \comS_{n - 1}, \comS_{n}]$}. 
 
-It is important to note that even though a range test has been performed with $n$ runners (say, all possible configurations with 20 runners up to a max speed of 40), then this does not verify any configuration that contains fewer runner. Thus there could theoretically be a configuration with fewer runners in the given speed range that was a counter example for the Lonely Runner conjecture. I have done so because I felt the Range Test tool was designed to check for a specific number of runners, and also that checking every possible   . It should however be little problem to change the code to allow it to test ranges of runners. 
+It is important to note that even though a range test has been performed with $n$ runners (say, all possible configurations with 20 runners up to the same max speed), then this does not verify any configuration that contains fewer runner. Thus there could theoretically be a configuration with fewer runners in the given speed range that was a counter example for the Lonely Runner conjecture. I have done so because I felt the Range Test tool was designed to check for a specific number of runners, and also that checking every possible   . It should however be little problem to change the code to allow it to test ranges of runners. 
 
-\subsection{The Divisor Check}
+\subsection{The Divisor Check algorithm}
 \label{detect}
-From personal communication with my projects advisor I have been informed of a new method, and its proof, to check whether a configuration makes \eqaref{eqa:lonelyRunner} hold. 
+From personal communication with my projects adviser\footnote{Jakob Grue Simonsen, cand. scient., PhD, MBA  \underline{http://www.diku.dk/hjemmesider/ansatte/simonsen/}} I have been informed of a new method, and its proof, to check whether a configuration makes \eqaref{eqa:lonelyRunner} hold. 
 
 Let $n$ be the number of runners, $S = \E{s_1, s_2, \ldots, s_n}$ be the set of runner speeds, and $p \in \E{2, \ldots, n+1}$. If there exist a $p$ such that it does not evenly divide any of the speeds in $S$, then \eqaref{eqa:lonelyRunner} holds for the set of runner speeds $S$. 
 
@@ -474,7 +470,7 @@ We know that $d_i \bmod p \neq 0$, since we assumed $p$ did not evenly divide $d
 
 Thus, if we pick the time $\frac{1}{p}$, runner $d_i$ must be in the Zone. Since $d_i$ was an arbitrary chosen speed in $S$, it must hold that all the runners must be in the Zone for $\frac{1}{p}$, and thus the configuration $S$ must hold for \eqaref{eqa:lonelyRunner}, which was what we wanted to show.
 
-\subsection{Integer Speeds}
+\subsection{Integer Speed Proof}
 \label{integerSpeeds}
 In this section I will prove that my program will only have to work with integer speeds.
 Let us assume for a given configuration of runner speeds T there is a non-empty set $S \subset T$ of runner speeds that are not integers. Since we are dealing with the speeds of runners, it is clear that there are 3 cases we have to worry about: 
