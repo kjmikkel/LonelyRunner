@@ -1,0 +1,45 @@
+Table of Content:
+	Overview
+	The Objective of the Project
+	The Lonely Runner Conjecture
+	Repository Content
+
+====
+Overview:
+====
+This repository contains both the Source Code and report for my "Experimental Verification of the Lonely Runner Conjecture" project that I did as a part of my Master in Copenhagen University in the interval of September - November 2010.
+
+====
+The Objective of the Project: 
+====
+
+The objective of the project was to create a practical tool that should be able to verify whether or not a given set of pairwise distinct Integers (commonly reffered to as Runner Speeds) would violate the Lonely Runner conjecture (see next section).
+
+I have in this project tested all combinations with 20 Runners (i.e. 20 integers) with a max runner speed of 39.
+
+====
+The Lonely Runner Conjecture:
+====
+
+Imagine n runners at a circular, unit length track (i.e. the track has a circumference of 1), where every runner runs with constant, pairwise different speeds, there will then exist a time t where all runners will be at least 1/(n + 1) units away from their common start-point.
+
+The Lonely Runner Conjecture has only been proved for up to n = 6.
+
+====
+Repository Content:
+====
+
+Source Code: 
+My Lonely Runner Conjecture verfier ended up being written in C++, and can be found in the src/C++ directory. There you will also find a README file listing the source codes dependencies.
+
+Report:
+The report I made to document my work was written in Latex and can be found in the report directoy. It should contain everything that is needed to compile it.
+
+Data:
+You can find the machine-readable data I used for the report in src/data/ in the JSON file format.
+
+Tables/Graphs:
+
+You can find the tables/graphs I used in my report in the report/data/(tables/graphs) directories.
+
+If you re-run my tests yourself, and you want to update my tables/graphs, please run the formatData.py script found in the src/ directory, which will format the data for you.
