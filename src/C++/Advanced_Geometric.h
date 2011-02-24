@@ -15,41 +15,11 @@
     along with The Lonely Runner Verifier.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef DATA_STRUCT_H
-#define DATA_STRUCT_H
+#ifndef A_GEO_H
+#define A_GEO_H
 
-enum point_type { START, END, FINAL };
+#include "data_structure.h"
 
-struct event_point  {
-  unsigned int local_position;
-  unsigned int number_of_runners;
-  unsigned int rounds;
-  unsigned int speed;
-  unsigned int runnerNumber;
-  point_type type;
-};
-		    
-struct geo_time_result {
-  // the time we are returning
-  event_point point;
+geo_time_result* Advanced_Geometric_method (const int speed_array[], const int length);
 
-  // whether we could find a solution to equation (1)
-  bool result;
-};
-
-struct len_array {
-  int* array;  
-  unsigned int len;
-};
-
-struct num_time_result {
-  // the time we are returning
-  unsigned int k1;
-  unsigned int k2;
-  unsigned int a;
-  
-  // whether we could find a solution to equation (1)
-  bool result;
-};
-		  
 #endif

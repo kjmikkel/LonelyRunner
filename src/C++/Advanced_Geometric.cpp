@@ -28,28 +28,10 @@ NTL_CLIENT
 struct compare_event_point_pointers {
   bool operator() ( const event_point first, const event_point second ) const
   {
-    /*
-    ZZ rounds1 = to_ZZ(first.rounds);
-    ZZ rounds2 = to_ZZ(second.rounds);
-    */
     
     ZZ time1 = (first.local_position +  to_ZZ(first.rounds) *  (first.number_of_runners + 1)) *  second.speed;
     ZZ time2 = (second.local_position + to_ZZ(second.rounds) * (second.number_of_runners + 1)) * first.speed;
-   
-    //    if (time1 > pow(2, 32) || time2 > pow(2, 32))
-    // cout << "above " << time1 << ", " << time2 << "\n";
-
-    /*
-    unsigned int time1 = first.pre_computed * second.speed;
-    unsigned int time2 = second.pre_computed * first.speed;;
-    */
-    /*
-    int time1 = (first.local_position + first.rounds * (first.number_of_runners + 1)) * second.speed;
-    int time2 = (second.local_position + second.rounds * (second.number_of_runners + 1)) * first.speed;;
-    */
-    // if (time1 < second.speed || time2 < first.speed) 
-    //  printf("time1: %i and time2: %i\n", time1, time2);
-    
+       
     if(time1 < time2) {
       //      cout << "time2 larger than time1\n";
       return false;
@@ -109,18 +91,7 @@ static void freeQueue(event_point_priority_queue* queue) {
   delete queue;
 }
 
-event_point make_start_point(int speed, int number, int length) {
-   event_point point;
-   point.number_of_runners = length;
-   point.rounds = -1; // It is important that rounds = -1, otherwise there will be a problem when the points are made
-   point.speed = speed;
-   point.runnerNumber = number;
-   point.local_position = 0;
-   point.type = START;
-   return point;
-}
-
-geo_time_result* Geometric_method (const int speed_array[], const int length) {
+geo_time_result* Advanced_Geometric_method (const int speed_array[], const int length) {
   if (length < 1) {
     std::cout << "The list of speeds is empty\n";
    
@@ -141,9 +112,16 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
   queue->push(final_point);
 
   for(int pointIndex = 0; pointIndex < length; pointIndex++) {
-    event_point point = make_start_point(speed_array[pointIndex], pointIndex, length);
+    event_point point;
+    point.number_of_runners = length;
+    point.rounds = -1; // It is important that rounds = -1, otherwise there will be a problem when the points are made
+    point.speed = speed_array[pointIndex];
+    point.runnerNumber = pointIndex;
+    point.local_position = 0;
+    point.type = START;
+    
     MakeTimePoints(point, queue, length);
- }
+  }
 
   int intersection = 0;
   event_point p;
@@ -190,82 +168,6 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
       return no_result;
     }
   }
-}
-
-
-
-
-geo_time_result* Advanced_Geometric_method (const int speed_array[], const int length) {
-  if (length < 1) {
-    std::cout << "The list of speeds is empty\n";
-   
-    geo_time_result* no_result = new geo_time_result;
-    no_result->result = 0;
-    //  no_result.point = NULL;
-    //    delete speed_array;
-  }
-  event_point_priority_queue* queue = new event_point_priority_queue;
-  
-  event_point final_point;
-  final_point.number_of_runners = length;
-  final_point.rounds = 1;
-  final_point.speed = 1;
-  final_point.runnerNumber = length + 1;
-  final_point.local_position = length + 1;
-  final_point.type = FINAL;
-  queue->push(final_point);
-
-  // sort the list of times - with rising values
-
-  event_point point = make_start_point(speed_array[0], 0, length);
-
-  event_point start = make_point(point, 1, START);
-  event_point end = make_point(point, length, END);
-
-  
-
-  /*
-
-  int intersection = 0;
-  event_point p;
-  while(!queue->empty()) {
-    // Find point and remove it from the queue
-    p = queue->top();
-    queue->pop();
-    
-    if (p.type == START) {
-      intersection++;
-      if (intersection == length) {
-
-	geo_time_result* has_result = new geo_time_result;
-	has_result->result = true;
-	has_result->point = p;
-	
-      	freeQueue(queue); // Free the queue
-	return has_result;
-      }
-      
-      // delete p; // Delete the point
-    } else if (p.type == END) {
-      intersection--;
-      // cout << "-: " << intersection << "\n";
-      
-      MakeTimePoints(p, queue, length);
-      // delete p; // free the point
-
-    } else if (p.type == FINAL) {
-      // There can be no solution, so free the entire queue
-      //cout << "***Final!***\n";
-      freeQueue(queue);
-      //  delete p; //... and the point
-      
-      geo_time_result* no_result = new geo_time_result;
-      no_result->result = 0;
-      //   no_result->point = NULL;
-      return no_result;
-    }
-  }
-  */
 }
 
 /*
