@@ -15,14 +15,11 @@
     along with The Lonely Runner Verifier.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef A_GEO_H
+#define A_GEO_H
 
 #include "data_structure.h"
-int extern stringToInt(std::string str);
-std::string extern intToString(int i);
-std::string extern string_speeds(const int speeds[], int length);
-len_array extern read_json_file_array(char* filename);
-void extern write_to_file(char* filename, std::string data);
+
+geo_time_result* Advanced_Geometric_method (const int speed_array[], const int length);
 
 #endif

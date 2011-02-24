@@ -22,35 +22,16 @@
 #include <vector>
 #include <math.h>
 #include "data_structure.h"
-#include "util.h"
 
 NTL_CLIENT
 
 struct compare_event_point_pointers {
   bool operator() ( const event_point first, const event_point second ) const
   {
-    /*
-    ZZ rounds1 = to_ZZ(first.rounds);
-    ZZ rounds2 = to_ZZ(second.rounds);
-    */
     
     ZZ time1 = (first.local_position +  to_ZZ(first.rounds) *  (first.number_of_runners + 1)) *  second.speed;
     ZZ time2 = (second.local_position + to_ZZ(second.rounds) * (second.number_of_runners + 1)) * first.speed;
-   
-    //    if (time1 > pow(2, 32) || time2 > pow(2, 32))
-    // cout << "above " << time1 << ", " << time2 << "\n";
-
-    /*
-    unsigned int time1 = first.pre_computed * second.speed;
-    unsigned int time2 = second.pre_computed * first.speed;;
-    */
-    /*
-    int time1 = (first.local_position + first.rounds * (first.number_of_runners + 1)) * second.speed;
-    int time2 = (second.local_position + second.rounds * (second.number_of_runners + 1)) * first.speed;;
-    */
-    // if (time1 < second.speed || time2 < first.speed) 
-    //  printf("time1: %i and time2: %i\n", time1, time2);
-    
+       
     if(time1 < time2) {
       //      cout << "time2 larger than time1\n";
       return false;
@@ -97,138 +78,18 @@ static void freeQueue(event_point_priority_queue* queue) {
   
   // First we remove and free all the points
   event_point p;
-  
+  /*
   while(!queue->empty()) {
-    queue->pop();
-   }
-  
-  // Free the queue itself;
-  delete queue;
-}
-
-event_point make_start_point(int speed, int number, int length) {
-   event_point point;
-   point.number_of_runners = length;
-   point.rounds = -1; // It is important that rounds = -1, otherwise there will be a problem when the points are made
-   point.speed = speed;
-   point.runnerNumber = number;
-   point.local_position = 0;
-   point.type = START;
-   return point;
-}
-
-geo_time_result* Geometric_method (const int speed_array[], const int length) {
-    bool stop = false;
-    if (length < 1) {
-        std::cout << "The list of speeds is empty\n";
-        stop = true;
-    }
-
-    for(int index1 = 0; index1 < length; index1++) {
-        if (speed_array[index1] < 1) {
-            cout << "Negative hastigheder:\n";
-          cout << string_speeds(speed_array, length) << "\n";
-          stop = true;
-        }
-    }
-
-    if (stop) {
-        geo_time_result* no_result = new geo_time_result;
-        no_result->result = 0;
-        return no_result;
-    }
-
-//    cout << "Entering: " << string_speeds(speed_array, length) << "\n";
-    
-  event_point_priority_queue* queue = new event_point_priority_queue;
-
-
-  event_point final_point;
-  final_point.number_of_runners = length;
-  final_point.rounds = 1;
-  final_point.speed = 1;
-  final_point.runnerNumber = length + 1;
-  final_point.local_position = length + 1;
-  final_point.type = FINAL;
-  queue->push(final_point);
-
-  for(int pointIndex = 0; pointIndex < length; pointIndex++) {
-    event_point point = make_start_point(speed_array[pointIndex], pointIndex, length);
-    MakeTimePoints(point, queue, length);
- }
-
-  int intersection = 0;
-  int number = 0;
- 
-  event_point p;
-  while(!queue->empty()) {
-    // Find point and remove it from the queue
     p = queue->top();
     queue->pop();
     
-    if (p.type == START) {
-      intersection++;
-      number++;
-//      cout << string_speeds(speed_array, length) << ": " << intToString(intersection) << ", Number: " << number << "\n";
-
-      if (intersection == length) {
-
-          /*
-	double top = p.pre_computed; 
-	double down = p.speed * (length + 1.0);
-	*/
-	//	printf("Top: %f\nDown: %f\n", top, down);
-
-	geo_time_result* has_result = new geo_time_result;
-	has_result->result = true;
-
-        event_point* returnPoint = new event_point;
-        returnPoint->local_position = p.local_position;
-        returnPoint->number_of_runners = p.number_of_runners;
-        returnPoint->rounds = p.rounds;
-        returnPoint->runnerNumber = p.runnerNumber;
-        returnPoint->speed = p.speed;
-        returnPoint->type = p.type;
-/*
-        unsigned int local_position;
-  unsigned int number_of_runners;
-  unsigned int rounds;
-  unsigned int speed;
-  unsigned int runnerNumber;
-  point_type type;
-*/
-        has_result->point = returnPoint;
-	
-      	freeQueue(queue); // Free the queue
-	return has_result;
-      }
-      
-      // delete p; // Delete the point
-    } else if (p.type == END) {
-      intersection--;
-      number++;
-   //   cout << string_speeds(speed_array, length) << ": " << intToString(intersection) << ", Number: " << number << "\n";
-      // cout << "-: " << intersection << "\n";
-
-      MakeTimePoints(p, queue, length);
-      // delete p; // free the point
-
-    } else if (p.type == FINAL) {
-      // There can be no solution, so free the entire queue
-      //cout << "***Final!***\n";
-      freeQueue(queue);
-      //  delete p; //... and the point
-      
-      geo_time_result* no_result = new geo_time_result;
-      no_result->result = 0;
-      //   no_result->point = NULL;
-      return no_result;
-    }
+    delete p;
+    p = NULL;
   }
+  */
+  // Free the queue itself;
+  delete queue;
 }
-
-
-
 
 geo_time_result* Advanced_Geometric_method (const int speed_array[], const int length) {
   if (length < 1) {
@@ -250,16 +111,17 @@ geo_time_result* Advanced_Geometric_method (const int speed_array[], const int l
   final_point.type = FINAL;
   queue->push(final_point);
 
-  // sort the list of times - with rising values
-
-  event_point point = make_start_point(speed_array[0], 0, length);
-
-  event_point start = make_point(point, 1, START);
-  event_point end = make_point(point, length, END);
-
-  
-
-  /*
+  for(int pointIndex = 0; pointIndex < length; pointIndex++) {
+    event_point point;
+    point.number_of_runners = length;
+    point.rounds = -1; // It is important that rounds = -1, otherwise there will be a problem when the points are made
+    point.speed = speed_array[pointIndex];
+    point.runnerNumber = pointIndex;
+    point.local_position = 0;
+    point.type = START;
+    
+    MakeTimePoints(point, queue, length);
+  }
 
   int intersection = 0;
   event_point p;
@@ -271,6 +133,12 @@ geo_time_result* Advanced_Geometric_method (const int speed_array[], const int l
     if (p.type == START) {
       intersection++;
       if (intersection == length) {
+
+	/*
+	double top = p.pre_computed; 
+	double down = p.speed * (length + 1.0);
+	*/
+	//	printf("Top: %f\nDown: %f\n", top, down);
 
 	geo_time_result* has_result = new geo_time_result;
 	has_result->result = true;
@@ -300,7 +168,6 @@ geo_time_result* Advanced_Geometric_method (const int speed_array[], const int l
       return no_result;
     }
   }
-  */
 }
 
 /*

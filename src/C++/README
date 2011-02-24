@@ -6,20 +6,19 @@ make
 
 or 
 
-make LonelyRunner.out
+make LonelyRunnerVerifier.out
 
 or if you want the test program
 
 make TestCode.out
 
-The resulting output can be run normaly
+The resulting output can be run normally
 
-===Compilers and portability===
+===Compilers and Portability===
 
 For this project I have compiled the code with gcc version 4.4.3 (Ubuntu 4.4.3-4ubuntu). 
 
 I have tried to use  compliant code, though when it comes to testing, there may be problem with running on other platforms than Linux (primarily when it comes to getting the time).
-
 
 ===Dependencies===
 
@@ -34,3 +33,6 @@ I have tried to use  compliant code, though when it comes to testing, there may 
 * json-c (v. 0.9): 
   A C++ library used for importing and exporting data to/from the JSON file format. 
   The library can be found at http://oss.metaparadigm.com/json-c/ (last visited 10/11/2010).
+
+===Contributors===
+Mikkel Kjær Jensen

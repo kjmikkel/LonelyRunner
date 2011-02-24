@@ -2,8 +2,8 @@
 
 op = -O2
 
-LonelyRunner.out: main.o Geometric.o Numerical.o Prime_Number.o util.o 
-	g++ $(op) -o LonelyRunner.out main.o Geometric.o Numerical.o util.o `pkg-config gtk+-2.0 --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm -lboost_thread
+LonelyRunnerVerifier.out: main.o Geometric.o Numerical.o Prime_Number.o util.o 
+	g++ $(op) -o LonelyRunnerVerifier.out main.o Geometric.o Numerical.o util.o  `pkg-config gtk+-2.0 --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm -lboost_thread
 
 TestCode.out: main_test.o Geometric.o Numerical.o Prime_Number.o util.o 
 	g++ $(op) -o TestCode.out main_test.o Geometric.o Numerical.o Prime_Number.o util.o -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm 
