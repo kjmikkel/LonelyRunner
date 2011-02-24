@@ -5,6 +5,7 @@
 #include <vector>
 #include <math.h>
 #include "data_structure.h"
+#include "util.h"
 
 NTL_CLIENT
 
@@ -79,30 +80,41 @@ static void freeQueue(event_point_priority_queue* queue) {
   
   // First we remove and free all the points
   event_point p;
-  /*
+  
   while(!queue->empty()) {
-    p = queue->top();
     queue->pop();
-    
-    delete p;
-    p = NULL;
-  }
-  */
+   }
+  
   // Free the queue itself;
   delete queue;
 }
 
 geo_time_result* Geometric_method (const int speed_array[], const int length) {
-  if (length < 1) {
-    std::cout << "The list of speeds is empty\n";
-   
-    geo_time_result* no_result = new geo_time_result;
-    no_result->result = 0;
-    //  no_result.point = NULL;
-    //    delete speed_array;
-  }
+    bool stop = false;
+    if (length < 1) {
+        std::cout << "The list of speeds is empty\n";
+        stop = true;
+    }
+
+    for(int index1 = 0; index1 < length; index1++) {
+        if (speed_array[index1] < 1) {
+            cout << "Negative hastigheder:\n";
+          cout << string_speeds(speed_array, length) << "\n";
+          stop = true;
+        }
+    }
+
+    if (stop) {
+        geo_time_result* no_result = new geo_time_result;
+        no_result->result = 0;
+        return no_result;
+    }
+
+//    cout << "Entering: " << string_speeds(speed_array, length) << "\n";
+    
   event_point_priority_queue* queue = new event_point_priority_queue;
-  
+
+
   event_point final_point;
   final_point.number_of_runners = length;
   final_point.rounds = 1;
@@ -125,6 +137,8 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
   }
 
   int intersection = 0;
+  int number = 0;
+ 
   event_point p;
   while(!queue->empty()) {
     // Find point and remove it from the queue
@@ -133,9 +147,12 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
     
     if (p.type == START) {
       intersection++;
+      number++;
+//      cout << string_speeds(speed_array, length) << ": " << intToString(intersection) << ", Number: " << number << "\n";
+
       if (intersection == length) {
 
-	/*
+          /*
 	double top = p.pre_computed; 
 	double down = p.speed * (length + 1.0);
 	*/
@@ -143,7 +160,23 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
 
 	geo_time_result* has_result = new geo_time_result;
 	has_result->result = true;
-	has_result->point = p;
+
+        event_point* returnPoint = new event_point;
+        returnPoint->local_position = p.local_position;
+        returnPoint->number_of_runners = p.number_of_runners;
+        returnPoint->rounds = p.rounds;
+        returnPoint->runnerNumber = p.runnerNumber;
+        returnPoint->speed = p.speed;
+        returnPoint->type = p.type;
+/*
+        unsigned int local_position;
+  unsigned int number_of_runners;
+  unsigned int rounds;
+  unsigned int speed;
+  unsigned int runnerNumber;
+  point_type type;
+*/
+        has_result->point = returnPoint;
 	
       	freeQueue(queue); // Free the queue
 	return has_result;
@@ -152,8 +185,10 @@ geo_time_result* Geometric_method (const int speed_array[], const int length) {
       // delete p; // Delete the point
     } else if (p.type == END) {
       intersection--;
+      number++;
+   //   cout << string_speeds(speed_array, length) << ": " << intToString(intersection) << ", Number: " << number << "\n";
       // cout << "-: " << intersection << "\n";
-      
+
       MakeTimePoints(p, queue, length);
       // delete p; // free the point
 

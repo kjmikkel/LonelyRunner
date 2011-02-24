@@ -3,15 +3,15 @@
 op = -O2
 
 LonelyRunner.out: main.o Geometric.o Numerical.o Prime_Number.o util.o 
-	g++ $(op) -o LonelyRunner.out main.o Geometric.o Numerical.o util.o  `pkg-config gtk+-2.0 --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm
+	g++ $(op) -o LonelyRunner.out main.o Geometric.o Numerical.o util.o `pkg-config gtk+-2.0 --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm -lboost_thread
 
 TestCode.out: main_test.o Geometric.o Numerical.o Prime_Number.o util.o 
 	g++ $(op) -o TestCode.out main_test.o Geometric.o Numerical.o Prime_Number.o util.o -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lntl -lgmp -lm 
 
 # above LonelyRunner.out depends on main.o, data_structure.o and Geometric.o
 
-main.o: main.c Geometric.h Numerical.h data_structure.h util.o
-	g++ $(op) -c main.c -l util.o `pkg-config gtk+-2.0 --cflags --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm 
+main.o: main.cpp Geometric.h Numerical.h data_structure.h util.o
+	g++ $(op) -c main.cpp -l util.o `pkg-config gtk+-2.0 --cflags --libs` -I$(HOME)/sw/include -L$(HOME)/sw/lib -lntl -ljson -lgmp -lm -lboost_thread
 
 main_test.o: main_test.cpp Geometric.h Numerical.h util.h Prime_Number.h util.o
 	g++ $(op) -c main_test.cpp -ljson -l util.o

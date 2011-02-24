@@ -5,9 +5,40 @@
 #include <fstream>
 #include <string>
 
+#include <sstream>
+
 #include <json/json.h>
 
+#include <boost/lexical_cast.hpp>
+
 #include "data_structure.h"
+
+std::string intToString(int i)
+{
+    return boost::lexical_cast<std::string>(i);
+}
+
+int stringToInt(std::string str) {
+    using boost::bad_lexical_cast;
+
+    try {
+       return boost::lexical_cast<int>(str);
+    } catch (bad_lexical_cast &) {
+       return -1;
+    }
+}
+
+std::string string_speeds(const int speed_array[], int length) {
+    std::string buf;
+    buf += "[";
+    for(int i = 0; i < length; i++) {
+        buf += intToString(speed_array[i]);
+	if (i != length - 1)
+            buf += ", ";
+	}
+    buf += "]";
+    return buf;
+}
 
 std::string read_entire_file(char* filename) {
   std::string buf;
