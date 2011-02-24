@@ -30,7 +30,7 @@ Repository Content:
 ====
 
 Source Code: 
-My Lonely Runner Conjecture verfier ended up being written in C++, and can be found in the src/C++ directory. There you will also find a README file listing the source codes dependencies.
+My Lonely Runner Conjecture verfier ended up being written in C++, and can be found in the src/C++ directory. There you will also find a README file listing the source codes dependencies. The Source code is released under the GPLv3
 
 Report:
 The report I made to document my work was written in Latex and can be found in the report directoy. It should contain everything that is needed to compile it.
