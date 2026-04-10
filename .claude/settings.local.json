@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(C:\\\\Users\\\\kjmik\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.0.7\\\\scripts\\\\start-server.sh:*)",
+      "Bash(curl -sL https://github.com/nlohmann/json/releases/download/v3.11.3/json.hpp -o third_party/nlohmann/json.hpp)",
+      "Bash(cmake:*)",
+      "Bash(wsl:*)",
+      "Bash(ctest --test-dir build --output-on-failure)",
+      "Bash(wc:*)"
+    ]
+  }
+}
