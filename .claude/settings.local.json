@@ -7,7 +7,12 @@
       "Bash(wsl:*)",
       "Bash(ctest --test-dir build --output-on-failure)",
       "Bash(wc:*)",
-      "Bash(ls /mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/README*)"
+      "Bash(ls /mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/README*)",
+      "Bash(./build/src/test/LonelyRunnerTests:*)",
+      "Bash(./build-san/src/test/LonelyRunnerTests:*)",
+      "WebSearch",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:www.quantamagazine.org)"
     ]
   }
 }

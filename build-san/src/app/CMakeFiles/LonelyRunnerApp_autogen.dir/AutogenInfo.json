@@ -1,0 +1,180 @@
+{
+	"BUILD_DIR" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/LonelyRunnerApp_autogen",
+	"CMAKE_BINARY_DIR" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san",
+	"CMAKE_CURRENT_BINARY_DIR" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app",
+	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/CMakeLists.txt"
+	],
+	"CMAKE_SOURCE_DIR" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner",
+	"DEP_FILE" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/LonelyRunnerApp_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "LonelyRunnerApp_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/animationwidget.h",
+			"Mu",
+			"EWIEGA46WW/moc_animationwidget.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/mainwindow.h",
+			"Mu",
+			"EWIEGA46WW/moc_mainwindow.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/manualtestpanel.h",
+			"Mu",
+			"EWIEGA46WW/moc_manualtestpanel.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/optionspanel.h",
+			"Mu",
+			"EWIEGA46WW/moc_optionspanel.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/rangetestpanel.h",
+			"Mu",
+			"EWIEGA46WW/moc_rangetestpanel.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/rangeworker.h",
+			"Mu",
+			"EWIEGA46WW/moc_rangeworker.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/thememanager.h",
+			"Mu",
+			"EWIEGA46WW/moc_thememanager.cpp",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/verifyfilepanel.h",
+			"Mu",
+			"EWIEGA46WW/moc_verifyfilepanel.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/LonelyRunnerApp_autogen/include",
+	"MOC_COMPILATION_FILE" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/LonelyRunnerApp_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : 
+	[
+		"QT_CONCURRENT_LIB",
+		"QT_CORE_LIB",
+		"QT_GUI_LIB",
+		"QT_NO_DEBUG",
+		"QT_WIDGETS_LIB"
+	],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/core",
+		"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/third_party",
+		"/usr/include/x86_64-linux-gnu/qt6/QtCore",
+		"/usr/include/x86_64-linux-gnu/qt6",
+		"/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++",
+		"/usr/include/x86_64-linux-gnu/qt6/QtWidgets",
+		"/usr/include/x86_64-linux-gnu/qt6/QtGui",
+		"/usr/include/x86_64-linux-gnu/qt6/QtConcurrent",
+		"/usr/include",
+		"/usr/include/c++/13",
+		"/usr/include/x86_64-linux-gnu/c++/13",
+		"/usr/include/c++/13/backward",
+		"/usr/lib/gcc/x86_64-linux-gnu/13/include",
+		"/usr/local/include",
+		"/usr/include/x86_64-linux-gnu"
+	],
+	"MOC_MACRO_NAMES" : 
+	[
+		"Q_OBJECT",
+		"Q_GADGET",
+		"Q_GADGET_EXPORT",
+		"Q_NAMESPACE",
+		"Q_NAMESPACE_EXPORT"
+	],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/c++",
+		"-std=c++20",
+		"-dM",
+		"-E",
+		"-c",
+		"/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/LonelyRunnerApp_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 12,
+	"PARSE_CACHE_FILE" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/CMakeFiles/LonelyRunnerApp_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/usr/lib/qt6/libexec/moc",
+	"QT_UIC_EXECUTABLE" : "",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 4,
+	"SETTINGS_FILE" : "/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/build-san/src/app/CMakeFiles/LonelyRunnerApp_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/animationwidget.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/main.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/mainwindow.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/manualtestpanel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/optionspanel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/rangetestpanel.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/rangeworker.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/thememanager.cpp",
+			"Mu",
+			null
+		],
+		[
+			"/mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/src/app/verifyfilepanel.cpp",
+			"Mu",
+			null
+		]
+	],
+	"VERBOSITY" : 0
+}

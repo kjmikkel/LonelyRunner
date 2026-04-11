@@ -1,0 +1,9 @@
+# ninja log v5
+48	626	1775902520611480700	src/core/CMakeFiles/lonelyrunner.dir/prime.cpp.o	8f7aef080f1ecaf4
+51	2221	1775902522144023200	src/core/CMakeFiles/lonelyrunner.dir/range_test.cpp.o	c918a9f12b910407
+45	2273	1775902522189124400	src/core/CMakeFiles/lonelyrunner.dir/numerical.cpp.o	4c97c05b3e53c7b
+54	2567	1775902522471348100	src/test/CMakeFiles/LonelyRunnerTests.dir/tests.cpp.o	bca818b28f34ef04
+43	2852	1775902522744793800	src/core/CMakeFiles/lonelyrunner.dir/geometric.cpp.o	2a68fdd8ab92eaa2
+50	14492	1775902535164700000	src/core/CMakeFiles/lonelyrunner.dir/util.cpp.o	e17f689d4614a8cc
+14500	15871	1775902536504441000	src/core/liblonelyrunner.a	eae507dae4ed7db8
+15873	16826	1775902537418623500	src/test/LonelyRunnerTests	4c79f0f94328421b
