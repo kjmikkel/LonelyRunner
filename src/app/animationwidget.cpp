@@ -2,11 +2,13 @@
 #include "thememanager.h"
 #include <QPainter>
 #include <QPainterPath>
+#include <QFont>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFileDialog>
 #include <QSignalBlocker>
 #include <algorithm>
+#include <cmath>
 
 // ---------------------------------------------------------------------------
 // AnimationCanvas
@@ -78,6 +80,16 @@ void AnimationCanvas::paintEvent(QPaintEvent*) {
         }
         p.setPen(Qt::NoPen); p.setBrush(col);
         p.drawEllipse(QPointF(rx, ry), 7.0, 7.0);
+
+        // Speed label radiating outward from dot (only for small runner counts)
+        if (n <= 15) {
+            p.setPen(col);
+            p.setFont(QFont("sans-serif", 7, QFont::Bold));
+            double lx = cx + (radius + 14) * std::cos(-angle) - 8;
+            double ly = cy + (radius + 14) * std::sin(-angle) - 6;
+            p.drawText(QRectF(lx, ly, 30, 14), Qt::AlignCenter,
+                       QString::number(m_speeds[i]));
+        }
     }
 }
 
@@ -85,9 +97,14 @@ void AnimationCanvas::paintEvent(QPaintEvent*) {
 // AnimationWidget
 // ---------------------------------------------------------------------------
 
-static const char*  SPEED_LABELS[]{"0.125x","0.25x","0.5x","1x","2x","5x"};
-static const double SPEED_VALUES[]{0.125, 0.25, 0.5, 1.0, 2.0, 5.0};
-static constexpr int SPEED_DEFAULT = 3;  // index of 1x
+// Logarithmic speed mapping: speed = 2^(-4 + 5*v/1000)
+// v=0 → 0.0625×, v=800 → 1.0×, v=1000 → 2.0×
+static double sliderToSpeed(int v) {
+    return std::pow(2.0, -4.0 + 5.0 * v / 1000.0);
+}
+static int speedToSlider(double s) {
+    return static_cast<int>(std::round((std::log2(s) + 4.0) / 5.0 * 1000.0));
+}
 
 AnimationWidget::AnimationWidget(std::vector<int> speeds, int lonely_num, int lonely_den,
                                  QWidget* parent)
@@ -138,24 +155,22 @@ AnimationWidget::AnimationWidget(std::vector<int> speeds, int lonely_num, int lo
     barLayout->addSpacing(12);
     barLayout->addWidget(new QLabel("Speed:"));
 
-    QWidget* speedGroup = new QWidget;
-    auto* speedRow = new QHBoxLayout(speedGroup);
-    speedRow->setContentsMargins(0,0,0,0); speedRow->setSpacing(2);
-    for (int i = 0; i < static_cast<int>(std::size(SPEED_VALUES)); ++i) {
-        auto* btn = new QPushButton(SPEED_LABELS[i]);
-        btn->setCheckable(true); btn->setChecked(i == SPEED_DEFAULT);
-        double sv = SPEED_VALUES[i];
-        connect(btn, &QPushButton::clicked, this, [this, sv, i, speedGroup]() {
-            m_speedMult = sv;
-            for (int j = 0; j < speedGroup->layout()->count(); ++j) {
-                auto* b = qobject_cast<QPushButton*>(
-                    speedGroup->layout()->itemAt(j)->widget());
-                if (b) b->setChecked(j == i);
-            }
-        });
-        speedRow->addWidget(btn);
-    }
-    barLayout->addWidget(speedGroup);
+    m_speedValueLabel = new QLabel("1.00\xc3\x97");  // UTF-8 "×"
+    m_speedValueLabel->setMinimumWidth(48);
+    m_speedValueLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    barLayout->addWidget(m_speedValueLabel);
+
+    m_speedSlider = new QSlider(Qt::Horizontal);
+    m_speedSlider->setRange(0, 1000);
+    m_speedSlider->setValue(speedToSlider(1.0));  // default 1×
+    m_speedSlider->setFixedWidth(120);
+    m_speedSlider->setToolTip("Speed: drag left for slower, right for faster");
+    connect(m_speedSlider, &QSlider::valueChanged, this, [this](int v) {
+        m_speedMult = sliderToSpeed(v);
+        m_speedValueLabel->setText(
+            QString::number(m_speedMult, 'g', 2) + "\xc3\x97");
+    });
+    barLayout->addWidget(m_speedSlider);
     barLayout->addStretch();
 
     m_timeLabel = new QLabel("t = 0.0000");
@@ -199,6 +214,7 @@ void AnimationWidget::applyTheme() {
     m_timeLabel->setStyleSheet(
         QString("color:%1;").arg(c.highlight.name()));
     m_canvas->update();
+    updateInfoPanel();
 }
 
 void AnimationWidget::onTick() {
@@ -246,21 +262,36 @@ void AnimationWidget::updateTimeLabel() {
 }
 void AnimationWidget::updateInfoPanel() {
     if (!m_infoPanel->isVisible()) return;
+    const auto&  c         = ThemeManager::instance().colors();
     const int    n         = static_cast<int>(m_speeds.size());
     const double threshold = 1.0 / (n + 1);
     QString text;
     text += QString("<b>t = %1</b><br>").arg(m_t, 0, 'f', 5);
     if (m_lonelyTime > 0.0)
-        text += QString("Lonely t ~ %1<br>").arg(m_lonelyTime, 0, 'f', 5);
-    text += QString("Threshold: 1/%1 = %2<br><br>").arg(n + 1).arg(threshold, 0, 'f', 4);
-    text += "<b>Distances:</b><br>";
+        text += QString("Lonely t \xe2\x89\x88 %1<br>").arg(m_lonelyTime, 0, 'f', 5);
+    text += QString("Threshold: 1/%1 = %2<br>").arg(n + 1).arg(threshold, 0, 'f', 4);
+    text += "<br><b>Runners:</b><br>";
+    text += "<table cellpadding='2' cellspacing='0'>";
     for (int i = 0; i < n; ++i) {
         double pos  = std::fmod(m_speeds[i] * m_t, 1.0);
         if (pos < 0) pos += 1.0;
         double dist = std::min(pos, 1.0 - pos);
         bool lonely = dist >= threshold;
-        text += QString("v=%1 %2 %3<br>")
-                .arg(m_speeds[i]).arg(dist, 0, 'f', 4).arg(lonely ? "ok" : "no");
+        QString col = c.runners[i % static_cast<int>(c.runners.size())].name();
+        QString statusCol = lonely ? c.ok.name() : c.fail.name();
+        QString statusSym = lonely ? "\xe2\x9c\x93" : "\xe2\x9c\x97";
+        text += QString(
+            "<tr>"
+            "<td><span style='color:%1;font-size:14px'>\xe2\xac\xa4</span></td>"
+            "<td>v=%2</td>"
+            "<td>%3</td>"
+            "<td style='color:%4'>%5</td>"
+            "</tr>")
+            .arg(col)
+            .arg(m_speeds[i])
+            .arg(dist, 0, 'f', 4)
+            .arg(statusCol, statusSym);
     }
+    text += "</table>";
     m_infoPanel->setText(text);
 }

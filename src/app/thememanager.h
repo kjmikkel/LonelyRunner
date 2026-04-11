@@ -45,6 +45,7 @@ private:
 
     void applyDarkPalette();
     void applyLightPalette();
+    void applyGlobalStylesheet();
     void computeDark();
     void computeLight();
 

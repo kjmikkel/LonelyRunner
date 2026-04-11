@@ -6,7 +6,8 @@
       "Bash(cmake:*)",
       "Bash(wsl:*)",
       "Bash(ctest --test-dir build --output-on-failure)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(ls /mnt/c/Users/kjmik/Documents/Programming/LonelyRunner/README*)"
     ]
   }
 }

@@ -1,5 +1,7 @@
 #pragma once
 #include <QMainWindow>
+#include <QButtonGroup>
+#include <QPushButton>
 #include <QListWidget>
 #include <QStackedWidget>
 #include <vector>
@@ -18,11 +20,12 @@ public:
 protected:
     void showEvent(QShowEvent* event) override;
 
-private slots:
-    void onNavSelected(int row);
-
 private:
-    QListWidget*     m_nav{};
+    QButtonGroup*    m_navGroup{};
+    QPushButton*     m_navManual{};
+    QPushButton*     m_navRange{};
+    QPushButton*     m_navVerify{};
+    QPushButton*     m_navOptions{};
     QStackedWidget*  m_stack{};
     QListWidget*     m_history{};
     ManualTestPanel* m_manualPanel{};

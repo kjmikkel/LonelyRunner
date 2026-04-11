@@ -36,6 +36,7 @@ void ThemeManager::apply(ThemeMode mode) {
             }
             break;
     }
+    applyGlobalStylesheet();
     emit themeChanged();
 
     // Push the title-bar hint to all windows that are already visible
@@ -69,6 +70,96 @@ void ThemeManager::applyTitleBarHint(QWindow* window) {
 #else
     Q_UNUSED(window)
 #endif
+}
+
+// ---------------------------------------------------------------------------
+// Global stylesheet
+// ---------------------------------------------------------------------------
+
+void ThemeManager::applyGlobalStylesheet() {
+    qApp->setStyleSheet(R"(
+        /* ── Buttons ─────────────────────────────────── */
+        QPushButton {
+            border-radius: 6px;
+            padding: 5px 14px;
+            border: 1px solid palette(mid);
+        }
+        QPushButton:hover  { border-color: palette(highlight); }
+        QPushButton:pressed {
+            background: palette(highlight);
+            color: palette(highlighted-text);
+        }
+        QPushButton:disabled { color: palette(dark); }
+        QPushButton:checked {
+            border-color: palette(highlight);
+            background: palette(alternate-base);
+        }
+
+        /* ── Nav buttons (override general button) ──── */
+        QPushButton[navRole="true"] {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            text-align: left;
+            font-size: 13px;
+        }
+        QPushButton[navRole="true"]:hover   { background: palette(alternate-base); }
+        QPushButton[navRole="true"]:checked {
+            background: palette(highlight);
+            color: palette(highlighted-text);
+        }
+
+        /* ── Group boxes ─────────────────────────────── */
+        QGroupBox {
+            background: palette(base);
+            border: 1px solid palette(mid);
+            border-radius: 8px;
+            margin-top: 12px;
+            padding: 10px 8px 8px 8px;
+        }
+        QGroupBox::title {
+            subcontrol-origin: margin;
+            left: 10px;
+            padding: 0 4px;
+            color: palette(window-text);
+        }
+
+        /* ── Input fields ────────────────────────────── */
+        QLineEdit, QSpinBox, QDoubleSpinBox {
+            border: 1px solid palette(mid);
+            border-radius: 5px;
+            padding: 4px 8px;
+            background: palette(base);
+        }
+        QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
+            border-color: palette(highlight);
+        }
+
+        /* ── Progress bar ────────────────────────────── */
+        QProgressBar {
+            border: 1px solid palette(mid);
+            border-radius: 4px;
+            text-align: center;
+            height: 10px;
+        }
+        QProgressBar::chunk {
+            background: palette(highlight);
+            border-radius: 4px;
+        }
+
+        /* ── List widgets (history / nav) ────────────── */
+        QListWidget {
+            border: 1px solid palette(mid);
+            border-radius: 6px;
+            background: palette(base);
+        }
+        QListWidget::item { padding: 3px 6px; }
+        QListWidget::item:selected {
+            background: palette(highlight);
+            color: palette(highlighted-text);
+            border-radius: 4px;
+        }
+    )");
 }
 
 // ---------------------------------------------------------------------------

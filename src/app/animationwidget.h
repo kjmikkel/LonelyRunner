@@ -51,8 +51,10 @@ private:
     QTimer*          m_timer{};
     AnimationCanvas* m_canvas{};
     QSlider*         m_scrubber{};
+    QSlider*         m_speedSlider{};
     QPushButton*     m_playBtn{};
     QLabel*          m_timeLabel{};
+    QLabel*          m_speedValueLabel{};
     QLabel*          m_infoPanel{};
     QCheckBox*       m_showInfoBox{};
 
