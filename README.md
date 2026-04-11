@@ -48,7 +48,7 @@ sudo pacman -S ntl gmp qt6-base cmake ninja
 
 # Then build and test
 cmake -B build -G Ninja && cmake --build build
-ctest --test-dir build --output-on-failure   # should report 170/170 passed
+ctest --test-dir build --output-on-failure   # should report 213/213 passed
 ```
 
 **Run:**
@@ -101,6 +101,15 @@ placed at the zone boundary). This search is not exhaustive — it may miss lone
 other denominators — so a `nullopt` from this method does **not** prove the conjecture is
 violated. The numerical method is used in the Manual Test panel to show a specific lonely time.
 The range test always uses the geometric method for the yes/no violation determination.
+
+**Prime Modular method** (`src/core/prime_modular.cpp`) — searches lonely times of the form
+t = a/((n+1)·p) for small primes p. This denominator family is central to the 2025–2026
+proofs by Matthieu Rosenfeld (8 runners, arXiv:2509.14111) and Tanupat Trakulthongchai
+(9–10 runners, arXiv:2511.22427): any counterexample's speed-product must be divisible by
+primes for which no tuple covers the range with this denominator. Here the search runs in the
+forward direction — given a specific speed set, it checks each t = a/((n+1)·p) for primes
+up to 200. Like the numerical method, it is not exhaustive, but it covers a complementary set
+of denominators and runs in pure integer arithmetic (no NTL required).
 
 ## License
 

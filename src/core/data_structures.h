@@ -24,7 +24,15 @@ struct NumResult {
     int k1{}, k2{}, a{};
 };
 
-enum class Algorithm { Geometric, Numerical };
+// Result from the prime modular method.
+// The lonely time is a / ((n+1) * prime), where n = number of runners.
+struct PrimeModResult {
+    bool found{false};
+    int  prime{};  // p — the denominator factor
+    int  a{};      // numerator: t = a / ((n+1)*prime)
+};
+
+enum class Algorithm { Geometric, Numerical, PrimeModular };
 
 struct RangeConfig {
     int start_value{1};

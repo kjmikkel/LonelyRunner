@@ -27,6 +27,7 @@ private:
     QCheckBox*    m_findMaxBox{};
     QRadioButton* m_geoRadio{};
     QRadioButton* m_numRadio{};
+    QRadioButton* m_primeRadio{};
     QLabel*       m_resultLabel{};
     QPushButton*  m_animateBtn{};
 

@@ -2,6 +2,7 @@ add_library(lonelyrunner STATIC
     geometric.cpp
     numerical.cpp
     prime.cpp
+    prime_modular.cpp
     util.cpp
     range_test.cpp
 )

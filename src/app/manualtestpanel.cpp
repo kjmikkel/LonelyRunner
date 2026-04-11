@@ -2,6 +2,7 @@
 #include "animationwidget.h"
 #include "geometric.h"
 #include "numerical.h"
+#include "prime_modular.h"
 #include "util.h"
 #include "thememanager.h"
 #include <QVBoxLayout>
@@ -34,11 +35,13 @@ ManualTestPanel::ManualTestPanel(QWidget* parent) : QWidget(parent) {
 
     auto* algoBox    = new QGroupBox("Algorithm");
     auto* algoLayout = new QHBoxLayout(algoBox);
-    m_geoRadio = new QRadioButton("Geometric");
-    m_numRadio = new QRadioButton("Numerical");
+    m_geoRadio   = new QRadioButton("Geometric");
+    m_numRadio   = new QRadioButton("Numerical");
+    m_primeRadio = new QRadioButton("Prime Modular");
     m_geoRadio->setChecked(true);
     algoLayout->addWidget(m_geoRadio);
     algoLayout->addWidget(m_numRadio);
+    algoLayout->addWidget(m_primeRadio);
     algoLayout->addStretch();
     layout->addWidget(algoBox);
 
@@ -104,13 +107,23 @@ void ManualTestPanel::onRun() {
             m_lastNumerator   = p.local_position + p.rounds * (p.number_of_runners + 1);
             m_lastDenominator = p.speed * (p.number_of_runners + 1);
         }
-    } else {
+    } else if (m_numRadio->isChecked()) {
         algo_name = "Numerical";
         auto r = numerical_method(m_lastSpeeds, find_max);
         if (r && r->found) {
             valid = is_valid(*r, m_lastSpeeds);
             m_lastNumerator   = r->a;
             m_lastDenominator = r->k1 + r->k2;
+        }
+    } else {
+        // Prime Modular: t = a / ((n+1)*p) for small primes p.
+        // Based on Rosenfeld (arXiv:2509.14111) and Trakulthongchai (arXiv:2511.22427).
+        algo_name = "Prime Modular";
+        auto r = prime_modular_method(m_lastSpeeds);
+        if (r && r->found) {
+            valid = is_valid(*r, m_lastSpeeds);
+            m_lastNumerator   = r->a;
+            m_lastDenominator = (static_cast<int>(m_lastSpeeds.size()) + 1) * r->prime;
         }
     }
 

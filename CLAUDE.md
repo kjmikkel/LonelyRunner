@@ -41,9 +41,13 @@ Core algorithm fixes applied (TDD red/green pass):
 - All three core files (`geometric.cpp`, `numerical.cpp`, `range_test.cpp`) have been rewritten
   for clarity: precomputed `NTL::ZZ` speed vectors, `make_entry` helper, renamed variables,
   removed `using namespace NTL`, added mathematical comments explaining the time-unit model.
+- **Prime Modular method** (`prime_modular.cpp`) added: searches lonely times of the form
+  t = a/((n+1)·p) for small primes p.  This denominator family is central to Rosenfeld's
+  proof for 8 runners (arXiv:2509.14111) and Trakulthongchai's proofs for 9–10 runners
+  (arXiv:2511.22427).  Exposed as a third algorithm option in the Manual Test panel.
 
 - `lonelyrunner` static lib — complete (numerical, geometric, prime algorithms; NTL arbitrary precision)
-- `LonelyRunnerTests` — 170/170 tests pass
+- `LonelyRunnerTests` — 213/213 tests pass
 - `LonelyRunnerApp` — full Qt6 GUI, complete:
   - Manual Test, Range Test (parallel `RangeWorker`), Verify File panels
   - Animation window with colour-coded runner dots, speed legend, log speed slider (0.06×–2×)

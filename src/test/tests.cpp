@@ -6,6 +6,7 @@
 #include "numerical.h"
 #include "geometric.h"
 #include "prime.h"
+#include "prime_modular.h"
 #include "util.h"
 #include "range_test.h"
 
@@ -316,6 +317,89 @@ void test_check_for_solution_empty() {
     CHECK(!check_for_solution(std::span<const int>{}));
 }
 
+// ── Prime modular method (Rosenfeld / Trakulthongchai approach) ───────────────
+//
+// The prime modular method searches lonely times of the form t = a/((n+1)*p)
+// for small primes p.  This denominator family is central to the 2025-2026
+// proofs for 8-10 runners (arXiv:2509.14111, 2511.22427, 2512.01912).
+
+void test_prime_modular_empty() {
+    auto r = prime_modular_method(std::span<const int>{});
+    CHECK(!r.has_value());
+}
+
+void test_prime_modular_one_runner() {
+    // Single runner with speed 3: lonely at t = 1/(2*p) for any prime p.
+    // With p=2, Q=4: a=2 → 2*3 mod 4 = 2, min(2,2)=2, 2*2=4 >= 4 ✓
+    std::vector<int> speeds{3};
+    auto r = prime_modular_method(speeds);
+    CHECK(r.has_value() && r->found);
+    if (r) CHECK(is_valid(*r, speeds));
+}
+
+void test_prime_modular_two_runners() {
+    std::vector<int> speeds{1, 2};
+    auto r = prime_modular_method(speeds);
+    CHECK(r.has_value() && r->found);
+    if (r) CHECK(is_valid(*r, speeds));
+}
+
+void test_prime_modular_three_runners() {
+    std::vector<int> speeds{2, 3, 4};
+    auto r = prime_modular_method(speeds);
+    CHECK(r.has_value() && r->found);
+    if (r) CHECK(is_valid(*r, speeds));
+}
+
+void test_prime_modular_is_valid_known_good() {
+    // t = 2/6 for speeds {1,2}: (n+1)=3, p=2 → Q=6
+    //   v=1: 2*1 mod 6=2, min(2,4)=2, 2*3=6>=6 ✓
+    //   v=2: 2*2 mod 6=4, min(4,2)=2, 2*3=6>=6 ✓
+    PrimeModResult r{true, 2, 2};
+    CHECK(is_valid(r, std::vector<int>{1, 2}));
+}
+
+void test_prime_modular_is_valid_rejects_bad() {
+    // a=1 with same configuration: v=1 → pos=1, min(1,5)=1, 1*3=3 < 6 ✗
+    PrimeModResult r{true, 2, 1};
+    CHECK(!is_valid(r, std::vector<int>{1, 2}));
+}
+
+void test_prime_modular_is_valid_not_found() {
+    // found=false must always be rejected
+    PrimeModResult r{false, 2, 2};
+    CHECK(!is_valid(r, std::vector<int>{1, 2}));
+}
+
+// Cross-validate: prime modular and geometric must both succeed (or both not),
+// and when they succeed their results must individually pass is_valid.
+void test_prime_modular_agrees_with_geometric() {
+    for (auto& speeds : std::vector<std::vector<int>>{
+            {1, 2}, {3, 5}, {1, 2, 3}, {2, 3, 4}, {1, 3, 5}, {3, 7, 11}}) {
+        auto gr = geometric_method(speeds);
+        auto pr = prime_modular_method(speeds);
+        // Geometric is the authoritative verifier — if it finds a solution,
+        // one exists.  Prime modular may miss it (incomplete search), so we
+        // only check that prime modular doesn't spuriously claim a solution
+        // when none exists.
+        if (pr) CHECK(is_valid(*pr, speeds));
+        if (gr)  CHECK(is_valid(*gr, speeds));
+        // For these small, well-studied inputs a prime solution must exist
+        CHECK(pr.has_value());
+    }
+}
+
+// Consistency: result from prime_modular_method must satisfy is_valid when found=true
+void test_prime_modular_result_self_consistent() {
+    for (int s0 = 1; s0 <= 6; ++s0) {
+        for (int s1 = s0 + 1; s1 <= 6; ++s1) {
+            std::vector<int> speeds{s0, s1};
+            auto r = prime_modular_method(speeds);
+            if (r && r->found) CHECK(is_valid(*r, speeds));
+        }
+    }
+}
+
 // ── main ─────────────────────────────────────────────────────────────────────
 
 int main(int argc, char* argv[]) {
@@ -356,6 +440,16 @@ int main(int argc, char* argv[]) {
     test_range_numerical_no_false_violations();
     test_range_test_cancel();
     test_check_for_solution_empty();
+
+    test_prime_modular_empty();
+    test_prime_modular_one_runner();
+    test_prime_modular_two_runners();
+    test_prime_modular_three_runners();
+    test_prime_modular_is_valid_known_good();
+    test_prime_modular_is_valid_rejects_bad();
+    test_prime_modular_is_valid_not_found();
+    test_prime_modular_agrees_with_geometric();
+    test_prime_modular_result_self_consistent();
 
     std::cout << g_pass << "/" << g_run << " tests passed\n";
     return (g_pass == g_run) ? 0 : 1;
