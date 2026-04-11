@@ -5,44 +5,48 @@
 #include <chrono>
 #include <algorithm>
 
-// Recursively fills speed combinations and tests each one.
-// Fills slots 0..num_runners-2; the top-value slot (num_runners-1) is pre-set by caller.
-// max_index: number of entries in number_array available for this slot (exclusive upper bound).
-// Returns true if a violation candidate was found.
+// Recursively generates all strictly-increasing k-tuples from number_array
+// (indices 0..max_index-1) and tests each one for a conjecture violation.
+//
+// slot: the current position being filled (0-based, innermost first)
+// max_index: only entries 0..max_index-1 are available for this slot
+//   (enforces strictly increasing order: each slot picks an index less than
+//   the one above it, so the final speeds array is strictly sorted)
+//
+// Returns true if a violation is found (caller should stop recursing).
 static bool recursive_test(std::vector<int>& array,
                             const std::vector<int>& number_array,
-                            int slot,          // current slot index (0-based)
+                            int slot,
                             int num_runners,
-                            int max_index,     // entries 0..max_index-1 are available
+                            int max_index,
                             bool pre_test,
-                            Algorithm algo,
                             std::atomic<bool>& cancel) {
     if (cancel.load(std::memory_order_relaxed)) return false;
 
-    for (int ci = 0; ci < max_index; ++ci) {
-        array[slot] = number_array[ci];
+    for (int candidate_idx = 0; candidate_idx < max_index; ++candidate_idx) {
+        array[slot] = number_array[candidate_idx];
 
         if (slot + 1 < num_runners - 1) {
-            // Not the last inner slot — recurse, restricting to strictly lower index
+            // Not the last inner slot — recurse with a smaller available range
+            // so the next slot can only pick indices strictly below candidate_idx
             if (recursive_test(array, number_array,
-                                slot + 1, num_runners, ci,
-                                pre_test, algo, cancel))
+                                slot + 1, num_runners, candidate_idx,
+                                pre_test, cancel))
                 return true;
         } else {
-            // All slots filled — run the test
+            // All slots filled — test this combination
             std::span<const int> speeds(array.data(), num_runners);
 
             if (pre_test && check_for_solution(speeds))
-                continue;
+                continue;   // easy pre-filter: a solution provably exists
 
-            bool violation = false;
-            if (algo == Algorithm::Geometric) {
-                auto r = geometric_method(speeds);
-                violation = !r.has_value() || !is_valid(*r, speeds);
-            } else {
-                auto r = numerical_method(speeds);
-                violation = !r.has_value() || !is_valid(*r, speeds);
-            }
+            // The geometric method is the authoritative verifier: it sweeps the
+            // timeline completely within the FINAL bound.  The numerical method
+            // is a "lonely-time finder" whose search space (pair denominators)
+            // is not exhaustive, so a nullopt from it does NOT prove a violation.
+            // We always use geometric for the violation determination.
+            auto result   = geometric_method(speeds);
+            bool violation = !result.has_value() || !is_valid(*result, speeds);
 
             if (violation) return true;
         }
@@ -57,8 +61,7 @@ RangeResult range_test_sequential(
 
     auto t_start = std::chrono::steady_clock::now();
 
-    // Build number_array: integers [start_value, end_value)
-    // Fix #12 (off-by-one): end_value is exclusive upper bound
+    // Build the candidate pool: integers [start_value, end_value)
     std::vector<int> number_array;
     number_array.reserve(cfg.end_value - cfg.start_value);
     for (int v = cfg.start_value; v < cfg.end_value; ++v)
@@ -74,7 +77,11 @@ RangeResult range_test_sequential(
         return result;
     }
 
-    // Find starting index for the top-value slot
+    // Find the starting index for the outermost (top) slot.
+    // The top slot must be at index >= num_runners-1 (otherwise there aren't
+    // enough lower values to fill the inner slots with strictly smaller values).
+    // We also skip indices whose values are below start_max_value, which allows
+    // resuming a range test from a previous checkpoint.
     int start_top = cfg.num_runners - 1;
     for (int i = 0; i < total; ++i) {
         if (number_array[i] >= cfg.start_max_value) {
@@ -83,7 +90,6 @@ RangeResult range_test_sequential(
         }
     }
 
-    // Fix #11: use std::vector instead of VLA
     std::vector<int> array(cfg.num_runners, 0);
 
     for (int top_idx = start_top; top_idx < total; ++top_idx) {
@@ -96,11 +102,11 @@ RangeResult range_test_sequential(
 
         array[cfg.num_runners - 1] = number_array[top_idx];
 
+        // Inner slots pick from indices strictly below top_idx
         bool found = recursive_test(
             array, number_array,
-            0, cfg.num_runners,
-            top_idx,   // inner slots pick from indices strictly less than top_idx
-            cfg.pre_test, cfg.algorithm, cancel_flag);
+            0, cfg.num_runners, top_idx,
+            cfg.pre_test, cancel_flag);
 
         if (found) {
             result.status = RangeResult::Status::ViolationFound;

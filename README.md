@@ -48,7 +48,7 @@ sudo pacman -S ntl gmp qt6-base cmake ninja
 
 # Then build and test
 cmake -B build -G Ninja && cmake --build build
-ctest --test-dir build --output-on-failure   # should report 33/33 passed
+ctest --test-dir build --output-on-failure   # should report 170/170 passed
 ```
 
 **Run:**
@@ -84,6 +84,23 @@ git checkout v1.0.0
 ```
 
 Original test data (JSON format) and the graphs used in the report remain in `data/` and `report/data/` respectively.
+
+## Algorithm notes
+
+The application implements two independent methods for finding lonely times:
+
+**Geometric method** (`src/core/geometric.cpp`) — the complete verifier. It models each runner's
+lonely zone (distance ≥ 1/(n+1) from the start) as a series of time intervals and sweeps a
+priority-queue timeline. Every runner is in the lonely zone simultaneously at the moment the
+overlap count reaches n. The method is complete within its search window [0, 2(n+1)] and is
+used for all range-test violation detection.
+
+**Numerical method** (`src/core/numerical.cpp`) — a targeted lonely-time finder. It searches
+denominators of the form `speeds[i] + speeds[j]` (derived from two runners being symmetrically
+placed at the zone boundary). This search is not exhaustive — it may miss lonely times with
+other denominators — so a `nullopt` from this method does **not** prove the conjecture is
+violated. The numerical method is used in the Manual Test panel to show a specific lonely time.
+The range test always uses the geometric method for the yes/no violation determination.
 
 ## License
 
