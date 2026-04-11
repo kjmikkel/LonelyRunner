@@ -74,6 +74,32 @@ Keep these files up to date as the project evolves:
 
 When the test count changes, update the count in both files.
 
+## Bug-finding tools
+
+Two opt-in CMake options for catching unknown bugs automatically. Run these before declaring a
+codebase change clean — they do not require writing any new tests.
+
+### Sanitizer build (ASan + UBSan)
+Instruments the existing 170 tests to catch undefined behaviour, memory errors, and
+strict-weak-ordering violations at runtime. Would have caught Bug 1 automatically.
+```bash
+cmake -B build-san -G Ninja -DSANITIZE=ON
+cmake --build build-san --target LonelyRunnerTests
+./build-san/src/test/LonelyRunnerTests
+```
+
+### Fuzzer (requires `clang`; install with `sudo apt install clang`)
+Feeds random speed vectors into the core algorithms and asserts result validity.
+Runs unattended and saves a crash-reproducing input on any assertion failure.
+```bash
+CC=clang CXX=clang++ cmake -B build-fuzz -G Ninja -DFUZZ=ON
+cmake --build build-fuzz
+mkdir -p fuzz-corpus
+# Run indefinitely (Ctrl-C to stop); use -max_total_time=N for a time limit
+./build-fuzz/src/fuzz/fuzz_algorithms fuzz-corpus -max_len=8 -jobs=4
+```
+Re-run with the corpus directory to resume from saved inputs.
+
 ## Style
 C++20, `std::optional` / `std::span` / value semantics throughout. No raw `new`/`delete`
 in the new code. NTL (`#include <NTL/ZZ.h>`) is used for arbitrary-precision arithmetic
