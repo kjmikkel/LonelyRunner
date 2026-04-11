@@ -22,7 +22,15 @@ The conjecture has been proved for up to *n* = 7 runners. This tool lets you ver
 
 ## Build
 
-Requires WSL2 (Ubuntu 22.04) or a native Linux desktop with the dependencies below.
+Requires WSL2 (Ubuntu 22.04) or a native Linux desktop.
+
+**1. Install system dependencies** (once):
+
+```bash
+sudo apt install libntl-dev libgmp-dev qt6-base-dev qt6-base-dev-tools cmake ninja-build
+```
+
+**2. Build, test, and run:**
 
 ```bash
 cmake -B build -G Ninja && cmake --build build
@@ -33,12 +41,6 @@ LIBGL_ALWAYS_SOFTWARE=1 ./build/src/app/LonelyRunnerApp
 > **WSL2 note:** The `LIBGL_ALWAYS_SOFTWARE=1` prefix silences benign Mesa/EGL warnings
 > about a missing GPU driver. The application uses CPU-based Qt painting and works
 > correctly without hardware OpenGL.
-
-## Dependencies (Ubuntu 22.04 / WSL2)
-
-```
-libntl-dev  libgmp-dev  qt6-base-dev  qt6-base-dev-tools  cmake  ninja-build
-```
 
 ## Architecture
 
