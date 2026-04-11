@@ -22,19 +22,38 @@ The conjecture has been proved for up to *n* = 7 runners. This tool lets you ver
 
 ## Build
 
-Requires WSL2 (Ubuntu 22.04) or a native Linux desktop.
+Requires WSL2 or a native Linux desktop (Ubuntu/Debian, Fedora, or Arch).
 
-**1. Install system dependencies** (once):
+**Quickstart — installs dependencies and builds in one step:**
 
 ```bash
-sudo apt install libntl-dev libgmp-dev qt6-base-dev qt6-base-dev-tools cmake ninja-build
+./setup.sh
 ```
 
-**2. Build, test, and run:**
+`setup.sh` detects your distribution, installs the required packages via the
+native package manager (`apt` / `dnf` / `pacman`), and then runs the cmake
+build automatically.
+
+**Manual steps** (if you prefer to install dependencies yourself):
 
 ```bash
+# Ubuntu / Debian
+sudo apt install libntl-dev libgmp-dev qt6-base-dev qt6-base-dev-tools cmake ninja-build
+
+# Fedora
+sudo dnf install ntl-devel gmp-devel qt6-qtbase-devel cmake ninja-build
+
+# Arch
+sudo pacman -S ntl gmp qt6-base cmake ninja
+
+# Then build and test
 cmake -B build -G Ninja && cmake --build build
 ctest --test-dir build --output-on-failure   # should report 33/33 passed
+```
+
+**Run:**
+
+```bash
 LIBGL_ALWAYS_SOFTWARE=1 ./build/src/app/LonelyRunnerApp
 ```
 

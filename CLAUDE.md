@@ -6,16 +6,24 @@ parallel range test, and runner animation. **Linux-only target** (WSL2 on Window
 
 ## Build (run inside WSL2)
 ```bash
-cmake -B build -G Ninja && cmake --build build
+# First-time setup (installs deps + builds):
+./setup.sh
+
+# Subsequent builds:
+cmake --build build
+
+# Tests:
 ctest --test-dir build --output-on-failure
+
+# Run:
 LIBGL_ALWAYS_SOFTWARE=1 ./build/src/app/LonelyRunnerApp
 ```
 
 `LIBGL_ALWAYS_SOFTWARE=1` silences benign Mesa/EGL warnings about the missing GPU driver
 in WSL2. The app uses CPU-based Qt painting and works correctly without it.
 
-Dependencies (already installed in Ubuntu-22.04 WSL2):
-`libntl-dev libgmp-dev qt6-base-dev qt6-base-dev-tools cmake ninja-build`
+`setup.sh` detects the distro and installs the right packages via `apt` / `dnf` / `pacman`.
+Manual dependency install (Ubuntu/WSL2): `sudo apt install libntl-dev libgmp-dev qt6-base-dev qt6-base-dev-tools cmake ninja-build`
 
 ## Current status (2026-04-11)
 All targets build and link cleanly. All 33 unit tests pass.
